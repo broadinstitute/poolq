@@ -1,0 +1,4 @@
+	condition1	condition2	condition3
+condition1	1.00	-0.29	0.38
+condition2	-0.29	1.00	-0.77
+condition3	0.38	-0.77	1.00

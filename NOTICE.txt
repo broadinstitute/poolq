@@ -1,0 +1,17 @@
+The PoolQ program depends on the following open source libraries:
+
+Library	License	Link
+better-files	MIT	https://github.com/pathikrit/better-files/blob/master/LICENSE
+cats-effect	Apache 2.0	https://github.com/typelevel/cats-effect/blob/series/3.x/LICENSE.txt
+cats	Scalaz and Apache 2.0-like	https://github.com/typelevel/cats/blob/main/COPYING
+commons-io	Apache 2.0	https://commons.apache.org/
+comons-math	Apache 2.0	https://commons.apache.org/
+fastutil	Apache 2.0	https://fastutil.di.unimi.it/
+fs2	MIT	https://github.com/typelevel/fs2/blob/main/LICENSE
+kantan.csv	Apache 2.0	https://github.com/nrinaudo/kantan.csv/blob/master/LICENSE
+kantan.codecs	Apache 2.0	https://github.com/nrinaudo/kantan.codecs/blob/master/LICENSE
+log4s	Apache 2.0	https://github.com/Log4s/log4s/blob/master/LICENSE
+logback	Eclipse 2.0	https://github.com/qos-ch/logback/blob/master/LICENSE.txt
+samtools htsjdk	MIT	https://github.com/samtools/htsjdk
+scopt	MIT	https://github.com/scopt/scopt/blob/develop/LICENSE.md
+slf4j	MIT	https://www.slf4j.org/license.html

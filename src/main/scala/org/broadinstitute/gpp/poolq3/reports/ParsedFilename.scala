@@ -1,0 +1,10 @@
+/*
+ * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+package org.broadinstitute.gpp.poolq3.reports
+
+import java.nio.file.Path
+
+case class ParsedFilename(dir: Path, basename: String, extension: Option[String])

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="false" debug="false">
+
+  <appender name="file" class="ch.qos.logback.core.FileAppender">
+    <append>false</append>
+    <file>poolq3.log</file>
+    <encoder>
+      <pattern>%level %date %logger{16} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%highlight([%level]) %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <root level="INFO">
+    <appender-ref ref="stdout" />
+    <appender-ref ref="file" />
+  </root>
+
+</configuration>

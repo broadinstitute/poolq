@@ -1,0 +1,5 @@
+Construct Barcode	Construct IDs	pDNA	Unlabeled Sample Barcodes	DMSO
+AAAACCCCTTTT	act	1	2	1
+CCCCAAAATTTT	cat	1	0	1
+GGGGAAAACCCC	gac	2	0	1
+TTTTAAAAGGGG	tag	0	0	1

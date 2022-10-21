@@ -1,0 +1,102 @@
+Total reads: 10000
+Matching reads: 93
+1-base mismatch reads: 16
+
+Overall % match: 0.93
+
+Reads with no construct barcode: 0
+Max construct barcode index: 16
+Min construct barcode index: 16
+Avg construct barcode index: 16.00
+
+Read counts for sample barcodes with associated conditions:
+Barcode	Condition	Matched (Construct+Sample Barcode)	Matched Sample Barcode	% Match	Normalized Match
+AACC	condition1	0	153	0.00	0.000
+AACT	condition2	1	138	0.72	6.658
+AATA	condition3	4	246	1.63	8.647
+AATC	condition4	3	143	2.10	8.234
+AATT	condition5	6	193	3.11	9.231
+ACAG	condition6	1	191	0.52	6.658
+ACGA	condition7	2	148	1.35	7.651
+ACGC	condition8	0	51	0.00	0.000
+ACGG	condition9	0	156	0.00	0.000
+ACGT	condition10	0	77	0.00	0.000
+ACTG	condition11	0	58	0.00	0.000
+AGCG	condition12	1	95	1.05	6.658
+AGGA	condition13	0	93	0.00	0.000
+AGGC	condition14	2	580	0.34	7.651
+AGGT	condition15	10	438	2.28	9.967
+ATAG	condition16	7	699	1.00	9.453
+ATCG	condition17	3	542	0.55	8.234
+ATGA	condition18	1	351	0.28	6.658
+ATGC	condition19	8	478	1.67	9.646
+ATGT	condition20	1	214	0.47	6.658
+ATTG	condition21	1	112	0.89	6.658
+CAAG	condition22	0	159	0.00	0.000
+CACG	condition23	0	97	0.00	0.000
+CAGA	condition24	0	156	0.00	0.000
+CAGC	condition25	0	117	0.00	0.000
+CAGT	condition26	1	120	0.83	6.658
+CATG	condition27	0	144	0.00	0.000
+CTGG	condition28	0	110	0.00	0.000
+GAAG	condition29	0	179	0.00	0.000
+GAAT	condition30	1	199	0.50	6.658
+GAGC	condition31	4	693	0.58	8.647
+GAGT	condition32	4	313	1.28	8.647
+GATC	condition33	0	197	0.00	0.000
+GATG	condition34	2	245	0.82	7.651
+GTGG	condition35	5	321	1.56	8.969
+TAAG	condition36	6	255	2.35	9.231
+TACG	condition37	9	328	2.74	9.815
+TAGA	condition38	6	249	2.41	9.231
+TAGC	condition39	1	120	0.83	6.658
+TAGT	condition40	1	149	0.67	6.658
+TATG	condition41	1	287	0.35	6.658
+TGGG	condition42	1	200	0.50	6.658
+
+Read counts for most common sample barcodes without associated conditions:
+ACCG	107
+GAGA	15
+TGAG	7
+GAGG	4
+ATAA	3
+ATTA	3
+GACA	3
+TGAA	3
+AACG	2
+AAGG	2
+AAGT	2
+ACCA	2
+AGCA	2
+AGTA	2
+ATGG	2
+CAAA	2
+GGCA	2
+GGTA	2
+GTAC	2
+AACA	1
+ACCC	1
+ACTA	1
+AGAG	1
+AGGG	1
+ATAT	1
+CCGA	1
+CGAA	1
+CGGA	1
+CGGT	1
+CTGA	1
+GACG	1
+GATA	1
+GATT	1
+GCAC	1
+GCGG	1
+GGAG	1
+GGTC	1
+GTGA	1
+TAAA	1
+TACA	1
+TAGG	1
+TGGA	1
+TGGC	1
+TTGG	1
+

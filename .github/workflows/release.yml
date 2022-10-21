@@ -1,0 +1,28 @@
+name: Release
+
+on:
+  workflow_dispatch
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - uses: actions/checkout@v3.1.0
+    - run: git config --global user.email "gpp-informatics@broadinstitute.org"
+    - run: git config --global user.name "GPP Informatics"
+    - uses: jrouly/scalafmt-native-action@v2
+      with:
+        version: '3.3.2'
+    - name: Set up JDK 8
+      uses: actions/setup-java@v3.6.0
+      with:
+        java-version: '8'
+        distribution: 'temurin'
+    - run: sbt "scalafixAll --check"
+    - name: Run tests
+      run: make test-all
+    - name: Release
+      run: sbt "release cross with-defaults"

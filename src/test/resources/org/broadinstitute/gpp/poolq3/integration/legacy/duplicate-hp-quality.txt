@@ -1,0 +1,63 @@
+Total reads: 18
+Matching reads: 10
+1-base mismatch reads: 2
+
+Overall % match: 55.56
+
+Reads with no construct barcode: 0
+Max construct barcode index: 16
+Min construct barcode index: 16
+Avg construct barcode index: 16.00
+
+Read counts for sample barcodes with associated conditions:
+Barcode	Condition	Matched (Construct+Sample Barcode)	Matched Sample Barcode	% Match	Normalized Match
+AACC	condition1	1	1	100.00	15.762
+AACT	condition2	1	1	100.00	15.762
+AATA	condition3	1	1	100.00	15.762
+AATC	condition4	1	1	100.00	15.762
+AATT	condition5	1	1	100.00	15.762
+ACAG	condition6	1	1	100.00	15.762
+ACGA	condition7	1	1	100.00	15.762
+ACGC	condition8	1	1	100.00	15.762
+ACGG	condition9	1	1	100.00	15.762
+ACGT	condition10	1	1	100.00	15.762
+ACTG	condition11	0	0	0.00	0.000
+AGCG	condition12	0	0	0.00	0.000
+AGGA	condition13	0	0	0.00	0.000
+AGGC	condition14	0	0	0.00	0.000
+AGGT	condition15	0	0	0.00	0.000
+ATAG	condition16	0	0	0.00	0.000
+ATCG	condition17	0	0	0.00	0.000
+ATGA	condition18	0	1	0.00	0.000
+ATGC	condition19	0	0	0.00	0.000
+ATGT	condition20	0	0	0.00	0.000
+ATTG	condition21	0	0	0.00	0.000
+CAAG	condition22	0	0	0.00	0.000
+CACG	condition23	0	0	0.00	0.000
+CAGA	condition24	0	0	0.00	0.000
+CAGC	condition25	0	0	0.00	0.000
+CAGT	condition26	0	1	0.00	0.000
+CATG	condition27	0	0	0.00	0.000
+CTGG	condition28	0	0	0.00	0.000
+GAAG	condition29	0	0	0.00	0.000
+GAAT	condition30	0	0	0.00	0.000
+GAGC	condition31	0	0	0.00	0.000
+GAGT	condition32	0	0	0.00	0.000
+GATC	condition33	0	0	0.00	0.000
+GATG	condition34	0	0	0.00	0.000
+GTGG	condition35	0	1	0.00	0.000
+TAAG	condition36	0	0	0.00	0.000
+TACG	condition37	0	0	0.00	0.000
+TAGA	condition38	0	0	0.00	0.000
+TAGC	condition39	0	0	0.00	0.000
+TAGT	condition40	0	0	0.00	0.000
+TATG	condition41	0	0	0.00	0.000
+TGGG	condition42	0	0	0.00	0.000
+
+Read counts for most common sample barcodes without associated conditions:
+AGTT	1
+GCCA	1
+TCTC	1
+TTAT	1
+TTGA	1
+
