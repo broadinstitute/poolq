@@ -2,6 +2,8 @@
 
 Copyright (c) 2022 Genetic Perturbation Platform, The Broad Institute of Harvard and MIT.
 
+[![Build Status](https://github.com/broadinstitute/poolq/actions/workflows/ci.yml/badge.svg)](https://github.com/broadinstitute/poolq/actions/workflows/ci.yml)
+
 ## Overview
 
 PoolQ is a counter for indexed samples from next-generation sequencing of pooled DNA. Given a set
