@@ -27,24 +27,25 @@ locations, matching correlations between barcodes, and lists of frequently-occur
 
 ## Changes in PoolQ 3
 
-PoolQ was completely rewritten for version 3.0. The new code is faster and the codebase is much cleaner
+PoolQ was completely rewritten for version 3. The new code is faster and the codebase is much cleaner
 and more maintainable. We have taken the opportunity to make other changes to PoolQ as well.
 
 * There are substantial changes to the command-line interface for the program.
 * The default counts file format has changed slightly, although there is a command-line 
-argument that indicates that PoolQ 3.0 should write a backwards-compatible counts file. The differences
+argument that indicates that PoolQ 3 should write a backwards-compatible counts file. The differences
 are in headers only; file parsers should be able to adapt easily.
 * The quality file has changed somewhat. Importantly, the definition of certain statistics has changed
 slightly, so quality metrics cannot be directly compared between the the new and old versions. In addition,
 we no longer provide normalized match counts.
 
-See the manual for complete details on the differences between the 2.X and 3.0 versions.
+See the [manual](docs/MANUAL.md) for complete details on the differences versions 2 and 3.
 
-## PoolQ 2.X support
+## PoolQ 2 support
 
-We will continue to make the PoolQ 2.4 artifacts available for download. We have no plans to add features
-to the code. We will address bugs on a case-by-case basis; in general only critical bugfixes will be 
-ported to versions prior to 2.4, effective immediately.
+We will continue to make the PoolQ 2.4 artifacts available for download on the 
+[GPP portal](https://portals.broadinstitute.org/gpp/public/software/poolq). We have no plans to add
+features to the code. We will address bugs on a case-by-case basis; in general only critical 
+bugfixes will be ported to versions prior to 2.4, effective immediately.
 
 ## Maintainers 
 
