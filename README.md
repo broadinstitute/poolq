@@ -25,6 +25,15 @@ In addition to producing a histogram, PoolQ generates a number of reports, which
 other information that can be used to troubleshoot experiments. These include match percentages, barcode 
 locations, matching correlations between barcodes, and lists of frequently-occurring unknown barcodes.
 
+## Documentation
+For information on how to run PoolQ and its various modes and options, please see the 
+[manual](docs/MANUAL.md). We also maintain a [changelog](CHANGELOG.md) listing updates made to PoolQ.
+
+As of version 3.5.0, the source code to PoolQ is available under a [BSD 3-clause license](LICENSE). We 
+welcome contributions to PoolQ and have created a [contributor guide](CONTRIBUTING.md). Additionally,
+we maintain a [list](NOTICE.txt) of other open-source libraries PoolQ depends on, along with links to 
+associated licenses.
+
 ## Changes in PoolQ 3
 
 PoolQ was completely rewritten for version 3. The new code is faster and the codebase is much cleaner
