@@ -1,7 +1,7 @@
 # PoolQ
 PoolQ is a counter for indexed samples from next-gen sequencing of pooled DNA.
 
-*This documentation covers PoolQ version 3.5.0 (last updated 10/20/2022).*
+*This documentation covers PoolQ version 3.5.0 (last updated 11/22/2022).*
 
 ## Background
 The Broad Institute Genetic Perturbation Platform (GPP) uses Illumina sequencing to tally the
@@ -179,11 +179,19 @@ sgRNAs, ORFs, or other constructs utilized in a pooled experiment.
 * Every row must have the same number of columns
 * The columns can be separated by either commas or tabs
 * The file may not include any column headers or any extra columns
-* Barcode sequences must contain only A, T, C or G
+* Barcode sequences must contain only A, T, C or G and semantic delimeters `;`, `-`, `:`
+  * Semantic delimiters are ignored during data processing; they exist for human readability only
+  * For paired-end sequencing PoolQ can optionally infer the length of the forward and reverse
+  barcodes by splitting them on the first occurrence of any semantic delimiter
 * A barcode ID cannot occur more than once in the file
 * Every barcode in the reference file must have the same length
 * You can have multiple IDs mapping to the same barcode sequence; the counts file will report the
   counts for the barcode alongside a comma-separated list of associated IDs.
+  
+When processing paired-end sequencing data, the row reference contains the components of the 
+barcode found in both the forward and reverse reads, in the orientation that the barcodes will 
+occur in each file. PoolQ does not do *any* reverse complementation when processing paired-end 
+sequence data.
 
 #### Platform Reference File
 The platform reference file is an optional input file whose format is identical to that of the
@@ -288,6 +296,12 @@ policies, see the previous section.
 The UMI barcode policy specifies how UMI barcodes are located. When reads are split between two
 files, PoolQ will search for UMI barcodes in the same file/read that it uses to locate row barcodes.
 
+#### Reverse Row Barcode Policy
+The reverse row barcode policy specifies how row barcodes are located in the reverse read when 
+processing paired-end sequence data. PoolQ expects the barcode policy to match the sequence data
+as it is found in the input data. It does *not* do any reverse complementation for paired-end
+sequence data processing.
+
 ### Count Ambiguous
 This is an optional input flag that, when present, controls the handling of barcodes encountered in
 reads that fuzzy-match to more than one barcode in the reference file. The default behavior is to
@@ -335,6 +349,19 @@ This is an optional flag that directs PoolQ to emit counts in the
 [http://software.broadinstitute.org/cancer/software/genepattern/file-formats-guide#GCT](GCT) file
 format, for use with tools such as GenePattern or RIGER. It is mutually exclusive of the PoolQ 2.0
 compatibility mode flag described above.
+
+### Barcode length inference
+In order to extract row or column barcodes from FASTQ files, PoolQ needs to know the length of the
+barcodes it expects to extract. For convenience, PoolQ can infer the length of barcodes from the 
+rows found in the appropriate reference files. However, the user may specify a barcode length in
+the barcode policies as well. In every case, the barcode length specified in the barcode policy
+takes precedence over an inferred barcode length.
+
+When processing paired end sequence data, PoolQ will infer the length of the barcodes from the rows
+of the reference file by searching for the first occurrence of a semantic delimiter (`:`, `-`, or 
+`;`). For example, if the reference file contains barcodes of the form `CACCG;CCGG`, PoolQ will
+infer that the forward read contains barcodes of length 5, while the reverse read contains barcodes
+of length 4.
 
 ## PoolQ Outputs
 PoolQ generates output files representing the matrix of read counts (or counts) for expected
