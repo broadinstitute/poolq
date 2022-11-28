@@ -10,10 +10,11 @@ import java.nio.file.{Files, Path, Paths}
 
 import scala.collection.mutable
 
+import cats.data.{NonEmptyList => Nel}
 import cats.syntax.all._
 import org.broadinstitute.gpp.poolq3.PoolQConfig.DefaultPath
 import org.broadinstitute.gpp.poolq3.reports.{GctDialect, PoolQ2Dialect, PoolQ3Dialect, ReportsDialect}
-import org.broadinstitute.gpp.poolq3.types.ReadIdCheckPolicy
+import org.broadinstitute.gpp.poolq3.types.{PoolQException, ReadIdCheckPolicy}
 import scopt.{OptionParser, Read}
 
 final case class PoolQInput(
@@ -32,7 +33,24 @@ final case class PoolQInput(
   addlReverseRowReads: List[Path] = Nil,
   addlColReads: List[Path] = Nil,
   addlReads: List[Path] = Nil
-)
+) {
+
+  def readsSourceE: Either[Exception, ReadsSource] = (rowReads, reverseRowReads, colReads, reads) match {
+    case (None, None, None, Some(r)) => Right(ReadsSource.SelfContained(Nel(r, addlReads)))
+    case (Some(rr), None, Some(cr), None) =>
+      val rs = ReadsSource.Split(Nel(cr, addlColReads), Nel(rr, addlRowReads))
+      if (rs.forward.length == rs.index.length) Right(rs)
+      else Left(PoolQException("Number of row, column, and reverse reads files must match"))
+    case (Some(rr), Some(rrr), Some(cr), None) =>
+      val rs = ReadsSource.PairedEnd(Nel(cr, addlColReads), Nel(rr, addlRowReads), Nel(rrr, addlReverseRowReads))
+      if (rs.forward.length == rs.index.length && rs.forward.length == rs.reverse.length) Right(rs)
+      else Left(PoolQException("Number of row and column reads files must match"))
+    case _ => Left(PoolQException("Conflicting input options"))
+  }
+
+  def readsSource: ReadsSource = readsSourceE.fold(e => throw e, rs => rs)
+
+}
 
 final case class PoolQOutput(
   countsFile: Path = Paths.get("counts.txt"),
@@ -67,7 +85,12 @@ final case class PoolQConfig(
   noopConsumer: Boolean = false
 ) {
 
-  def isPairedEnd = input.reverseRowReads.isDefined && reverseRowBarcodePolicyStr.isDefined
+  def isPairedEnd =
+    reverseRowBarcodePolicyStr.isDefined &&
+      (input.readsSourceE match {
+        case Right(ReadsSource.PairedEnd(_, _, _)) => true
+        case _                                     => false
+      })
 
 }
 

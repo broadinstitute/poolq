@@ -13,7 +13,7 @@ sealed trait ReadsSource extends Product with Serializable
 
 object ReadsSource {
 
-  final case class SelfContained(path: Nel[Path]) extends ReadsSource
+  final case class SelfContained(paths: Nel[Path]) extends ReadsSource
   final case class Split(index: Nel[Path], forward: Nel[Path]) extends ReadsSource
   final case class PairedEnd(index: Nel[Path], forward: Nel[Path], reverse: Nel[Path]) extends ReadsSource
 
