@@ -25,7 +25,13 @@ final case class PoolQInput(
   reverseRowReads: Option[Path] = None,
   colReads: Option[Path] = None,
   reads: Option[Path] = None,
-  readIdCheckPolicy: ReadIdCheckPolicy = ReadIdCheckPolicy.Strict
+  readIdCheckPolicy: ReadIdCheckPolicy = ReadIdCheckPolicy.Strict,
+  // these are companion to rowReads, reverseRowReads, colReads, and reads
+  // they are added thusly to retain source compatibility with the old object
+  addlRowReads: List[Path] = Nil,
+  addlReverseRowReads: List[Path] = Nil,
+  addlColReads: List[Path] = Nil,
+  addlReads: List[Path] = Nil
 )
 
 final case class PoolQOutput(
