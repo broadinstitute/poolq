@@ -100,6 +100,13 @@ object PoolQConfig {
 
   implicit private[this] val readPath: Read[Path] = implicitly[Read[File]].map(_.toPath)
 
+  implicit private[this] val readPaths: Read[(Path, List[Path])] = implicitly[Read[Seq[File]]].map { files =>
+    files.toList.map(_.toPath) match {
+      case Nil       => throw new IllegalArgumentException(s"No argument provided")
+      case (x :: xs) => (x, xs)
+    }
+  }
+
   implicit private[this] val readReadIdCheckPolicy: Read[ReadIdCheckPolicy] =
     implicitly[Read[String]].map(ReadIdCheckPolicy.forName)
 
@@ -135,29 +142,31 @@ object PoolQConfig {
         c.copy(input = c.input.copy(globalReference = Some(f.toPath)))
       }
 
-      opt[Path]("row-reads")
-        .valueName("<file>")
-        .action((f, c) => c.copy(input = c.input.copy(rowReads = Some(f))))
+      opt[(Path, List[Path])]("row-reads")
+        .valueName("<files>")
+        .action { case ((p, ps), c) => c.copy(input = c.input.copy(rowReads = Some(p), addlRowReads = ps)) }
         .text("required if reads are split between two files")
-        .validate(existsAndIsReadable)
+        .validate { case (p, ps) => (p :: ps).traverse_(existsAndIsReadable) }
 
-      opt[Path]("rev-row-reads")
-        .valueName("<file>")
-        .action((f, c) => c.copy(input = c.input.copy(reverseRowReads = Some(f))))
+      opt[(Path, List[Path])]("rev-row-reads")
+        .valueName("<files>")
+        .action { case ((p, ps), c) =>
+          c.copy(input = c.input.copy(reverseRowReads = Some(p), addlReverseRowReads = ps))
+        }
         .text("required for processing paired-end sequencing data")
-        .validate(existsAndIsReadable)
+        .validate { case (p, ps) => (p :: ps).traverse_(existsAndIsReadable) }
 
-      opt[Path]("col-reads")
-        .valueName("<file>")
-        .action((f, c) => c.copy(input = c.input.copy(colReads = Some(f))))
+      opt[(Path, List[Path])]("col-reads")
+        .valueName("<files>")
+        .action { case ((p, ps), c) => c.copy(input = c.input.copy(colReads = Some(p), addlColReads = ps)) }
         .text("required if reads are split between two files")
-        .validate(existsAndIsReadable)
+        .validate { case (p, ps) => (p :: ps).traverse_(existsAndIsReadable) }
 
-      opt[Path]("reads")
-        .valueName("<file>")
-        .action((f, c) => c.copy(input = c.input.copy(reads = Some(f))))
+      opt[(Path, List[Path])]("reads")
+        .valueName("<files>")
+        .action { case ((p, ps), c) => c.copy(input = c.input.copy(reads = Some(p), addlReads = ps)) }
         .text("required if reads are contained in a single file")
-        .validate(existsAndIsReadable)
+        .validate { case (p, ps) => (p :: ps).traverse_(existsAndIsReadable) }
 
       opt[ReadIdCheckPolicy]("read-id-check-policy")
         .valueName("<policy>")
