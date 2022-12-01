@@ -2,7 +2,7 @@ val artifactId = "poolq"
 
 inThisBuild(
   List(
-    scalaVersion := "2.13.8",
+    scalaVersion := "2.13.10",
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision,
     scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.6.0",
