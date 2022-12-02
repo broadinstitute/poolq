@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 package org.broadinstitute.gpp.poolq3
+
 import org.broadinstitute.gpp.poolq3.parser.ReferenceEntry
 
 /** Provides classes implementing reference databases as well as utility functions used by the various reference
