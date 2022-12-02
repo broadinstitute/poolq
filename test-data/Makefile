@@ -10,9 +10,9 @@ test-output-dir := ../test-output
 poolq-jar := $(if $(wildcard ../poolq3.jar),../..,../../target/bin)/poolq3.jar
 
 # run integration tests
-.PHONY: all clean test-scenario-1 test-scenario-2 test-scenario-3 test-scenario-4 test-scenario-5 test-scenario-6 test-long-template test-umi test-paired-end
+.PHONY: all clean test-scenario-1 test-scenario-2 test-scenario-3 test-scenario-4 test-scenario-5 test-scenario-6 test-long-template test-umi test-paired-end test-multiple-inputs
 
-all: test-scenario-1 test-scenario-2 test-scenario-3 test-scenario-4 test-scenario-5 test-scenario-6 test-long-template test-umi test-paired-end
+all: test-scenario-1 test-scenario-2 test-scenario-3 test-scenario-4 test-scenario-5 test-scenario-6 test-long-template test-umi test-paired-end test-multiple-inputs
 
 clean:
 	rm -rf test-output
@@ -164,3 +164,20 @@ test-paired-end:
 	--rev-row-barcode-policy PREFIX:CGGTG@11 \
 	--col-barcode-policy FIXED@0)
 	(cd $(wd); diff counts.txt ../../test-data/paired-end/expected-counts.txt)	
+
+test-multiple-inputs: wd = $(test-output-dir)/multiple-inputs
+test-multiple-inputs:
+	@rm -rf $(wd)
+	@mkdir -p $(wd)
+	(cd $(wd); java $(jvm-args) -jar $(poolq-jar) \
+	--compat \
+	--col-reference $(conditions) \
+	--row-reference $(reference) \
+	--row-reads ../../test-data/multiple-inputs/scenario4.1.fastq,../../test-data/multiple-inputs/scenario4.2.fastq,../../test-data/multiple-inputs/scenario4.3.fastq,../../test-data/multiple-inputs/scenario4.4.fastq \
+	--col-reads ../../test-data/multiple-inputs/scenario4.barcode_1.fastq,../../test-data/multiple-inputs/scenario4.barcode_2.fastq,../../test-data/multiple-inputs/scenario4.barcode_3.fastq,../../test-data/multiple-inputs/scenario4.barcode_4.fastq \
+	--row-barcode-policy PREFIX:CACCG@18 \
+	--col-barcode-policy FIXED@0)
+	(cd $(wd); diff counts.txt ../../test-data/expected-counts.txt && \
+     diff lognormalized-counts.txt ../../test-data/lognormalized-counts.txt && \
+     diff barcode-counts.txt ../../test-data/barcode-counts.txt && \
+     diff correlation.txt ../../test-data/correlation.txt)
