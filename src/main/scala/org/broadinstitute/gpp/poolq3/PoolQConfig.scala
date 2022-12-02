@@ -310,16 +310,19 @@ object PoolQConfig {
     // umi
     val umiInfo = (config.input.umiReference, config.umiBarcodePolicyStr).tupled
 
+    def files(name: String, path: Option[Path], addl: List[Path]): Option[(String, String)] =
+      path.map(file => (name, (file :: addl).map(_.getFileName.toString).mkString(",")))
+
     // input files
     val input = config.input
     args += (("row-reference", input.rowReference.getFileName.toString))
     args += (("col-reference", input.colReference.getFileName.toString))
     umiInfo.map(_._1).foreach(file => args += (("umi-reference", file.getFileName.toString)))
     input.globalReference.foreach(file => args += (("global-reference", file.getFileName.toString)))
-    input.rowReads.foreach(file => args += (("row-reads", file.getFileName.toString)))
-    input.reverseRowReads.foreach(file => args += (("rev-row-reads", file.getFileName.toString)))
-    input.colReads.foreach(file => args += (("col-reads", file.getFileName.toString)))
-    input.reads.foreach(file => args += (("reads", file.getFileName.toString)))
+    files("row-reads", input.rowReads, input.addlRowReads).foreach(t => args += t)
+    files("rev-row-reads", input.reverseRowReads, input.addlReverseRowReads).foreach(t => args += t)
+    files("col-reads", input.colReads, input.addlColReads).foreach(t => args += t)
+    files("reads", input.reads, input.addlReads).foreach(t => args += t)
     args += (("read-id-check-policy", input.readIdCheckPolicy.name))
 
     // run control
