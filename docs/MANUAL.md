@@ -1,7 +1,7 @@
 # PoolQ
 PoolQ is a counter for indexed samples from next-gen sequencing of pooled DNA.
 
-*This documentation covers PoolQ version 3.5.0 (last updated 11/22/2022).*
+*This documentation covers PoolQ version 3.6.0 (last updated 12/05/2022).*
 
 ## Background
 The Broad Institute Genetic Perturbation Platform (GPP) uses Illumina sequencing to tally the
@@ -140,6 +140,15 @@ case). One file contains the column barcodes, while the other contains the row b
 case, the file with shorter reads is assumed to contain the column barcodes, while the file with
 longer reads is assumed to contain the row barcodes. This mode of operation requires that FASTQ
 record IDs match between the two input files.
+
+Certain sequencing technologies produce multiple reads files for a single run of sequencing; these
+files could be processed by earlier versions of PoolQ by simply concatenating them sequentially.
+However PoolQ now also has the ability to read multiple files one after another; it will accumulate
+and report read counts for the files in aggregate. To process multiple files at the command line, 
+simply provide the list of input files separated by commas. PoolQ will process the files in the 
+order they are provided. This option works in combination with split reads (where row an column 
+barcodes are split between files), but you must take care to  provide the input files of each type
+in corresponding order. 
 
 ### Reference Files
 Reference files map DNA barcodes to their associated identifiers. PoolQ uses two reference files to
@@ -481,7 +490,7 @@ PoolQ you will need a Java 8 JDK. You can download an appropriate JRE or JDK fro
 You can download PoolQ from an as yet undetermined location. The file you download is a ZIP file
 that you will need to unzip. In most cases, this is as simple as right-clicking on the zip file, and
 selecting something like "extract contents" from the popup menu. This will create a new folder on
-your computer named `poolq-3.5.0`, with the following contents:
+your computer named `poolq-3.6.0`, with the following contents:
 
 * `poolq3.jar`
 * `poolq3.bat`
@@ -531,7 +540,7 @@ You can run PoolQ from any Windows, Mac, or Linux machine, but it requires some 
 how to launch programs from the command line on your given operating system.
 
 1. Open a terminal window for your operating system
-2. Change directories to the `poolq-3.5.0` directory
+2. Change directories to the `poolq-3.6.0` directory
 * On Windows, run:
 
 > `poolq3.bat`
@@ -547,7 +556,7 @@ how to launch programs from the command line on your given operating system.
 If you successfully launched PoolQ, you should see a usage message explaining all of the
 command-line options:
 
-    poolq 3.5.0
+    poolq 3.6.0
     Usage: poolq [options]
     
       --row-reference <file>   reference file for row barcodes (i.e., constructs)
