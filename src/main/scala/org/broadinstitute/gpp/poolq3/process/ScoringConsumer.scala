@@ -82,7 +82,7 @@ final class ScoringConsumer(
     (parsedBarcode.row, parsedBarcode.revRow, parsedBarcode.col) match {
       case (f @ Some(_), revRowOpt, None) =>
         // a forward row barcode region was found; extract the sequence and update stats
-        updateRowBarcodePositionStats(f, (if (pairedEndMode) revRowOpt else None))
+        updateRowBarcodePositionStats(f, if (pairedEndMode) revRowOpt else None)
 
       case (f @ Some(parsedRow), None, Some(parsedCol)) =>
         updateRowBarcodePositionStats(f, None)

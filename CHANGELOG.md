@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.6.0
+* Support reading multiple reads files sequentially as part of a single run
+
 ## 3.5.0
 Released as open source under a BSD 3-Clause license
 

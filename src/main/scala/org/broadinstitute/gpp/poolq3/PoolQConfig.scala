@@ -10,10 +10,11 @@ import java.nio.file.{Files, Path, Paths}
 
 import scala.collection.mutable
 
+import cats.data.{NonEmptyList => Nel}
 import cats.syntax.all._
 import org.broadinstitute.gpp.poolq3.PoolQConfig.DefaultPath
 import org.broadinstitute.gpp.poolq3.reports.{GctDialect, PoolQ2Dialect, PoolQ3Dialect, ReportsDialect}
-import org.broadinstitute.gpp.poolq3.types.ReadIdCheckPolicy
+import org.broadinstitute.gpp.poolq3.types.{PoolQException, ReadIdCheckPolicy}
 import scopt.{OptionParser, Read}
 
 final case class PoolQInput(
@@ -25,8 +26,31 @@ final case class PoolQInput(
   reverseRowReads: Option[Path] = None,
   colReads: Option[Path] = None,
   reads: Option[Path] = None,
-  readIdCheckPolicy: ReadIdCheckPolicy = ReadIdCheckPolicy.Strict
-)
+  readIdCheckPolicy: ReadIdCheckPolicy = ReadIdCheckPolicy.Strict,
+  // these are companion to rowReads, reverseRowReads, colReads, and reads
+  // they are added thusly to retain source compatibility with the old object
+  addlRowReads: List[Path] = Nil,
+  addlReverseRowReads: List[Path] = Nil,
+  addlColReads: List[Path] = Nil,
+  addlReads: List[Path] = Nil
+) {
+
+  def readsSourceE: Either[Exception, ReadsSource] = (rowReads, reverseRowReads, colReads, reads) match {
+    case (None, None, None, Some(r)) => Right(ReadsSource.SelfContained(Nel(r, addlReads)))
+    case (Some(rr), None, Some(cr), None) =>
+      val rs = ReadsSource.Split(Nel(cr, addlColReads), Nel(rr, addlRowReads))
+      if (rs.forward.length == rs.index.length) Right(rs)
+      else Left(PoolQException("Number of row, column, and reverse reads files must match"))
+    case (Some(rr), Some(rrr), Some(cr), None) =>
+      val rs = ReadsSource.PairedEnd(Nel(cr, addlColReads), Nel(rr, addlRowReads), Nel(rrr, addlReverseRowReads))
+      if (rs.forward.length == rs.index.length && rs.forward.length == rs.reverse.length) Right(rs)
+      else Left(PoolQException("Number of row and column reads files must match"))
+    case _ => Left(PoolQException("Conflicting input options"))
+  }
+
+  def readsSource: ReadsSource = readsSourceE.fold(e => throw e, rs => rs)
+
+}
 
 final case class PoolQOutput(
   countsFile: Path = Paths.get("counts.txt"),
@@ -61,7 +85,12 @@ final case class PoolQConfig(
   noopConsumer: Boolean = false
 ) {
 
-  def isPairedEnd = input.reverseRowReads.isDefined && reverseRowBarcodePolicyStr.isDefined
+  def isPairedEnd =
+    reverseRowBarcodePolicyStr.isDefined &&
+      (input.readsSourceE match {
+        case Right(ReadsSource.PairedEnd(_, _, _)) => true
+        case _                                     => false
+      })
 
 }
 
@@ -70,6 +99,13 @@ object PoolQConfig {
   private[poolq3] val DefaultPath = Paths.get(".")
 
   implicit private[this] val readPath: Read[Path] = implicitly[Read[File]].map(_.toPath)
+
+  implicit private[this] val readPaths: Read[(Path, List[Path])] = implicitly[Read[Seq[File]]].map { files =>
+    files.toList.map(_.toPath) match {
+      case Nil       => throw new IllegalArgumentException(s"No argument provided")
+      case (x :: xs) => (x, xs)
+    }
+  }
 
   implicit private[this] val readReadIdCheckPolicy: Read[ReadIdCheckPolicy] =
     implicitly[Read[String]].map(ReadIdCheckPolicy.forName)
@@ -106,29 +142,31 @@ object PoolQConfig {
         c.copy(input = c.input.copy(globalReference = Some(f.toPath)))
       }
 
-      opt[Path]("row-reads")
-        .valueName("<file>")
-        .action((f, c) => c.copy(input = c.input.copy(rowReads = Some(f))))
+      opt[(Path, List[Path])]("row-reads")
+        .valueName("<files>")
+        .action { case ((p, ps), c) => c.copy(input = c.input.copy(rowReads = Some(p), addlRowReads = ps)) }
         .text("required if reads are split between two files")
-        .validate(existsAndIsReadable)
+        .validate { case (p, ps) => (p :: ps).traverse_(existsAndIsReadable) }
 
-      opt[Path]("rev-row-reads")
-        .valueName("<file>")
-        .action((f, c) => c.copy(input = c.input.copy(reverseRowReads = Some(f))))
+      opt[(Path, List[Path])]("rev-row-reads")
+        .valueName("<files>")
+        .action { case ((p, ps), c) =>
+          c.copy(input = c.input.copy(reverseRowReads = Some(p), addlReverseRowReads = ps))
+        }
         .text("required for processing paired-end sequencing data")
-        .validate(existsAndIsReadable)
+        .validate { case (p, ps) => (p :: ps).traverse_(existsAndIsReadable) }
 
-      opt[Path]("col-reads")
-        .valueName("<file>")
-        .action((f, c) => c.copy(input = c.input.copy(colReads = Some(f))))
+      opt[(Path, List[Path])]("col-reads")
+        .valueName("<files>")
+        .action { case ((p, ps), c) => c.copy(input = c.input.copy(colReads = Some(p), addlColReads = ps)) }
         .text("required if reads are split between two files")
-        .validate(existsAndIsReadable)
+        .validate { case (p, ps) => (p :: ps).traverse_(existsAndIsReadable) }
 
-      opt[Path]("reads")
-        .valueName("<file>")
-        .action((f, c) => c.copy(input = c.input.copy(reads = Some(f))))
+      opt[(Path, List[Path])]("reads")
+        .valueName("<files>")
+        .action { case ((p, ps), c) => c.copy(input = c.input.copy(reads = Some(p), addlReads = ps)) }
         .text("required if reads are contained in a single file")
-        .validate(existsAndIsReadable)
+        .validate { case (p, ps) => (p :: ps).traverse_(existsAndIsReadable) }
 
       opt[ReadIdCheckPolicy]("read-id-check-policy")
         .valueName("<policy>")
@@ -272,16 +310,19 @@ object PoolQConfig {
     // umi
     val umiInfo = (config.input.umiReference, config.umiBarcodePolicyStr).tupled
 
+    def files(name: String, path: Option[Path], addl: List[Path]): Option[(String, String)] =
+      path.map(file => (name, (file :: addl).map(_.getFileName.toString).mkString(",")))
+
     // input files
     val input = config.input
     args += (("row-reference", input.rowReference.getFileName.toString))
     args += (("col-reference", input.colReference.getFileName.toString))
     umiInfo.map(_._1).foreach(file => args += (("umi-reference", file.getFileName.toString)))
     input.globalReference.foreach(file => args += (("global-reference", file.getFileName.toString)))
-    input.rowReads.foreach(file => args += (("row-reads", file.getFileName.toString)))
-    input.reverseRowReads.foreach(file => args += (("rev-row-reads", file.getFileName.toString)))
-    input.colReads.foreach(file => args += (("col-reads", file.getFileName.toString)))
-    input.reads.foreach(file => args += (("reads", file.getFileName.toString)))
+    files("row-reads", input.rowReads, input.addlRowReads).foreach(t => args += t)
+    files("rev-row-reads", input.reverseRowReads, input.addlReverseRowReads).foreach(t => args += t)
+    files("col-reads", input.colReads, input.addlColReads).foreach(t => args += t)
+    files("reads", input.reads, input.addlReads).foreach(t => args += t)
     args += (("read-id-check-policy", input.readIdCheckPolicy.name))
 
     // run control
