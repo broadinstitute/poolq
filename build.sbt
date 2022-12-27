@@ -117,12 +117,24 @@ lazy val assemblySettings = List(
   assembly / mainClass := Some("org.broadinstitute.gpp.poolq3.PoolQ")
 )
 
-lazy val publishSettings = List(
-  // Publish to GitHub Packages:
-  githubOwner := "broadinstitute",
-  githubRepository := artifactId,
-  githubTokenSource := TokenSource.Environment("GITHUB_TOKEN") || TokenSource.GitConfig("github.token")
-)
+lazy val publishToGithubPackages = taskKey[Unit]("Publish jar to Github Packages")
+
+publishToGithubPackages := {
+  if (!sys.env.keySet.contains("GITHUB_TOKEN")) throw new Exception("You must set environmental variable GITHUB_TOKEN")
+  val mvn =
+    s"""mvn deploy:deploy-file
+       |-Durl=https://maven.pkg.github.com/poolq
+       |-DrepositoryId=github
+       |-Dfile=${(Compile / packageBin).value}
+       |-DpomFile=${(Compile / makePom).value}
+       |-Dsources=${(Compile / packageSrc).value}
+       |-Djavadoc=${(Compile / packageDoc).value}
+       |--settings=settings.xml""".stripLineEnd
+
+  println(s"Executing shell command $mvn")
+  import scala.sys.process._
+  if (mvn.! != 0) throw new Exception("publish failed")
+}
 
 lazy val poolq = project
   .in(file("."))
@@ -144,4 +156,7 @@ lazy val poolq = project
   )
   .settings(headerSettings: _*)
   .settings(assemblySettings: _*)
-  .settings(publishSettings: _*)
+  .settings(
+    // override the normal publish tasks with the maven task
+    publish := publishToGithubPackages.value
+  )

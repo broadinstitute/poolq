@@ -1,6 +1,5 @@
 addSbtPlugin("ch.epfl.scala" % "sbt-missinglink" % "0.3.3")
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.10.4")
-addSbtPlugin("com.codecommit" % "sbt-github-packages" % "0.5.3")
 addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "1.2.0")
 addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.11.0")
 addSbtPlugin("com.github.cb372" % "sbt-explicit-dependencies" % "0.2.16")
