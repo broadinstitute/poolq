@@ -10,10 +10,8 @@ inThisBuild(
   )
 )
 
-lazy val versions = new {
-  val acyclic = "0.2.1"
+lazy val versions = new {  
   val betterFiles = "3.9.1"
-  val betterMonadicFor = "0.3.1"
   val catsEffect3 = "3.4.2"
   val cats = "2.9.0"
   val commonsIo = "2.11.0"
@@ -35,10 +33,8 @@ lazy val versions = new {
   val slf4j = "1.7.36"
 }
 
-lazy val libraries = new {
-  val acyclic = "com.lihaoyi" %% "acyclic" % versions.acyclic
+lazy val libraries = new {  
   val betterFiles = "com.github.pathikrit" %% "better-files" % versions.betterFiles
-  val betterMonadicFor = "com.olegpy" %% "better-monadic-for" % versions.betterMonadicFor
   val cats = "org.typelevel" %% "cats-core" % versions.cats
   val catsEffect3 = "org.typelevel" %% "cats-effect" % versions.catsEffect3
   val commonsIo = "commons-io" % "commons-io" % versions.commonsIo
@@ -67,7 +63,6 @@ lazy val libraries = new {
 
 lazy val dependencies =
   List(
-    libraries.acyclic % "provided",
     libraries.cats,
     libraries.commonsIo,
     libraries.commonsMath3,
@@ -134,8 +129,6 @@ lazy val poolq = project
     scalacOptions ++= List("-P:acyclic:force", "-Xsource:3"),
     buildInfoKeys := Seq[BuildInfoKey](name, version),
     buildInfoPackage := "org.broadinstitute.gpp.poolq3",
-    addCompilerPlugin(libraries.acyclic),
-    addCompilerPlugin(libraries.betterMonadicFor),
     testFrameworks += new TestFramework("munit.Framework"),
     scalacOptions += "-Yrangepos", // ensure munit clues work
     // Tests pass in parallel, but SLF4J logging behaves weirdly. Disable this flag to examine test
