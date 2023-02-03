@@ -243,3 +243,56 @@ object TemplatePolicy {
   }
 
 }
+
+final case class SplitBarcodePolicy(
+  prefix1: String,
+  b1Length: Int,
+  gap: Int,
+  prefix2: String,
+  b2Length: Int,
+  minPrefix1StartPos: Option[Int],
+  maxPrefix1StartPos: Option[Int] = None
+) extends BarcodePolicy {
+
+  private[this] val minPrefix1StartPosInt: Int = minPrefix1StartPos.getOrElse(0)
+  private[this] val maxPrefix1StartPosInt: Int = maxPrefix1StartPos.getOrElse(Int.MaxValue)
+  private[this] val p1Length = prefix1.length
+  private[this] val p2Length = prefix2.length
+  private[this] val expectedP2Offset = prefix1.length + b1Length + gap
+  private[this] val patternLength = expectedP2Offset + p2Length + b2Length
+
+  override def length: Int = b1Length + b2Length
+
+  override def find(read: Read): Option[FoundBarcode] = {
+    val p1Index = read.seq.indexOf(prefix1, minPrefix1StartPosInt)
+    if (p1Index < 0) None
+    else if (p1Index > maxPrefix1StartPosInt) None
+    else {
+      // now we need to check if the read is long enough to contain the whole pattern starting at index
+      val patternEnd = p1Index + patternLength
+      if (read.seq.length < patternEnd) None
+      else {
+        val p2Index = p1Index + expectedP2Offset
+        val rsca = read.seq.toCharArray()
+        @tailrec
+        def containsP2(i: Int): Boolean =
+          if (i >= p2Length) true
+          else {
+            if (rsca(p2Index + i) != prefix2(i)) false
+            else containsP2(i + 1)
+          }
+        if (containsP2(0)) {
+          val dest = Array.ofDim[Char](length)
+          // copy in the the barcodes
+          System.arraycopy(rsca, p1Index + p1Length, dest, 0, b1Length)
+          System.arraycopy(rsca, p2Index + p2Length, dest, b1Length, b2Length)
+          Some(FoundBarcode(dest, p1Index + p1Length))
+        } else {
+          None
+        }
+      }
+    }
+
+  }
+
+}
