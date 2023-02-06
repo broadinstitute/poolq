@@ -131,46 +131,6 @@ object KnownPrefixPolicy {
 
 sealed trait TemplatePolicy extends BarcodePolicy with Product with Serializable
 
-final case class GeneralTemplatePolicy(template: KeyMask, minStartPos: Option[Int], maxStartPos: Option[Int] = None)
-    extends TemplatePolicy {
-
-  private[this] val minStartPosInt: Int = minStartPos.getOrElse(0)
-  private[this] val maxStartPosInt: Int = maxStartPos.getOrElse(Int.MaxValue)
-  private[this] val firstKeyBaseOffset: Int = template.keyRanges.head.start0
-
-  // commonly-accessed parts of the keymask
-  private[this] val templateChars: Array[Char] = template.pattern.toUpperCase.toCharArray
-  private[this] val contextLength: Int = template.contextLength
-  private[this] val keyLength: Int = template.keyLengthInBases
-
-  // the publicly exposed length is the keyLength
-  override val length: Int = keyLength
-
-  override def find(read: Read): Option[FoundBarcode] = {
-    // loop through the sequence looking for a valid context seq
-    val maxPos = math.min(read.seq.length - contextLength, maxStartPosInt)
-
-    @tailrec
-    def find(i: Int): Option[Int] =
-      if (i > maxPos) None
-      else if (TemplatePolicy.satisfies(templateChars, read.seq, i)) Some(i)
-      else find(i + 1)
-
-    find(minStartPosInt).map(i => extract(read, i))
-  }
-
-  private[barcode] def extract(read: Read, i: Int): FoundBarcode = {
-    val keyBuf = Array.ofDim[Char](keyLength)
-    var offset = 0
-    template.keyRanges.foreach { kr =>
-      TemplatePolicy.copy(read.seq, kr.start0 + i, keyBuf, offset, kr.length)
-      offset += kr.length
-    }
-    FoundBarcode(keyBuf, firstKeyBaseOffset + i)
-  }
-
-}
-
 object TemplatePolicy {
 
   val Regex1: Regex = """^:([ACGTRYSWKMBDHVNacgtryswkmbdhvn]+)(?:@(\d+)?(-\d+)?)?$""".r
@@ -253,6 +213,46 @@ object TemplatePolicy {
       dest(destOffset + i) = src.charAt(srcOffset + i)
       i += 1
     }
+  }
+
+}
+
+final case class GeneralTemplatePolicy(template: KeyMask, minStartPos: Option[Int], maxStartPos: Option[Int] = None)
+    extends TemplatePolicy {
+
+  private[this] val minStartPosInt: Int = minStartPos.getOrElse(0)
+  private[this] val maxStartPosInt: Int = maxStartPos.getOrElse(Int.MaxValue)
+  private[this] val firstKeyBaseOffset: Int = template.keyRanges.head.start0
+
+  // commonly-accessed parts of the keymask
+  private[this] val templateChars: Array[Char] = template.pattern.toUpperCase.toCharArray
+  private[this] val contextLength: Int = template.contextLength
+  private[this] val keyLength: Int = template.keyLengthInBases
+
+  // the publicly exposed length is the keyLength
+  override val length: Int = keyLength
+
+  override def find(read: Read): Option[FoundBarcode] = {
+    // loop through the sequence looking for a valid context seq
+    val maxPos = math.min(read.seq.length - contextLength, maxStartPosInt)
+
+    @tailrec
+    def find(i: Int): Option[Int] =
+      if (i > maxPos) None
+      else if (TemplatePolicy.satisfies(templateChars, read.seq, i)) Some(i)
+      else find(i + 1)
+
+    find(minStartPosInt).map(i => extract(read, i))
+  }
+
+  private[barcode] def extract(read: Read, i: Int): FoundBarcode = {
+    val keyBuf = Array.ofDim[Char](keyLength)
+    var offset = 0
+    template.keyRanges.foreach { kr =>
+      TemplatePolicy.copy(read.seq, kr.start0 + i, keyBuf, offset, kr.length)
+      offset += kr.length
+    }
+    FoundBarcode(keyBuf, firstKeyBaseOffset + i)
   }
 
 }
