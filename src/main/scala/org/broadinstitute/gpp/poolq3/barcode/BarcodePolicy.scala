@@ -129,8 +129,10 @@ object KnownPrefixPolicy {
 
 }
 
-final case class TemplatePolicy(template: KeyMask, minStartPos: Option[Int], maxStartPos: Option[Int] = None)
-    extends BarcodePolicy {
+sealed trait TemplatePolicy extends BarcodePolicy with Product with Serializable
+
+final case class GeneralTemplatePolicy(template: KeyMask, minStartPos: Option[Int], maxStartPos: Option[Int] = None)
+    extends TemplatePolicy {
 
   private[this] val minStartPosInt: Int = minStartPos.getOrElse(0)
   private[this] val maxStartPosInt: Int = maxStartPos.getOrElse(Int.MaxValue)
@@ -172,17 +174,28 @@ final case class TemplatePolicy(template: KeyMask, minStartPos: Option[Int], max
 object TemplatePolicy {
 
   val Regex1: Regex = """^:([ACGTRYSWKMBDHVNacgtryswkmbdhvn]+)(?:@(\d+)?(-\d+)?)?$""".r
+  val Regex2: Regex = """^([acgt]+)(N+)(n+)([acgt]+)(N+)$""".r
 
   def apply(s: String, refBarcodeLength: Int): TemplatePolicy =
     s match {
       case Regex1(ctx, minStr, maxStr) =>
-        val km = KeyMask(ctx)
-        if (km.keyLengthInBases != refBarcodeLength) {
-          throw new IllegalArgumentException(s"$s is not compatible with the provided reference file")
+        ctx match {
+          case Regex2(p1, b1, gap, p2, b2) =>
+            if ((b1.length + b2.length) != refBarcodeLength) {
+              throw new IllegalArgumentException(s"$s is not compatible with the provided reference file")
+            }
+            val min = Option(minStr).map(_.toInt)
+            val max = Option(maxStr).map(_.tail.toInt)
+            SplitBarcodePolicy(p1.toUpperCase, b1.length, gap.length, p2.toUpperCase, b2.length, min, max)
+          case _ =>
+            val km = KeyMask(ctx)
+            if (km.keyLengthInBases != refBarcodeLength) {
+              throw new IllegalArgumentException(s"$s is not compatible with the provided reference file")
+            }
+            val min = Option(minStr).map(_.toInt)
+            val max = Option(maxStr).map(_.tail.toInt)
+            GeneralTemplatePolicy(km, min, max)
         }
-        val min = Option(minStr).map(_.toInt)
-        val max = Option(maxStr).map(_.tail.toInt)
-        TemplatePolicy(km, min, max)
       case _ =>
         throw new IllegalArgumentException(s"Incomprehensible template barcode policy: $s")
     }
@@ -252,7 +265,7 @@ final case class SplitBarcodePolicy(
   b2Length: Int,
   minPrefix1StartPos: Option[Int],
   maxPrefix1StartPos: Option[Int] = None
-) extends BarcodePolicy {
+) extends TemplatePolicy {
 
   private[this] val minPrefix1StartPosInt: Int = minPrefix1StartPos.getOrElse(0)
   private[this] val maxPrefix1StartPosInt: Int = maxPrefix1StartPos.getOrElse(Int.MaxValue)

@@ -34,16 +34,16 @@ class BarcodePolicyTest extends AnyFlatSpec {
 
   it should "let the user specify a keymask policy" in {
     BarcodePolicy("KEYMASK:caccgNNNNttNNNNaa@3", 8, false) should be(
-      TemplatePolicy(KeyMask("caccgNNNNttNNNNaa"), Some(3), None)
+      GeneralTemplatePolicy(KeyMask("caccgNNNNttNNNNaa"), Some(3), None)
     )
     BarcodePolicy("TEMPLATE:caccgNNNNttNNNNaa@3", 8, false) should be(
-      TemplatePolicy(KeyMask("caccgNNNNttNNNNaa"), Some(3), None)
+      GeneralTemplatePolicy(KeyMask("caccgNNNNttNNNNaa"), Some(3), None)
     )
   }
 
   it should "let the user specify just a 3' limit" in {
     BarcodePolicy("TEMPLATE:NNNNNNNNNNNNNNNNNNNNNNN@-1", 23, false) should be(
-      TemplatePolicy(KeyMask("NNNNNNNNNNNNNNNNNNNNNNN"), None, Some(1))
+      GeneralTemplatePolicy(KeyMask("NNNNNNNNNNNNNNNNNNNNNNN"), None, Some(1))
     )
   }
 

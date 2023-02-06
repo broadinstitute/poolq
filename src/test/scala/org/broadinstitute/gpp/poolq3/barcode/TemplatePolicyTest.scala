@@ -16,7 +16,7 @@ class TemplatePolicyTest extends AnyFlatSpec {
 
   "KeyMaskPolicy" should "do a thing" in {
     val km = KeyMask("caccgNNNNNnnnnnnnnnttacaNNNNN")
-    val kmp = TemplatePolicy(km, Some(11))
+    val kmp = GeneralTemplatePolicy(km, Some(11))
 
     //                    caccgNNNNNnnnnnnnnnttacaNNNNN
     //                           caccgNNNNNnnnnnnnnnttacaNNNNN
@@ -30,7 +30,7 @@ class TemplatePolicyTest extends AnyFlatSpec {
 
   it should "find a seq at the right edge of the read" in {
     val km = KeyMask("caccgNNNNNnnnnnnnnnttacaNNNNN")
-    val kmp = TemplatePolicy(km, Some(11))
+    val kmp = GeneralTemplatePolicy(km, Some(11))
 
     //         0         1         2         3         4
     //         01234567890123456789012345678901234567890123456789
@@ -43,7 +43,7 @@ class TemplatePolicyTest extends AnyFlatSpec {
   // this is the same case as above, but I deleted the last base of the seq
   it should "not find a seq past the right edge of the read" in {
     val km = KeyMask("caccgNNNNNnnnnnnnnnttacaNNNNN")
-    val kmp = TemplatePolicy(km, Some(11))
+    val kmp = GeneralTemplatePolicy(km, Some(11))
 
     //         0         1         2         3         4
     //         0123456789012345678901234567890123456789012345678
@@ -55,7 +55,7 @@ class TemplatePolicyTest extends AnyFlatSpec {
 
   it should "find a seq at the min start pos" in {
     val km = KeyMask("caccgNNNNNnnnnnnnnnttacaNNNNN")
-    val kmp = TemplatePolicy(km, Some(11))
+    val kmp = GeneralTemplatePolicy(km, Some(11))
 
     //         0         1         2         3         4
     //         01234567890123456789012345678901234567890123456789
@@ -68,7 +68,7 @@ class TemplatePolicyTest extends AnyFlatSpec {
   // this is the same case as above, but I deleted the first base of the seq
   it should "not find a seq before the min start pos" in {
     val km = KeyMask("caccgNNNNNnnnnnnnnnttacaNNNNN")
-    val kmp = TemplatePolicy(km, Some(11))
+    val kmp = GeneralTemplatePolicy(km, Some(11))
 
     //         0         1         2         3         4
     //         0123456789012345678901234567890123456789012345678
@@ -80,7 +80,7 @@ class TemplatePolicyTest extends AnyFlatSpec {
 
   it should "find a seq at the max start pos" in {
     val km = KeyMask("caccgNNNNNnnnnnnnnnttacaNNNNN")
-    val kmp = TemplatePolicy(km, Some(11), Some(11))
+    val kmp = GeneralTemplatePolicy(km, Some(11), Some(11))
 
     //         0         1         2         3         4
     //         01234567890123456789012345678901234567890123456789
@@ -92,7 +92,7 @@ class TemplatePolicyTest extends AnyFlatSpec {
 
   it should "not find a seq past the max start pos" in {
     val km = KeyMask("caccgNNNNNnnnnnnnnnttacaNNNNN")
-    val kmp = TemplatePolicy(km, Some(5), Some(10))
+    val kmp = GeneralTemplatePolicy(km, Some(5), Some(10))
 
     //         0         1         2         3         4
     //         01234567890123456789012345678901234567890123456789
@@ -111,7 +111,7 @@ class TemplatePolicyTest extends AnyFlatSpec {
     // format: on
 
     val keymask = KeyMask(pattern)
-    val kmp = new TemplatePolicy(keymask, Some(0))
+    val kmp = new GeneralTemplatePolicy(keymask, Some(0))
 
     kmp.find(Read("", read1)) should be(Some(FoundBarcode("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT".toCharArray, 5)))
     kmp.find(Read("", read2)) should be(Some(FoundBarcode("NTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT".toCharArray, 5)))
@@ -124,7 +124,7 @@ class TemplatePolicyTest extends AnyFlatSpec {
     val prefix2 = "TTACA"
 
     val km = KeyMask("caccgNNNNNnnnnnnnnnttacaNNNNN")
-    val kmp = TemplatePolicy(km, Some(fixed.length))
+    val kmp = GeneralTemplatePolicy(km, Some(fixed.length))
     val kpp = IndexOfKnownPrefixPolicy("CACCG", 26, Some(fixed.length))
 
     forAll(dnaSeqMaxN(acgtn, 7), dnaSeqOfN(acgt, 5), dnaSeqOfN(acgtn, 10), dnaSeqOfN(acgt, 5), dnaSeqOfN(acgtn, 5)) {
