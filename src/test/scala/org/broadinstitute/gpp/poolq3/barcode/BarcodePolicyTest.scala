@@ -40,6 +40,12 @@ class BarcodePolicyTest extends AnyFlatSpec {
       GeneralTemplatePolicy(KeyMask("caccgNNNNttNNNNaa"), Some(3), None)
     )
   }
+  
+  it should "recognize a split barcode situation" in {
+    BarcodePolicy("TEMPLATE:caccgNNNNNnnnnnntatgcNNNNaa@3", 9, false) should be(
+      SplitBarcodePolicy("CACCG", 5, 6, "TATGC", 4, Some(3), None)
+    )
+  }
 
   it should "let the user specify just a 3' limit" in {
     BarcodePolicy("TEMPLATE:NNNNNNNNNNNNNNNNNNNNNNN@-1", 23, false) should be(
