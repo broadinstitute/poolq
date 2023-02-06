@@ -174,7 +174,7 @@ final case class GeneralTemplatePolicy(template: KeyMask, minStartPos: Option[In
 object TemplatePolicy {
 
   val Regex1: Regex = """^:([ACGTRYSWKMBDHVNacgtryswkmbdhvn]+)(?:@(\d+)?(-\d+)?)?$""".r
-  val Regex2: Regex = """^([acgt]+)(N+)(n+)([acgt]+)(N+)$""".r
+  val Regex2: Regex = """^([acgt]+)(N+)(n+)([acgt]+)(N+)[acgt]*$""".r
 
   def apply(s: String, refBarcodeLength: Int): TemplatePolicy =
     s match {
