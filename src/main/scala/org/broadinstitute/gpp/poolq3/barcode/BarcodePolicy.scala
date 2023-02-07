@@ -266,6 +266,7 @@ final case class SplitBarcodePolicy(
   minPrefix1StartPos: Option[Int],
   maxPrefix1StartPos: Option[Int] = None
 ) extends TemplatePolicy {
+  import SplitBarcodePolicy.{indexOf, matches}
 
   private[this] val minPrefix1StartPosInt: Int = minPrefix1StartPos.getOrElse(0)
   private[this] val maxPrefix1StartPosInt: Int = maxPrefix1StartPos.getOrElse(Int.MaxValue)
@@ -277,35 +278,60 @@ final case class SplitBarcodePolicy(
   override def length: Int = b1Length + b2Length
 
   override def find(read: Read): Option[FoundBarcode] = {
-    val p1Index = read.seq.indexOf(prefix1, minPrefix1StartPosInt)
-    if (p1Index < 0) None
-    else if (p1Index > maxPrefix1StartPosInt) None
-    else {
-      // now we need to check if the read is long enough to contain the whole pattern starting at index
-      val patternEnd = p1Index + patternLength
-      if (read.seq.length < patternEnd) None
+    @tailrec
+    def loop(start: Int): Option[FoundBarcode] = {
+      val e = math.min(maxPrefix1StartPosInt, read.seq.length - patternLength)
+      if (start > e) None
       else {
-        val p2Index = p1Index + expectedP2Offset
-        val rsca = read.seq.toCharArray()
-        @tailrec
-        def containsP2(i: Int): Boolean =
-          if (i >= p2Length) true
-          else {
-            if (rsca(p2Index + i) != prefix2(i)) false
-            else containsP2(i + 1)
-          }
-        if (containsP2(0)) {
-          val dest = Array.ofDim[Char](length)
-          // copy in the the barcodes
-          System.arraycopy(rsca, p1Index + p1Length, dest, 0, b1Length)
-          System.arraycopy(rsca, p2Index + p2Length, dest, b1Length, b2Length)
-          Some(FoundBarcode(dest, p1Index + p1Length))
-        } else {
-          None
+        indexOf(prefix1, read.seq, start, e) match {
+          case None => None
+          case Some(p1Index) =>
+            val p2Index = p1Index + expectedP2Offset
+            if (matches(prefix2, read.seq, p2Index)) {
+              val dest = Array.ofDim[Char](length)
+              // copy in the the barcodes
+              TemplatePolicy.copy(read.seq, p1Index + p1Length, dest, 0, b1Length)
+              TemplatePolicy.copy(read.seq, p2Index + p2Length, dest, b1Length, b2Length)
+              Some(FoundBarcode(dest, p1Index + p1Length))
+            } else {
+              loop(p1Index + 1)
+            }
         }
       }
     }
+    loop(minPrefix1StartPosInt)
+  }
 
+}
+
+object SplitBarcodePolicy {
+
+  // assumes ASCII (1-byte) chars
+  // haystack is the string we are searching
+  // needle is the string we are searching for
+  // start is the first place in `haystack` we will look for `needle`
+  // end is the last place in `haystack` where `needle` may _begin_
+  final private[barcode] def indexOf(needle: String, haystack: String, start: Int, end: Int): Option[Int] = {
+    @tailrec
+    def loop(i: Int): Option[Int] =
+      if (i > math.min(haystack.length - needle.length, end)) {
+        None
+      } else {
+        if (matches(needle, haystack, i)) Some(i)
+        else loop(i + 1)
+      }
+    loop(start)
+  }
+
+  final private def matches(needle: String, haystack: String, haystackOffset: Int): Boolean = {
+    @tailrec
+    def loop(i: Int): Boolean =
+      if (i >= needle.length) true
+      else {
+        if (needle(i) != haystack(haystackOffset + i)) false
+        else loop(i + 1)
+      }
+    loop(0)
   }
 
 }
