@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.6.1
+* Add a specialized template barcode policy to optimize a common use case, where a template
+  matches 2 barcode regions, each of which has a short prefix, separated by a fixed length
+  run of arbitrary barcodes.
+
 ## 3.6.0
 * Support reading multiple reads files sequentially as part of a single run
 
