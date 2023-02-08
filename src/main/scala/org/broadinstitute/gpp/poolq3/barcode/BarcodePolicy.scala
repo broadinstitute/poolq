@@ -207,14 +207,6 @@ object TemplatePolicy {
     true
   }
 
-  final def copy(src: String, srcOffset: Int, dest: Array[Char], destOffset: Int, length: Int): Unit = {
-    var i = 0
-    while (i < length) {
-      dest(destOffset + i) = src.charAt(srcOffset + i)
-      i += 1
-    }
-  }
-
 }
 
 final case class GeneralTemplatePolicy(template: KeyMask, minStartPos: Option[Int], maxStartPos: Option[Int] = None)
@@ -249,7 +241,7 @@ final case class GeneralTemplatePolicy(template: KeyMask, minStartPos: Option[In
     val keyBuf = Array.ofDim[Char](keyLength)
     var offset = 0
     template.keyRanges.foreach { kr =>
-      TemplatePolicy.copy(read.seq, kr.start0 + i, keyBuf, offset, kr.length)
+      read.seq.getChars(kr.start0 + i, kr.start0 + i + kr.length, keyBuf, offset)
       offset += kr.length
     }
     FoundBarcode(keyBuf, firstKeyBaseOffset + i)
@@ -290,8 +282,8 @@ final case class SplitBarcodePolicy(
             if (matches(prefix2, read.seq, p2Index)) {
               val dest = Array.ofDim[Char](length)
               // copy in the the barcodes
-              TemplatePolicy.copy(read.seq, p1Index + p1Length, dest, 0, b1Length)
-              TemplatePolicy.copy(read.seq, p2Index + p2Length, dest, b1Length, b2Length)
+              read.seq.getChars(p1Index + p1Length, p1Index + p1Length + b1Length, dest, 0)
+              read.seq.getChars(p2Index + p2Length, p2Index + p2Length + b2Length, dest, b1Length)
               Some(FoundBarcode(dest, p1Index + p1Length))
             } else {
               loop(p1Index + 1)
