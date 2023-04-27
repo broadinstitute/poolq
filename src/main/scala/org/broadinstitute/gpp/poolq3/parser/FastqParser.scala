@@ -25,16 +25,19 @@ final class FastqParser(file: Path) extends CloseableIterable[Read] {
       ret
     }
 
+    // for details on the FASTQ format, see https://maq.sourceforge.net/fastq.shtml
     final override def next(): Read = {
       // get the next record and make sure it's complete
       val line0 = nextLine()
       val line1 = nextLine()
-      nextLine()
+      val line2 = nextLine()
       val line3 = nextLine()
 
-      if (line3 == null) {
-        throw InvalidFileException(file, "File contains an incomplete FASTQ read")
-      } else Read(line0, line1)
+      if (line0.charAt(0) != '@') { throw InvalidFileException(file, "Corrupt or incorrect FASTQ") }
+      if (line2.charAt(0) != '+') { throw InvalidFileException(file, "Corrupt or incorrect FASTQ") }
+
+      if (line3 == null) throw InvalidFileException(file, "File contains an incomplete FASTQ read")
+      else Read(line0, line1)
     }
 
     final override def hasNext: Boolean = line != null
