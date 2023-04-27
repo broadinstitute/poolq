@@ -337,6 +337,15 @@ short reads to be badly formed and exits. By specifying this flag, you indicate 
 simply skip these short reads; a count of the number of skipped short reads will be available in the
 quality file. Currently, this flag is only supported if you have selected the fixed barcode policy.
 
+### Read Id Check Policy
+When processing sequencing data with indexing reads split into a separate FASTQ file, PoolQ 
+attempts to match the FASTQ read IDs between the FASTQ records for the indexing and regular reads.
+This behavior is controlled by the argument `--read-id-check-policy`. The default mode is `strict`,
+which assumes that the read IDs will match exactly. In some cases, Illumina sequencing machines use
+a similar but not identical read ID. In this case, to relax the restriction but still check that 
+the read IDs match, you can use `illumina` mode. If this fails, and you are very certain your FASTQ
+files go together, you can disable this check entirely by running in `lax` mode.
+
 ### Always Match Column Barcodes
 This is an advanced, optional input flag that, when present, specifies how PoolQ should count the
 total number of reads found matching each column barcode, which is reported in the quality file. 
