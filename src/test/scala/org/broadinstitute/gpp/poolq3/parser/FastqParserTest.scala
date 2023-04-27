@@ -33,6 +33,26 @@ class FastqParserTest extends AnyFlatSpec {
     }
   }
 
+  "FastqParser" should "reject a misaligned FASTQ file" in {
+    val data =
+      """+
+        |4<<8-767
+        |@HWUSI-EAS100R:6:23:398:3989#1
+        |AACTCACG
+        |+""".stripMargin
+
+    val file: File = File.newTemporaryFile("FastqParserTest", ".fastq")
+    try {
+      file.overwrite(data)
+      val fqp = new FastqParser(file.path)
+      intercept[InvalidFileException] {
+        fqp.toList
+      }
+    } finally {
+      file.delete()
+    }
+  }
+
   it should "parse complete records" in {
     val data =
       """@HWUSI-EAS100R:6:23:398:3989#1
