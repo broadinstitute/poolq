@@ -665,6 +665,26 @@ condition/row barcode ID pairs.
 Row barcodes are counted as unexpected sequences if they are not successfully matched by the above
 procedure.
 
+## Using PoolQ on Demultiplexed Data
+PoolQ was designed to quantify multiplexed DNA sequence data, and its features and interface are
+specifically designed for that use case. However, it is still possible to use PoolQ to quantify
+demultiplexed data. PoolQ still requires a column barcode, representing the samples. So, the 
+simplest way to process demultiplexed data is to create a "dummy" column reference file such as:
+
+```
+A,Sample
+C,Sample
+G,Sample
+T,Sample
+```
+
+If you provide a column barcode policy of `FIXED@0`, PoolQ will use the first base of each read as
+its demultiplexing barcode. The column reference file maps each base to the same sample, named 
+"Sample". Note that in this case if the first base of a read is `N`, it will not match to a barcode
+in the sample reference file, and the read will not be counted as a match. If this is undesirable,
+you can additionally specify that PoolQ should use the `mismatch` barcode matching scheme for 
+column barcodes.
+
 ## Contact Us
 
 Your feedback of any kind is much appreciated. Please email us at
