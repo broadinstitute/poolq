@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.6.3
+* Documentation for processing demultiplexed FASTQ files
+
+## 3.6.2
+* Additional validation of FASTQ records to detect badly concatenated files
+* Documentation for read ID check policy
+
 ## 3.6.1
 * Add a specialized template barcode policy to optimize a common use case, where a template
   matches 2 barcode regions, each of which has a short prefix, separated by a fixed length
