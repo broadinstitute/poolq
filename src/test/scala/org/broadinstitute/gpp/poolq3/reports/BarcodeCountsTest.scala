@@ -94,7 +94,7 @@ class BarcodeCountsTest extends FunSuite {
       val ret = PoolQ.runProcess(barcodes, consumer)
       val state = ret.get.state
 
-      BarcodeCountsWriter.write(outputFile, state.known, rowReference, colReference, PoolQ2Dialect)
+      val _ = BarcodeCountsWriter.write(outputFile, state.known, rowReference, colReference, PoolQ2Dialect)
 
       val expected =
         s"""Construct Barcode\tConstruct IDs\t$SampleBarcode1\t$SampleBarcode2\t$SampleBarcode3\t$SampleBarcode4
@@ -118,7 +118,7 @@ class BarcodeCountsTest extends FunSuite {
       val ret = PoolQ.runProcess(barcodes, consumer)
       val state = ret.get.state
 
-      BarcodeCountsWriter.write(outputFile, state.known, rowReference, colReference, GctDialect)
+      val _ = BarcodeCountsWriter.write(outputFile, state.known, rowReference, colReference, GctDialect)
 
       val expected =
         s"""#1.2
@@ -174,17 +174,17 @@ class BarcodeCountsTest extends FunSuite {
       new OpenHashMapHistogram
     )
 
-    state.known.increment(None, (brdn01, eh2))
-    state.known.increment(a01.some, (brdn01, eh1))
-    state.known.increment(a01.some, (brdn01, eh1))
-    state.known.increment(a01.some, (brdn01, eh2))
-    state.known.increment(e09.some, (brdn01, eh1))
+    val _ = state.known.increment(None, (brdn01, eh2))
+    val _ = state.known.increment(a01.some, (brdn01, eh1))
+    val _ = state.known.increment(a01.some, (brdn01, eh1))
+    val _ = state.known.increment(a01.some, (brdn01, eh2))
+    val _ = state.known.increment(e09.some, (brdn01, eh1))
 
-    state.known.increment(a03.some, (brdn02, eh1))
-    state.known.increment(a03.some, (brdn02, sea2))
+    val _ = state.known.increment(a03.some, (brdn02, eh1))
+    val _ = state.known.increment(a03.some, (brdn02, sea2))
 
-    state.known.increment(f02.some, (brdn03, sea1))
-    state.known.increment(a03.some, (brdn03, sea1))
+    val _ = state.known.increment(f02.some, (brdn03, sea1))
+    val _ = state.known.increment(a03.some, (brdn03, sea1))
 
     val aggregateOutputFile = Files.createTempFile("barcode-counts-file-test-umi-", ".txt")
 
@@ -200,7 +200,7 @@ class BarcodeCountsTest extends FunSuite {
     }
 
     try {
-      BarcodeCountsWriter.write(
+      val _ = BarcodeCountsWriter.write(
         aggregateOutputFile,
         aggregateOutputFile.getParent.some,
         state.known,

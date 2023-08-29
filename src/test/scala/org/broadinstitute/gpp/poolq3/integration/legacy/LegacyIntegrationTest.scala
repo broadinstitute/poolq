@@ -13,12 +13,12 @@ import org.broadinstitute.gpp.poolq3.testutil.contents
 import org.broadinstitute.gpp.poolq3.{PoolQ, PoolQConfig, PoolQInput, PoolQOutput, TestResources}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
-import org.scalatest.{Assertion => TestAssertion}
 
 class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
 
-  private[this] def filesSame(actual: Path, expected: Path): TestAssertion =
-    contents(actual) should be(contents(expected))
+  private[this] def filesSame(actual: Path, expected: Path): Unit = {
+    val _ = contents(actual) should be(contents(expected))
+  }
 
   /** Tests PoolQ end-to-end, using 10000 reads, 8 constructs, and 42 conditions. Compares the results to expected
     * results.
@@ -59,7 +59,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         reportsDialect = PoolQ2Dialect
       )
 
-      PoolQ.run(config)
+      val _ = PoolQ.run(config)
 
       filesSame(countsFile.path, resourcePath("counts-10000-8-42.txt"))
       filesSame(normalizedCountsFile.path, resourcePath("lognorm-10000-8-42.txt"))
@@ -102,7 +102,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         reportsDialect = PoolQ2Dialect
       )
 
-      PoolQ.run(config)
+      val _ = PoolQ.run(config)
 
       filesSame(countsFile.path, resourcePath("counts-10000-8-42.txt"))
       filesSame(normalizedCountsFile.path, resourcePath("lognorm-10000-8-42.txt"))
@@ -152,7 +152,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         reportsDialect = PoolQ2Dialect
       )
 
-      PoolQ.run(config)
+      val _ = PoolQ.run(config)
 
       filesSame(countsFile.toJava.toPath, resourcePath("long-reads-counts.txt"))
       filesSame(normalizedCountsFile.toJava.toPath, resourcePath("long-reads-lognorm.txt"))
@@ -196,7 +196,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         reportsDialect = PoolQ2Dialect
       )
 
-      PoolQ.run(config)
+      val _ = PoolQ.run(config)
 
       filesSame(countsFile.toJava.toPath, resourcePath("overlapping-barcode-counts.txt"))
       filesSame(normalizedCountsFile.toJava.toPath, resourcePath("overlapping-barcode-lognorm.txt"))
@@ -242,7 +242,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         reportsDialect = PoolQ2Dialect
       )
 
-      PoolQ.run(config)
+      val _ = PoolQ.run(config)
 
       filesSame(countsFile.toJava.toPath, resourcePath("next500-counts.txt"))
       filesSame(qualityFile.toJava.toPath, resourcePath("next500-quality.txt"))
@@ -282,7 +282,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         reportsDialect = PoolQ2Dialect
       )
 
-      PoolQ.run(config)
+      val _ = PoolQ.run(config)
 
       filesSame(countsFile.toJava.toPath, resourcePath("next500-counts.txt"))
       filesSame(qualityFile.toJava.toPath, resourcePath("next500-quality.txt"))
@@ -325,7 +325,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         reportsDialect = PoolQ2Dialect
       )
 
-      PoolQ.run(config)
+      val _ = PoolQ.run(config)
 
       filesSame(countsFile.toJava.toPath, resourcePath("duplicate-hp-counts.txt"))
       filesSame(normalizedCountsFile.toJava.toPath, resourcePath("duplicate-hp-lognorm.txt"))

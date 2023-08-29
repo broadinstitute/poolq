@@ -2,34 +2,33 @@ val artifactId = "poolq"
 
 inThisBuild(
   List(
-    scalaVersion := "2.13.10",
+    scalaVersion := "2.13.11",
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision,
-    scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.6.0",
     versionScheme := Some("early-semver")
   )
 )
 
 lazy val versions = new {
   val acyclic = "0.2.1"
-  val betterFiles = "3.9.1"
+  val betterFiles = "3.9.2"
   val betterMonadicFor = "0.3.1"
-  val catsEffect3 = "3.4.5"
-  val cats = "2.9.0"
-  val commonsIo = "2.11.0"
+  val catsEffect3 = "3.5.1"
+  val cats = "2.10.0"
+  val commonsIo = "2.13.0"
   val commonsText = "1.10.0"
   val commonsMath3 = "3.6.1"
-  val fastutil = "8.5.11"
-  val fs2 = "3.5.0"
+  val fastutil = "8.5.12"
+  val fs2 = "3.8.0"
   val kantanCodecs = "0.5.3"
   val kantanCsv = "0.7.0"
   val log4s = "1.10.0"
   val logback = "1.2.11"
   val munit = "0.7.29"
   val munitCatsEffect3 = "1.0.7"
-  val samTools = "3.0.4"
+  val samTools = "3.0.5"
   val scalaCheck = "1.17.0"
-  val scalaTest = "3.2.15"
+  val scalaTest = "3.2.16"
   val scalaTestPlusScalaCheck = "3.2.2.0"
   val scopt = "4.1.0"
   val slf4j = "1.7.36"

@@ -159,9 +159,8 @@ final class ScoringConsumer(
     log.debug(s"Incrementing state for ($r, $c}).")
     umiReference match {
       case None =>
-        None
         // we're not in UMI mode, so just increment the state
-        state.known.increment(None, (r, c))
+        val _ = state.known.increment(None, (r, c))
       case Some(ref) =>
         // we're in UMI mode
         handleUmi(umi, ref, r, c)
@@ -182,7 +181,7 @@ final class ScoringConsumer(
           val _ = state.known.increment(Some(u), (r, c))
         } else {
           // we found an unknown UMI barcode, so track it somehow
-          state.known.increment(None, (r, c))
+          val _ = state.known.increment(None, (r, c))
           val _ = state.unknownUmi.increment(u)
         }
       case None =>

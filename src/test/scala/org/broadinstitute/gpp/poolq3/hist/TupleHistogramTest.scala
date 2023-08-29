@@ -13,17 +13,17 @@ class TupleHistogramTest extends FunSuite with ScalaCheckSuite {
   test("OpenHashMapHistogram should track frequencies") {
     val h = new TupleHistogram[String]
 
-    h.increment(("AAAA", "TTTT"))
-    h.increment(("AAAA", "TTTT"))
-    h.increment(("AAAA", "TTTT"))
-    h.increment(("AAAA", "TTTT"))
+    val _ = h.increment(("AAAA", "TTTT"))
+    val _ = h.increment(("AAAA", "TTTT"))
+    val _ = h.increment(("AAAA", "TTTT"))
+    val _ = h.increment(("AAAA", "TTTT"))
 
     assertEquals(h.count(("AAAA", "TTTT")), 4)
     assertEquals(h.count(("AAAA", "TTTC")), 0)
   }
 
   property("track frequencies for arbitrary data") {
-    forAll { data: List[(Char, Char)] =>
+    forAll { (data: List[(Char, Char)]) =>
       val expectedCounts: Map[(Char, Char), Int] = data.groupBy(identity).view.mapValues(_.length).toMap
 
       val hist = new TupleHistogram[Char]

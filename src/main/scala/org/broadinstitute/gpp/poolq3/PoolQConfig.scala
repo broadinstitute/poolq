@@ -118,185 +118,191 @@ object PoolQConfig {
         else if (!Files.isReadable(f)) failure(s"Could not read ${f.toAbsolutePath}")
         else success
 
-      head(BuildInfo.name, BuildInfo.version)
+      locally {
+        val _ = head(BuildInfo.name, BuildInfo.version)
 
-      opt[Path]("row-reference")
-        .valueName("<file>")
-        .required()
-        .action((f, c) => c.copy(input = c.input.copy(rowReference = f)))
-        .text("reference file for row barcodes (i.e., constructs)")
-        .validate(existsAndIsReadable)
+        val _ = opt[Path]("row-reference")
+          .valueName("<file>")
+          .required()
+          .action((f, c) => c.copy(input = c.input.copy(rowReference = f)))
+          .text("reference file for row barcodes (i.e., constructs)")
+          .validate(existsAndIsReadable)
 
-      opt[Path]("col-reference")
-        .valueName("<file>")
-        .required()
-        .action((f, c) => c.copy(input = c.input.copy(colReference = f)))
-        .text("reference file for column barcodes (i.e., conditions)")
-        .validate(existsAndIsReadable)
+        val _ = opt[Path]("col-reference")
+          .valueName("<file>")
+          .required()
+          .action((f, c) => c.copy(input = c.input.copy(colReference = f)))
+          .text("reference file for column barcodes (i.e., conditions)")
+          .validate(existsAndIsReadable)
 
-      opt[File]("umi-reference").valueName("<file>").action { (f, c) =>
-        c.copy(input = c.input.copy(umiReference = Some(f.toPath)))
-      }
-
-      opt[File]("global-reference").valueName("<file>").action { (f, c) =>
-        c.copy(input = c.input.copy(globalReference = Some(f.toPath)))
-      }
-
-      opt[(Path, List[Path])]("row-reads")
-        .valueName("<files>")
-        .action { case ((p, ps), c) => c.copy(input = c.input.copy(rowReads = Some(p), addlRowReads = ps)) }
-        .text("required if reads are split between two files")
-        .validate { case (p, ps) => (p :: ps).traverse_(existsAndIsReadable) }
-
-      opt[(Path, List[Path])]("rev-row-reads")
-        .valueName("<files>")
-        .action { case ((p, ps), c) =>
-          c.copy(input = c.input.copy(reverseRowReads = Some(p), addlReverseRowReads = ps))
-        }
-        .text("required for processing paired-end sequencing data")
-        .validate { case (p, ps) => (p :: ps).traverse_(existsAndIsReadable) }
-
-      opt[(Path, List[Path])]("col-reads")
-        .valueName("<files>")
-        .action { case ((p, ps), c) => c.copy(input = c.input.copy(colReads = Some(p), addlColReads = ps)) }
-        .text("required if reads are split between two files")
-        .validate { case (p, ps) => (p :: ps).traverse_(existsAndIsReadable) }
-
-      opt[(Path, List[Path])]("reads")
-        .valueName("<files>")
-        .action { case ((p, ps), c) => c.copy(input = c.input.copy(reads = Some(p), addlReads = ps)) }
-        .text("required if reads are contained in a single file")
-        .validate { case (p, ps) => (p :: ps).traverse_(existsAndIsReadable) }
-
-      opt[ReadIdCheckPolicy]("read-id-check-policy")
-        .valueName("<policy>")
-        .action((p, c) => c.copy(input = c.input.copy(readIdCheckPolicy = p)))
-        .text("read ID check policy; one of [lax, strict, illumina]")
-
-      opt[String]("row-matcher")
-        .valueName("<matcher>")
-        .action((m, c) => c.copy(rowMatchFn = m))
-        .text("function used to match row barcodes against the row reference database")
-
-      opt[String]("col-matcher")
-        .valueName("<matcher>")
-        .action((m, c) => c.copy(colMatchFn = m))
-        .text("function used to match column barcodes against the column reference database")
-
-      opt[Boolean]("count-ambiguous")
-        .action((b, c) => c.copy(countAmbiguous = b))
-        .text("when true, counts ambiguous fuzzy matches for all potential row barcodes")
-
-      opt[String]("row-barcode-policy").valueName("<barcode-policy>").action { (p, c) =>
-        c.copy(rowBarcodePolicyStr = p)
-      }
-
-      opt[String]("rev-row-barcode-policy").valueName("<barcode-policy>").action { (p, c) =>
-        c.copy(reverseRowBarcodePolicyStr = Some(p))
-      }
-
-      opt[String]("col-barcode-policy").valueName("<barcode-policy>").action { (p, c) =>
-        c.copy(colBarcodePolicyStr = p)
-      }
-
-      opt[String]("umi-barcode-policy").valueName("<barcode-policy>").action { (p, c) =>
-        c.copy(umiBarcodePolicyStr = Some(p))
-      }
-
-      opt[Path]("umi-counts-dir").valueName("<file>").action { (f, c) =>
-        c.copy(output = c.output.copy(umiCountsFilesDir = Some(f)))
-      }
-
-      opt[Path]("umi-barcode-counts-dir").valueName("<file>").action { (f, c) =>
-        c.copy(output = c.output.copy(umiBarcodeCountsFilesDir = Some(f)))
-      }
-
-      opt[Path]("quality").valueName("<file>").action((f, c) => c.copy(output = c.output.copy(qualityFile = f)))
-
-      opt[Path]("counts").valueName("<file>").action((f, c) => c.copy(output = c.output.copy(countsFile = f)))
-
-      opt[Path]("normalized-counts").valueName("<file>").action { (f, c) =>
-        c.copy(output = c.output.copy(normalizedCountsFile = f))
-      }
-
-      opt[Path]("barcode-counts").valueName("<file>").action { (f, c) =>
-        c.copy(output = c.output.copy(barcodeCountsFile = f))
-      }
-
-      opt[Path]("scores").valueName("<file>").action((f, c) => c.copy(output = c.output.copy(countsFile = f)))
-
-      opt[Path]("normalized-scores").valueName("<file>").action { (f, c) =>
-        c.copy(output = c.output.copy(normalizedCountsFile = f))
-      }
-
-      opt[Path]("barcode-scores").valueName("<file>").action { (f, c) =>
-        c.copy(output = c.output.copy(barcodeCountsFile = f))
-      }
-
-      opt[Path]("correlation").valueName("<file>").action { (f, c) =>
-        c.copy(output = c.output.copy(correlationFile = f))
-      }
-
-      opt[Path]("run-info").valueName("<file>").action((f, c) => c.copy(output = c.output.copy(runInfoFile = f)))
-
-      opt[Int]("unexpected-sequence-threshold")
-        .valueName("<number>")
-        .action((n, c) => c.copy(unexpectedSequencesToReport = n))
-        .validate { n =>
-          if (n > 0) success
-          else failure(s"Unexpected sequence threshold must be greater than 0, got: $n")
+        val _ = opt[File]("umi-reference").valueName("<file>").action { (f, c) =>
+          c.copy(input = c.input.copy(umiReference = Some(f.toPath)))
         }
 
-      opt[Path]("unexpected-sequences").valueName("<file>").action { (f, c) =>
-        c.copy(output = c.output.copy(unexpectedSequencesFile = f))
-      }
-
-      opt[Path]("umi-quality").valueName("<file>").action { (f, c) =>
-        c.copy(output = c.output.copy(umiQualityFile = f))
-      }
-
-      opt[Path]("unexpected-sequence-cache").valueName("<cache-dir>").action { (f, c) =>
-        c.copy(unexpectedSequenceCacheDir = Some(f))
-      }
-
-      opt[Unit]("retain-unexpected-sequence-cache").hidden().action { (_, c) =>
-        c.copy(removeUnexpectedSequenceCache = false)
-      }
-
-      opt[Unit]("skip-unexpected-sequence-report").action((_, c) => c.copy(skipUnexpectedSequenceReport = true))
-
-      opt[Unit]("skip-short-reads").action((_, c) => c.copy(skipShortReads = true))
-
-      opt[Unit]("always-count-col-barcodes")
-        .action((_, c) => c.copy(alwaysCountColumnBarcodes = true))
-        .text("Count each column barcode regardless of whether a row barcode was found in the read")
-
-      opt[Unit]("compat")
-        .action((_, c) => c.copy(reportsDialect = PoolQ2Dialect))
-        .text("Enable PoolQ 2.X compatibility mode")
-
-      opt[Unit]("gct").action((_, c) => c.copy(reportsDialect = GctDialect)).text("Output counts in GCT format")
-
-      // this is used for throughput testing
-      opt[Unit]("noop").hidden().action((_, c) => c.copy(noopConsumer = true))
-
-      checkConfig { c =>
-        val readsCheck = (c.input.reads, c.input.rowReads, c.input.colReads) match {
-          case (None, None, None) => failure("No reads files specified.")
-          case (None, None, Some(_)) =>
-            failure("Column barcode file specified but no row barcodes file specified.")
-          case (None, Some(_), None) =>
-            failure("Row barcode file specified but no column barcodes file specified.")
-          case _ => success
+        val _ = opt[File]("global-reference").valueName("<file>").action { (f, c) =>
+          c.copy(input = c.input.copy(globalReference = Some(f.toPath)))
         }
 
-        val pairedEndConsistencyCheck = (c.input.reverseRowReads, c.reverseRowBarcodePolicyStr) match {
-          case (Some(_), None) => failure("Reverse row reads file specified but no reverse barcode policy specified")
-          case (None, Some(_)) => failure("Reverse barcode policy specified but now reverse row reads file specified")
-          case _               => success
+        val _ = opt[(Path, List[Path])]("row-reads")
+          .valueName("<files>")
+          .action { case ((p, ps), c) => c.copy(input = c.input.copy(rowReads = Some(p), addlRowReads = ps)) }
+          .text("required if reads are split between two files")
+          .validate { case (p, ps) => (p :: ps).traverse_(existsAndIsReadable) }
+
+        val _ = opt[(Path, List[Path])]("rev-row-reads")
+          .valueName("<files>")
+          .action { case ((p, ps), c) =>
+            c.copy(input = c.input.copy(reverseRowReads = Some(p), addlReverseRowReads = ps))
+          }
+          .text("required for processing paired-end sequencing data")
+          .validate { case (p, ps) => (p :: ps).traverse_(existsAndIsReadable) }
+
+        val _ = opt[(Path, List[Path])]("col-reads")
+          .valueName("<files>")
+          .action { case ((p, ps), c) => c.copy(input = c.input.copy(colReads = Some(p), addlColReads = ps)) }
+          .text("required if reads are split between two files")
+          .validate { case (p, ps) => (p :: ps).traverse_(existsAndIsReadable) }
+
+        val _ = opt[(Path, List[Path])]("reads")
+          .valueName("<files>")
+          .action { case ((p, ps), c) => c.copy(input = c.input.copy(reads = Some(p), addlReads = ps)) }
+          .text("required if reads are contained in a single file")
+          .validate { case (p, ps) => (p :: ps).traverse_(existsAndIsReadable) }
+
+        val _ = opt[ReadIdCheckPolicy]("read-id-check-policy")
+          .valueName("<policy>")
+          .action((p, c) => c.copy(input = c.input.copy(readIdCheckPolicy = p)))
+          .text("read ID check policy; one of [lax, strict, illumina]")
+
+        val _ = opt[String]("row-matcher")
+          .valueName("<matcher>")
+          .action((m, c) => c.copy(rowMatchFn = m))
+          .text("function used to match row barcodes against the row reference database")
+
+        val _ = opt[String]("col-matcher")
+          .valueName("<matcher>")
+          .action((m, c) => c.copy(colMatchFn = m))
+          .text("function used to match column barcodes against the column reference database")
+
+        val _ = opt[Boolean]("count-ambiguous")
+          .action((b, c) => c.copy(countAmbiguous = b))
+          .text("when true, counts ambiguous fuzzy matches for all potential row barcodes")
+
+        val _ = opt[String]("row-barcode-policy").valueName("<barcode-policy>").action { (p, c) =>
+          c.copy(rowBarcodePolicyStr = p)
         }
 
-        readsCheck >> pairedEndConsistencyCheck
+        val _ = opt[String]("rev-row-barcode-policy").valueName("<barcode-policy>").action { (p, c) =>
+          c.copy(reverseRowBarcodePolicyStr = Some(p))
+        }
+
+        val _ = opt[String]("col-barcode-policy").valueName("<barcode-policy>").action { (p, c) =>
+          c.copy(colBarcodePolicyStr = p)
+        }
+
+        val _ = opt[String]("umi-barcode-policy").valueName("<barcode-policy>").action { (p, c) =>
+          c.copy(umiBarcodePolicyStr = Some(p))
+        }
+
+        val _ = opt[Path]("umi-counts-dir").valueName("<file>").action { (f, c) =>
+          c.copy(output = c.output.copy(umiCountsFilesDir = Some(f)))
+        }
+
+        val _ = opt[Path]("umi-barcode-counts-dir").valueName("<file>").action { (f, c) =>
+          c.copy(output = c.output.copy(umiBarcodeCountsFilesDir = Some(f)))
+        }
+
+        val _ =
+          opt[Path]("quality").valueName("<file>").action((f, c) => c.copy(output = c.output.copy(qualityFile = f)))
+
+        val _ = opt[Path]("counts").valueName("<file>").action((f, c) => c.copy(output = c.output.copy(countsFile = f)))
+
+        val _ = opt[Path]("normalized-counts").valueName("<file>").action { (f, c) =>
+          c.copy(output = c.output.copy(normalizedCountsFile = f))
+        }
+
+        val _ = opt[Path]("barcode-counts").valueName("<file>").action { (f, c) =>
+          c.copy(output = c.output.copy(barcodeCountsFile = f))
+        }
+
+        val _ = opt[Path]("scores").valueName("<file>").action((f, c) => c.copy(output = c.output.copy(countsFile = f)))
+
+        val _ = opt[Path]("normalized-scores").valueName("<file>").action { (f, c) =>
+          c.copy(output = c.output.copy(normalizedCountsFile = f))
+        }
+
+        val _ = opt[Path]("barcode-scores").valueName("<file>").action { (f, c) =>
+          c.copy(output = c.output.copy(barcodeCountsFile = f))
+        }
+
+        val _ = opt[Path]("correlation").valueName("<file>").action { (f, c) =>
+          c.copy(output = c.output.copy(correlationFile = f))
+        }
+
+        val _ =
+          opt[Path]("run-info").valueName("<file>").action((f, c) => c.copy(output = c.output.copy(runInfoFile = f)))
+
+        val _ = opt[Int]("unexpected-sequence-threshold")
+          .valueName("<number>")
+          .action((n, c) => c.copy(unexpectedSequencesToReport = n))
+          .validate { n =>
+            if (n > 0) success
+            else failure(s"Unexpected sequence threshold must be greater than 0, got: $n")
+          }
+
+        val _ = opt[Path]("unexpected-sequences").valueName("<file>").action { (f, c) =>
+          c.copy(output = c.output.copy(unexpectedSequencesFile = f))
+        }
+
+        val _ = opt[Path]("umi-quality").valueName("<file>").action { (f, c) =>
+          c.copy(output = c.output.copy(umiQualityFile = f))
+        }
+
+        val _ = opt[Path]("unexpected-sequence-cache").valueName("<cache-dir>").action { (f, c) =>
+          c.copy(unexpectedSequenceCacheDir = Some(f))
+        }
+
+        val _ = opt[Unit]("retain-unexpected-sequence-cache").hidden().action { (_, c) =>
+          c.copy(removeUnexpectedSequenceCache = false)
+        }
+
+        val _ =
+          opt[Unit]("skip-unexpected-sequence-report").action((_, c) => c.copy(skipUnexpectedSequenceReport = true))
+
+        val _ = opt[Unit]("skip-short-reads").action((_, c) => c.copy(skipShortReads = true))
+
+        val _ = opt[Unit]("always-count-col-barcodes")
+          .action((_, c) => c.copy(alwaysCountColumnBarcodes = true))
+          .text("Count each column barcode regardless of whether a row barcode was found in the read")
+
+        val _ = opt[Unit]("compat")
+          .action((_, c) => c.copy(reportsDialect = PoolQ2Dialect))
+          .text("Enable PoolQ 2.X compatibility mode")
+
+        val _ =
+          opt[Unit]("gct").action((_, c) => c.copy(reportsDialect = GctDialect)).text("Output counts in GCT format")
+
+        // this is used for throughput testing
+        val _ = opt[Unit]("noop").hidden().action((_, c) => c.copy(noopConsumer = true))
+
+        val _ = checkConfig { c =>
+          val readsCheck = (c.input.reads, c.input.rowReads, c.input.colReads) match {
+            case (None, None, None) => failure("No reads files specified.")
+            case (None, None, Some(_)) =>
+              failure("Column barcode file specified but no row barcodes file specified.")
+            case (None, Some(_), None) =>
+              failure("Row barcode file specified but no column barcodes file specified.")
+            case _ => success
+          }
+
+          val pairedEndConsistencyCheck = (c.input.reverseRowReads, c.reverseRowBarcodePolicyStr) match {
+            case (Some(_), None) => failure("Reverse row reads file specified but no reverse barcode policy specified")
+            case (None, Some(_)) => failure("Reverse barcode policy specified but now reverse row reads file specified")
+            case _               => success
+          }
+
+          readsCheck >> pairedEndConsistencyCheck
+        }
       }
     }
 

@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.6.4
+No user-facing changes
+
 ## 3.6.3
 * Documentation for processing demultiplexed FASTQ files
 

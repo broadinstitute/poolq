@@ -62,43 +62,43 @@ class AmbiguousMatchTest extends AnyFlatSpec {
     val ret = PoolQ.runProcess(barcodes, consumer)
     val state = ret.get.state
 
-    state.reads should be(9)
-    state.exactMatches should be(3)
+    val _ = state.reads should be(9)
+    val _ = state.exactMatches should be(3)
 
     val hist = state.known
-    hist.count(("AAAAAAAAAAAAAAAAAAAA", "AAAA")) should be(1)
-    hist.count(("AAAAAAAAAAAAAAAAAAAA", "AAAT")) should be(1)
-    hist.count(("GATGTGCAGTGAGTAGCGAG", "AAAA")) should be(1)
-    hist.count(("CCGGTTGATGCGTGGTGATG", "CCCC")) should be(1)
-    hist.count(("AATGTGAAAATGTGATGAAT", "CCCG")) should be(1)
+    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAA", "AAAA")) should be(1)
+    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAA", "AAAT")) should be(1)
+    val _ = hist.count(("GATGTGCAGTGAGTAGCGAG", "AAAA")) should be(1)
+    val _ = hist.count(("CCGGTTGATGCGTGGTGATG", "CCCC")) should be(1)
+    val _ = hist.count(("AATGTGAAAATGTGATGAAT", "CCCG")) should be(1)
 
     // these all correspond to the ambiguous match at the end
-    hist.count(("AAAAAAAAAAAAAAAAAAAA", "CCCC")) should be(1)
-    hist.count(("AAAAAAAAAAAAAAAAAAAC", "CCCC")) should be(1)
-    hist.count(("AAAAAAAAAAAAAAAAAAAG", "CCCC")) should be(1)
-    hist.count(("AAAAAAAAAAAAAAAAAAAT", "CCCC")) should be(1)
+    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAA", "CCCC")) should be(1)
+    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAC", "CCCC")) should be(1)
+    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAG", "CCCC")) should be(1)
+    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAT", "CCCC")) should be(1)
 
     // these are combinations that didn't occur
-    hist.count(("AAAAAAAAAAAAAAAAAAAA", "CCCG")) should be(0)
+    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAA", "CCCG")) should be(0)
 
-    hist.count(("AAAAAAAAAAAAAAAAAAAC", "AAAA")) should be(0)
-    hist.count(("AAAAAAAAAAAAAAAAAAAC", "AAAT")) should be(0)
-    hist.count(("AAAAAAAAAAAAAAAAAAAC", "CCCG")) should be(0)
+    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAC", "AAAA")) should be(0)
+    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAC", "AAAT")) should be(0)
+    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAC", "CCCG")) should be(0)
 
-    hist.count(("AAAAAAAAAAAAAAAAAAAG", "AAAA")) should be(0)
-    hist.count(("AAAAAAAAAAAAAAAAAAAG", "AAAT")) should be(0)
-    hist.count(("AAAAAAAAAAAAAAAAAAAG", "CCCG")) should be(0)
+    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAG", "AAAA")) should be(0)
+    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAG", "AAAT")) should be(0)
+    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAG", "CCCG")) should be(0)
 
-    hist.count(("AAAAAAAAAAAAAAAAAAAT", "AAAA")) should be(0)
-    hist.count(("AAAAAAAAAAAAAAAAAAAT", "AAAT")) should be(0)
-    hist.count(("AAAAAAAAAAAAAAAAAAAT", "CCCG")) should be(0)
+    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAT", "AAAA")) should be(0)
+    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAT", "AAAT")) should be(0)
+    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAT", "CCCG")) should be(0)
 
-    hist.count(("GATGTGCAGTGAGTAGCGAG", "AAAT")) should be(0)
-    hist.count(("GATGTGCAGTGAGTAGCGAG", "CCCC")) should be(0)
-    hist.count(("GATGTGCAGTGAGTAGCGAG", "CCCG")) should be(0)
+    val _ = hist.count(("GATGTGCAGTGAGTAGCGAG", "AAAT")) should be(0)
+    val _ = hist.count(("GATGTGCAGTGAGTAGCGAG", "CCCC")) should be(0)
+    val _ = hist.count(("GATGTGCAGTGAGTAGCGAG", "CCCG")) should be(0)
 
-    hist.count(("AATGTGAAAATGTGATGAAT", "AAAA")) should be(0)
-    hist.count(("AATGTGAAAATGTGATGAAT", "AAAT")) should be(0)
+    val _ = hist.count(("AATGTGAAAATGTGATGAAT", "AAAA")) should be(0)
+    val _ = hist.count(("AATGTGAAAATGTGATGAAT", "AAAT")) should be(0)
     hist.count(("AATGTGAAAATGTGATGAAT", "CCCC")) should be(0)
   }
 

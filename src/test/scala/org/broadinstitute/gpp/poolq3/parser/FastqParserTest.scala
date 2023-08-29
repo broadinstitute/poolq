@@ -68,7 +68,7 @@ class FastqParserTest extends AnyFlatSpec {
       file.overwrite(data)
       val fqp = new FastqParser(file.path)
       val fqi = fqp.iterator
-      (fqi.toList should have).length(2)
+      val _ = (fqi.toList should have).length(2)
       fqi.close()
     } finally {
       file.delete()

@@ -80,7 +80,7 @@ class CorrelationFileTest extends AnyFlatSpec {
       val state = ret.get.state
 
       val normalizedCounts = LogNormalizedCountsWriter.logNormalizedCounts(state.known, rowReference, colReference)
-      CorrelationFileWriter.write(outputFile, normalizedCounts, rowReference, colReference)
+      val _ = CorrelationFileWriter.write(outputFile, normalizedCounts, rowReference, colReference)
 
       val expected =
         s"""\t$Condition1\t$Condition2\t$Condition3
@@ -115,7 +115,7 @@ class CorrelationFileTest extends AnyFlatSpec {
       val normalizedCounts = LogNormalizedCountsWriter.logNormalizedCounts(state.known, rowReference, singleCondRef)
 
       // we've set a trap - if we try to compute a correlation, the library code should throw an exception
-      noException should be thrownBy {
+      val _ = noException should be thrownBy {
         CorrelationFileWriter.write(outputFile, normalizedCounts, rowReference, singleCondRef)
       }
 
@@ -146,7 +146,7 @@ class CorrelationFileTest extends AnyFlatSpec {
       val normalizedCounts = LogNormalizedCountsWriter.logNormalizedCounts(state.known, rowReference, singleCondRef)
 
       // we've set a trap - if we try to compute a correlation, the library code should throw an exception
-      noException should be thrownBy {
+      val _ = noException should be thrownBy {
         CorrelationFileWriter.write(outputFile, normalizedCounts, rowReference, singleCondRef)
       }
 
