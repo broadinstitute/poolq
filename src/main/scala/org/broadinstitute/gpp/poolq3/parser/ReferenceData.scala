@@ -70,7 +70,12 @@ object ReferenceData {
 
   def apply(file: Path, quote: Char = '"'): ReferenceData = {
     Using.resource(new FileInputStream(file.toFile)) { fin =>
-      val in = new BOMInputStream(fin, false, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_16LE)
+      val in = BOMInputStream
+        .builder()
+        .setInputStream(fin)
+        .setByteOrderMarks(ByteOrderMark.UTF_8, ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_16LE)
+        .setInclude(false)
+        .get()
       val br = new BufferedReader(new InputStreamReader(in))
       val delimiter = guessDelimiter(br)
       val config =
