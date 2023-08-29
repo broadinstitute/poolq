@@ -28,7 +28,7 @@ class BkTreeTest extends AnyFlatSpec {
   }
 
   it should "support queries of arbitrary dictionaries" in {
-    forAll(referenceGen) { reference: List[String] =>
+    forAll(referenceGen) { (reference: List[String]) =>
       val tree = new BkTree(levenshtein, reference)
       reference.headOption.foreach { query =>
         (0 until query.length).foreach { i =>

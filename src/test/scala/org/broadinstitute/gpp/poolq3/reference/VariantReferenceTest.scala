@@ -20,7 +20,7 @@ class VariantReferenceTest extends AnyFlatSpec {
   private[this] val referenceGen: Gen[List[String]] = Gen.listOfN(1000, barcode)
 
   "VariantReference" should "find matches for a given barcode" in {
-    forAll(referenceGen) { barcodes: List[String] =>
+    forAll(referenceGen) { (barcodes: List[String]) =>
       val reference = VariantReference(barcodes.map(b => ReferenceEntry(b, b)), identity, false)
 
       barcodes.foreach(barcode => reference.find(barcode) should be(Seq(MatchedBarcode(barcode, 0))))
@@ -28,7 +28,7 @@ class VariantReferenceTest extends AnyFlatSpec {
   }
 
   it should "find matches for barcodes with zero or one Ns" in {
-    forAll(referenceGen) { barcodes: List[String] =>
+    forAll(referenceGen) { (barcodes: List[String]) =>
       val reference = VariantReference(barcodes.map(b => ReferenceEntry(b, b)), identity, false)
 
       barcodes.foreach { barcode =>

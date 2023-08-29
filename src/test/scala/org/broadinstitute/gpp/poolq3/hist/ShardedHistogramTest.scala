@@ -34,7 +34,7 @@ class ShardedHistogramTest extends FunSuite with ScalaCheckSuite {
 
   property("track frequencies for arbitrary data") {
     def key(x: Int): Option[Int] = if (x < 0) None else Some(x)
-    forAll { data: List[(Int, Int)] =>
+    forAll { (data: List[(Int, Int)]) =>
       val actualHistogram = new BasicShardedHistogram[Int, Int](new OpenHashMapHistogram)
       data.foreach { case (shard, value) =>
         actualHistogram.increment(key(shard), value)

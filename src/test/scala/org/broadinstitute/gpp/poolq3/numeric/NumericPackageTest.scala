@@ -14,7 +14,7 @@ class NumericPackageTest extends AnyFlatSpec {
 
   "log2" should "take the log base 2" in {
     val smallNonNeg = Gen.chooseNum(0.0, 48.0)
-    forAll(smallNonNeg) { x: Double => log2(math.pow(2, x)) should be(x +- .00000000000001) }
+    forAll(smallNonNeg)((x: Double) => log2(math.pow(2, x)) should be(x +- .00000000000001))
   }
 
   "logNormalize" should "not divide by zero" in {

@@ -16,7 +16,7 @@ class ExactReferenceTest extends AnyFlatSpec {
   val referenceGen: Gen[List[String]] = Gen.listOfN(1000, barcode)
 
   "ExactReference" should "find matches for a given barcode" in {
-    forAll(referenceGen) { barcodes: List[String] =>
+    forAll(referenceGen) { (barcodes: List[String]) =>
       val reference = ExactReference(barcodes.map(b => ReferenceEntry(b, b)), identity, includeAmbiguous = false)
 
       barcodes.foreach { bc =>

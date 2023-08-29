@@ -23,7 +23,7 @@ class OpenHashMapHistogramTest extends FunSuite with ScalaCheckSuite {
   }
 
   property("OpenHashMapHistogram should track frequencies for arbitrary data") {
-    forAll { data: List[Int] =>
+    forAll { (data: List[Int]) =>
       val expectedCounts: Map[Int, Int] = data.groupBy(identity).view.mapValues(_.length).toMap
 
       val hist = new OpenHashMapHistogram[Int]

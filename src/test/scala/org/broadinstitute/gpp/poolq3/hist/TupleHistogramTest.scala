@@ -23,7 +23,7 @@ class TupleHistogramTest extends FunSuite with ScalaCheckSuite {
   }
 
   property("track frequencies for arbitrary data") {
-    forAll { data: List[(Char, Char)] =>
+    forAll { (data: List[(Char, Char)]) =>
       val expectedCounts: Map[(Char, Char), Int] = data.groupBy(identity).view.mapValues(_.length).toMap
 
       val hist = new TupleHistogram[Char]
