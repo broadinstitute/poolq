@@ -18,8 +18,8 @@ class NumericPackageTest extends AnyFlatSpec {
   }
 
   "logNormalize" should "not divide by zero" in {
-    logNormalize(0, 132656131) should be(0)
-    logNormalize(0, 0) should be(0)
+    val _ = logNormalize(0, 132656131) should be(0)
+    val _ = logNormalize(0, 0) should be(0)
     logNormalize(1, 0) should be(0)
   }
 

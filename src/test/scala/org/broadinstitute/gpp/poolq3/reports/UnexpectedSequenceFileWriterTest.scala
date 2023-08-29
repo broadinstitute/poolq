@@ -35,7 +35,7 @@ class UnexpectedSequenceFileWriterTest extends AnyFlatSpec {
 
     UnexpectedSequenceWriter.truncateToN(h, r, 3)
 
-    r.keySet should be(Set(1L, 2L, 4L))
+    val _ = r.keySet should be(Set(1L, 2L, 4L))
     h.keySet().iterator().asScala.toSet should be(Set(1L, 2L, 4L))
   }
 

@@ -23,7 +23,7 @@ class BkTreeTest extends AnyFlatSpec {
     val t =
       new BkTree(levenshtein, Seq("book", "books", "cake", "boo", "boon", "cook", "cape", "cart"))
 
-    t.query("book", 1) should be(Set("book", "books", "boon", "boo", "cook"))
+    val _ = t.query("book", 1) should be(Set("book", "books", "boon", "boo", "cook"))
     t.query("booky", 1) should be(Set("book", "books"))
   }
 

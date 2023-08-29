@@ -20,12 +20,12 @@ class ExactReferenceTest extends AnyFlatSpec {
       val reference = ExactReference(barcodes.map(b => ReferenceEntry(b, b)), identity, includeAmbiguous = false)
 
       barcodes.foreach { bc =>
-        reference.isDefined(bc) should be(true)
-        reference.find(bc) should be(Seq(MatchedBarcode(bc, 0)))
+        val _ = reference.isDefined(bc) should be(true)
+        val _ = reference.find(bc) should be(Seq(MatchedBarcode(bc, 0)))
         reference.idsForBarcode(bc) should be(Seq(bc))
       }
 
-      reference.allIds.toSet should be(barcodes.toSet)
+      val _ = reference.allIds.toSet should be(barcodes.toSet)
       reference.allBarcodes.toSet should be(barcodes.toSet)
     }
   }
@@ -33,12 +33,12 @@ class ExactReferenceTest extends AnyFlatSpec {
   it should "find variants with the correct distance" in {
     val reference =
       ExactReference(Seq(ReferenceEntry("AAAAAAAAAAAAAAAAAAAA", "One")), identity, includeAmbiguous = false)
-    reference.find("AAAAAAAAAAAAAAAAAAAA") should be(Seq(MatchedBarcode("AAAAAAAAAAAAAAAAAAAA", 0)))
-    reference.find("NAAAAAAAAAAAAAAAAAAA") should be(Seq())
-    reference.find("AAAAAAAAAAAAAAAAAAAT") should be(Seq())
-    reference.find("NAAAAAAAAAAAAAAAAAAT") should be(Seq())
+    val _ = reference.find("AAAAAAAAAAAAAAAAAAAA") should be(Seq(MatchedBarcode("AAAAAAAAAAAAAAAAAAAA", 0)))
+    val _ = reference.find("NAAAAAAAAAAAAAAAAAAA") should be(Seq())
+    val _ = reference.find("AAAAAAAAAAAAAAAAAAAT") should be(Seq())
+    val _ = reference.find("NAAAAAAAAAAAAAAAAAAT") should be(Seq())
 
-    reference.barcodesForId("One") should be(Seq("AAAAAAAAAAAAAAAAAAAA"))
+    val _ = reference.barcodesForId("One") should be(Seq("AAAAAAAAAAAAAAAAAAAA"))
     reference.idsForBarcode("AAAAAAAAAAAAAAAAAAAA") should be(Seq("One"))
   }
 

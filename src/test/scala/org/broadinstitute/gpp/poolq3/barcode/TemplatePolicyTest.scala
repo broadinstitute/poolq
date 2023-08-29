@@ -113,8 +113,12 @@ class TemplatePolicyTest extends AnyFlatSpec {
     val keymask = KeyMask(pattern)
     val kmp = new GeneralTemplatePolicy(keymask, Some(0))
 
-    kmp.find(Read("", read1)) should be(Some(FoundBarcode("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT".toCharArray, 5)))
-    kmp.find(Read("", read2)) should be(Some(FoundBarcode("NTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT".toCharArray, 5)))
+    val _ = kmp.find(Read("", read1)) should be(
+      Some(FoundBarcode("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT".toCharArray, 5))
+    )
+    val _ = kmp.find(Read("", read2)) should be(
+      Some(FoundBarcode("NTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT".toCharArray, 5))
+    )
     kmp.find(Read("", read3)) should be(None)
   }
 

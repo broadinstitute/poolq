@@ -41,11 +41,11 @@ class UnambiguousVariantTest extends AnyFlatSpec {
     val ret = PoolQ.runProcess(reads, consumer)
     val state = ret.get.state
 
-    state.reads should be(1)
-    state.exactMatches should be(0)
+    val _ = state.reads should be(1)
+    val _ = state.exactMatches should be(0)
 
     val hist = state.known
-    hist.count(("AAAAAAAAAAAAAAAAAAAA", "AAAA")) should be(1)
+    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAA", "AAAA")) should be(1)
     for {
       row <- rowReferenceBarcodes.map(_.dnaBarcode)
       col <- colReferenceBarcodes.map(_.dnaBarcode)

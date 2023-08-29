@@ -14,8 +14,8 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks._
 class SeqPackageTest extends AnyFlatSpec {
 
   "complement" should "complement a string of DNA" in {
-    complement("") should be("")
-    complement("ACGT") should be("TGCA")
+    val _ = complement("") should be("")
+    val _ = complement("ACGT") should be("TGCA")
     complement("NAATTTG") should be("NTTAAAC")
   }
 
@@ -24,8 +24,8 @@ class SeqPackageTest extends AnyFlatSpec {
   }
 
   "reverseComplement" should "reverse complement a string of DNA" in {
-    reverseComplement("") should be("")
-    reverseComplement("ACGT") should be("ACGT")
+    val _ = reverseComplement("") should be("")
+    val _ = reverseComplement("ACGT") should be("ACGT")
     reverseComplement("NTTGTATTTA") should be("TAAATACAAN")
   }
 
@@ -41,8 +41,8 @@ class SeqPackageTest extends AnyFlatSpec {
     forAll(barcode, barcode) { (x, y) =>
       val xydist = countMismatches(x, y)
       if (x != y) {
-        xydist should be > 0
-        countMismatches(x, x) should be(0)
+        val _ = xydist should be > 0
+        val _ = countMismatches(x, x) should be(0)
         countMismatches(y, y) should be(0)
       } else xydist should be(0)
     }
@@ -73,10 +73,10 @@ class SeqPackageTest extends AnyFlatSpec {
   }
 
   "nCount" should "return at most max Ns" in {
-    nCount("AAANAN".toCharArray, 0) should be(1)
-    nCount("AAANAN".toCharArray, 1) should be(1)
-    nCount("AAANAN".toCharArray, 2) should be(2)
-    nCount("AAANAN".toCharArray, 3) should be(2)
+    val _ = nCount("AAANAN".toCharArray, 0) should be(1)
+    val _ = nCount("AAANAN".toCharArray, 1) should be(1)
+    val _ = nCount("AAANAN".toCharArray, 2) should be(2)
+    val _ = nCount("AAANAN".toCharArray, 3) should be(2)
     nCount("TGNTA".toCharArray, 0) should be(1)
   }
 

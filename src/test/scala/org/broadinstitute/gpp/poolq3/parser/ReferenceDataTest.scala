@@ -89,7 +89,7 @@ class ReferenceDataTest extends AnyFlatSpec with TestResources {
   it should "read a CSV with empty IDs" in {
     val path = resourcePath("reference_empty_id.csv")
     val rd1 = ReferenceData(path)
-    rd1.mappings should be(Seq(ReferenceEntry("TTGAACCG", "EMPTY"), ReferenceEntry("GGCTTGCG", "")))
+    val _ = rd1.mappings should be(Seq(ReferenceEntry("TTGAACCG", "EMPTY"), ReferenceEntry("GGCTTGCG", "")))
     val rd2 = rd1.forColumnBarcodes(PoolQ2Dialect)
     rd2.mappings should be(
       Seq(ReferenceEntry("TTGAACCG", "EMPTY"), ReferenceEntry("GGCTTGCG", "Unlabeled Sample Barcodes"))

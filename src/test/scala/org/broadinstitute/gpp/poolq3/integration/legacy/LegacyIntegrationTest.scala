@@ -13,12 +13,12 @@ import org.broadinstitute.gpp.poolq3.testutil.contents
 import org.broadinstitute.gpp.poolq3.{PoolQ, PoolQConfig, PoolQInput, PoolQOutput, TestResources}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
-import org.scalatest.{Assertion => TestAssertion}
 
 class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
 
-  private[this] def filesSame(actual: Path, expected: Path): TestAssertion =
-    contents(actual) should be(contents(expected))
+  private[this] def filesSame(actual: Path, expected: Path): Unit = {
+    val _ = contents(actual) should be(contents(expected))
+  }
 
   /** Tests PoolQ end-to-end, using 10000 reads, 8 constructs, and 42 conditions. Compares the results to expected
     * results.

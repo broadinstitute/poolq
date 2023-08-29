@@ -94,26 +94,26 @@ class LongBarcodeMatchTest extends AnyFlatSpec {
     val ret = PoolQ.runProcess(barcodes, consumer)
     val state = ret.get.state
 
-    state.reads should be(9)
-    state.exactMatches should be(2)
-    state.matches should be(4)
+    val _ = state.reads should be(9)
+    val _ = state.exactMatches should be(2)
+    val _ = state.matches should be(4)
 
     val hist = state.known
 
     // these are all the matches
-    hist.count(
+    val _ = hist.count(
       (
         "TTTCTGTCATCCAAATACTCCACACGCAAATTTCCTTCCACTCGGATAAGATGCTGAGGAGGGGCCAGACCTAAGAGCAATCAGTGAGGAATCAGAGGCCTGGGGACCCTGGGCAACCAGCCCTGTCGTCTCTCCAGCCCCAGC",
         "AAAT"
       )
     ) should be(1)
-    hist.count(
+    val _ = hist.count(
       (
         "TTTCTGTCATCCAAATACTCCACACGCAAATTTCCTTCCACTCGGATAAGATGCTGAGGAGGGGCCAGACCTAAGAGCAATCAGTGAGGAATCAGAGGCCTGGGGACCCTGGGCAACCAGCCCTGTCGTCTCTCCAGCCCCAGC",
         "AAAA"
       )
     ) should be(1)
-    hist.count(
+    val _ = hist.count(
       (
         "TTTCTGTCATCCAAATACTCCACACGCAAATTTCCTTCCACTCGGATAAGATGCTGAGGAGGGGCCAGACCTAAGAGCAATCAGTGAGGAATCAGAGGCCTGGGGACCCTGGGCAACCAGCCCTGTCGTCTCTCCAGCCCCAGC",
         "CCCG"
