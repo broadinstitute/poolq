@@ -105,7 +105,7 @@ object UnexpectedSequenceWriter {
           val colBc = fields(1)
 
           // can't avoid the double hash lookup here without a big hassle
-          r.put(rowBc, r.getOrElseUpdate(rowBc, 0) + 1)
+          val _ = r.put(rowBc, r.getOrElseUpdate(rowBc, 0) + 1)
           h.putIfAbsent(rowBc, new Object2IntOpenHashMap[String]())
           h.get(rowBc).addTo(colBc, 1)
         }
@@ -120,7 +120,7 @@ object UnexpectedSequenceWriter {
   ): Unit = {
     val drop = r.toSeq.sortBy { case (_, count) => -count }.drop(n)
     drop.foreach { case (bc, _) =>
-      r.remove(bc)
+      val _ = r.remove(bc)
       h.remove(bc)
     }
   }
