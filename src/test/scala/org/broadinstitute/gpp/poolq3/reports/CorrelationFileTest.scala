@@ -80,7 +80,7 @@ class CorrelationFileTest extends AnyFlatSpec {
       val state = ret.get.state
 
       val normalizedCounts = LogNormalizedCountsWriter.logNormalizedCounts(state.known, rowReference, colReference)
-      CorrelationFileWriter.write(outputFile, normalizedCounts, rowReference, colReference)
+      val _ = CorrelationFileWriter.write(outputFile, normalizedCounts, rowReference, colReference)
 
       val expected =
         s"""\t$Condition1\t$Condition2\t$Condition3

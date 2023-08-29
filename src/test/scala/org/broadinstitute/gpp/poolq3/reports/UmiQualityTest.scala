@@ -49,7 +49,7 @@ class UmiQualityTest extends FunSuite with TestResources {
 
     val file = Files.createTempFile("umi-quality-", ".txt")
     try {
-      UmiQualityWriter.write(file, state)
+      val _ = UmiQualityWriter.write(file, state)
 
       // read the file, split into lines, drop the 1st header
       val reportContents = contents(file).split("\n", -1).drop(1)

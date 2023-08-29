@@ -13,10 +13,10 @@ class OpenHashMapHistogramTest extends FunSuite with ScalaCheckSuite {
   test("OpenHashMapHistogram should track frequencies") {
     val h = new OpenHashMapHistogram[String]
 
-    h.increment("AAAA")
-    h.increment("AAAA")
-    h.increment("AAAA")
-    h.increment("AAAA")
+    val _ = h.increment("AAAA")
+    val _ = h.increment("AAAA")
+    val _ = h.increment("AAAA")
+    val _ = h.increment("AAAA")
 
     assertEquals(h.count("AAAA"), 4)
     assertEquals(h.count("CCCC"), 0)

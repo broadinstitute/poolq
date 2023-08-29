@@ -41,7 +41,7 @@ class RunInfoWriterTest extends FunSuite {
         colBarcodePolicyStr = "FIXED@0",
         reportsDialect = PoolQ2Dialect
       )
-      RunInfoWriter.write(outputFile, config)
+      val _ = RunInfoWriter.write(outputFile, config)
 
       val expected =
         s"""PoolQ version: ${BuildInfo.version}

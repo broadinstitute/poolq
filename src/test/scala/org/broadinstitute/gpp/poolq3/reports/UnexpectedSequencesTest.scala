@@ -76,9 +76,9 @@ class UnexpectedSequencesTest extends AnyFlatSpec {
         new ScoringConsumer(rowReference, colReference, countAmbiguous = true, false, None, Some(cachePath), false)
 
       // run PoolQ and write the file
-      PoolQ.runProcess(barcodes, consumer)
+      val _ = PoolQ.runProcess(barcodes, consumer)
 
-      UnexpectedSequenceWriter.write(outputFile, cachePath, 100, colReference, Some(globalReference))
+      val _ = UnexpectedSequenceWriter.write(outputFile, cachePath, 100, colReference, Some(globalReference))
 
       val expected =
         s"""Sequence\tTotal\tAAAA\tAAAT\tCCCC\tCCCG\tPotential IDs

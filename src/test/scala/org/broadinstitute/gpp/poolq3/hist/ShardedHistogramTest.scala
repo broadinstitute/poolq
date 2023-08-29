@@ -14,13 +14,13 @@ class ShardedHistogramTest extends FunSuite with ScalaCheckSuite {
     val h = new BasicShardedHistogram[String, String](new OpenHashMapHistogram)
 
     // increment a few things
-    h.increment(None, "AAAA")
+    val _ = h.increment(None, "AAAA")
 
-    h.increment(Some("CCCC"), "AAAA")
-    h.increment(Some("CCCC"), "AAAA")
-    h.increment(Some("CCCT"), "AAAA")
+    val _ = h.increment(Some("CCCC"), "AAAA")
+    val _ = h.increment(Some("CCCC"), "AAAA")
+    val _ = h.increment(Some("CCCT"), "AAAA")
 
-    h.increment(Some("CCCT"), "TTTT")
+    val _ = h.increment(Some("CCCT"), "TTTT")
 
     // make sure the resulting histogram checks out
     assertEquals(h.shards, Set("CCCC", "CCCT"))

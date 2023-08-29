@@ -99,7 +99,7 @@ class CountsTest extends FunSuite {
       val ret = PoolQ.runProcess(barcodes, consumer)
       val state = ret.get.state
 
-      CountsWriter.write(outputFile, state.known, rowReference, colReference, PoolQ2Dialect)
+      val _ = CountsWriter.write(outputFile, state.known, rowReference, colReference, PoolQ2Dialect)
 
       val expected =
         s"""Construct Barcode\tConstruct IDs\t$Condition1\t$Condition2\t$Condition3
@@ -134,7 +134,7 @@ class CountsTest extends FunSuite {
         includeAmbiguous = false
       )
 
-      CountsWriter.write(outputFile, state.known, rowReference2, colReference, PoolQ2Dialect)
+      val _ = CountsWriter.write(outputFile, state.known, rowReference2, colReference, PoolQ2Dialect)
 
       val expected =
         s"""Construct Barcode\tConstruct IDs\t$Condition1\t$Condition2\t$Condition3
@@ -156,7 +156,7 @@ class CountsTest extends FunSuite {
       val ret = PoolQ.runProcess(barcodes, consumer)
       val state = ret.get.state
 
-      CountsWriter.write(outputFile, state.known, rowReference, colReference, GctDialect)
+      val _ = CountsWriter.write(outputFile, state.known, rowReference, colReference, GctDialect)
 
       val expected =
         s"""#1.2
@@ -212,17 +212,17 @@ class CountsTest extends FunSuite {
       new OpenHashMapHistogram
     )
 
-    state.known.increment(None, (brdn01, eh2))
-    state.known.increment(a01.some, (brdn01, eh1))
-    state.known.increment(a01.some, (brdn01, eh1))
-    state.known.increment(a01.some, (brdn01, eh2))
-    state.known.increment(e09.some, (brdn01, eh1))
+    val _ = state.known.increment(None, (brdn01, eh2))
+    val _ = state.known.increment(a01.some, (brdn01, eh1))
+    val _ = state.known.increment(a01.some, (brdn01, eh1))
+    val _ = state.known.increment(a01.some, (brdn01, eh2))
+    val _ = state.known.increment(e09.some, (brdn01, eh1))
 
-    state.known.increment(a03.some, (brdn02, eh1))
-    state.known.increment(a03.some, (brdn02, sea2))
+    val _ = state.known.increment(a03.some, (brdn02, eh1))
+    val _ = state.known.increment(a03.some, (brdn02, sea2))
 
-    state.known.increment(f02.some, (brdn03, sea1))
-    state.known.increment(a03.some, (brdn03, sea1))
+    val _ = state.known.increment(f02.some, (brdn03, sea1))
+    val _ = state.known.increment(a03.some, (brdn03, sea1))
 
     val aggregateOutputFile = Files.createTempFile("counts-file-test-umi-", ".txt")
 
@@ -238,7 +238,7 @@ class CountsTest extends FunSuite {
     }
 
     try {
-      CountsWriter.write(
+      val _ = CountsWriter.write(
         aggregateOutputFile,
         aggregateOutputFile.getParent.some,
         state.known,
