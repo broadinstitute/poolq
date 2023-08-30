@@ -42,7 +42,9 @@ final class ThreeFileBarcodeSource(
 
     final override def close(): Unit =
       try rowIterator.close()
-      finally colIterator.close()
+      finally
+        try revRowIterator.close()
+        finally colIterator.close()
 
   }
 
