@@ -5,6 +5,12 @@
  */
 package org.broadinstitute.gpp.poolq3.parser
 
+import java.nio.file.Path
+
+import scala.collection.mutable
+
+import org.broadinstitute.gpp.poolq3.types.Read
+
 abstract class CloseableIterable[A] extends Iterable[A] {
   override def iterator: CloseableIterator[A]
 }
@@ -18,6 +24,66 @@ object CloseableIterable {
       override def close(): Unit = {}
       override def hasNext: Boolean = underlying.hasNext
       override def next(): A = underlying.next()
+    }
+
+  }
+
+}
+
+abstract class DmuxedIterable extends CloseableIterable[Read] {
+
+  /** `Some(barcode)` or else `None` if unmatched */
+  def indexBarcode: Option[String]
+}
+
+object DmuxedIterable {
+
+  def apply(iterable: Iterable[(Option[String], Path)], parserFor: Path => CloseableIterator[Read]): DmuxedIterable =
+    new DmuxedIterableImpl(iterable, parserFor)
+
+  def apply(data: List[(Option[String], List[String])]): DmuxedIterable = {
+    val data2: List[(Option[String], List[Read])] = data.map { case (bco, seqs) =>
+      (bco, seqs.zipWithIndex.map { case (seq, i) => Read(i.toString, seq) })
+    }
+    new DmuxedIterableImpl(data2, CloseableIterator.ofList)
+  }
+
+  private class DmuxedIterableImpl[A](src: Iterable[(Option[String], A)], makeIterator: A => CloseableIterator[Read])
+      extends DmuxedIterable {
+
+    private val queue: mutable.Queue[(Option[String], A)] = mutable.Queue.from(src)
+
+    var current: CloseableIterator[Read] = _
+
+    var indexBarcode: Option[String] = _
+
+    override def iterator: CloseableIterator[Read] = new CloseableIterator[Read] {
+
+      override def hasNext: Boolean = {
+        var currentHasNext = if (current == null) false else current.hasNext
+        while (!currentHasNext && queue.nonEmpty) {
+          val head = queue.dequeue()
+          if (head != null) {
+            val old = current
+            indexBarcode = head._1
+            current = makeIterator(head._2)
+            if (old != null) {
+              old.close()
+            }
+            currentHasNext = current.hasNext
+          }
+        }
+        currentHasNext
+      }
+
+      override def next(): Read =
+        if (current == null) throw new NoSuchElementException
+        else current.next()
+
+      override def close(): Unit = {
+        Option(current).foreach(_.close())
+      }
+
     }
 
   }
