@@ -55,7 +55,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         ),
         unexpectedSequenceCacheDir = Some(unexpectedSequenceCacheDir.toJava.toPath),
         rowBarcodePolicyStr = "FIXED@16:20",
-        colBarcodePolicyStr = "FIXED@0",
+        colBarcodePolicyStr = Some("FIXED@0"),
         reportsDialect = PoolQ2Dialect
       )
 
@@ -98,7 +98,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         unexpectedSequenceCacheDir = Some(unexpectedSequenceCacheDir.toJava.toPath),
         removeUnexpectedSequenceCache = false,
         rowBarcodePolicyStr = "FIXED@16:20",
-        colBarcodePolicyStr = "FIXED@0",
+        colBarcodePolicyStr = Some("FIXED@0"),
         reportsDialect = PoolQ2Dialect
       )
 
@@ -148,7 +148,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         ),
         unexpectedSequenceCacheDir = Some(unexpectedSequenceCacheDir.toJava.toPath),
         rowBarcodePolicyStr = "FIXED@16:20",
-        colBarcodePolicyStr = "FIXED@0",
+        colBarcodePolicyStr = Some("FIXED@0"),
         reportsDialect = PoolQ2Dialect
       )
 
@@ -192,7 +192,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         ),
         unexpectedSequenceCacheDir = Some(unexpectedSequenceCacheDir.toJava.toPath),
         rowBarcodePolicyStr = "FIXED@16:20",
-        colBarcodePolicyStr = "FIXED@0",
+        colBarcodePolicyStr = Some("FIXED@0"),
         reportsDialect = PoolQ2Dialect
       )
 
@@ -238,7 +238,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         ),
         unexpectedSequenceCacheDir = Some(unexpectedSequenceCacheDir.toJava.toPath),
         rowBarcodePolicyStr = "PREFIX:ACCG@7:20",
-        colBarcodePolicyStr = "FIXED@0",
+        colBarcodePolicyStr = Some("FIXED@0"),
         reportsDialect = PoolQ2Dialect
       )
 
@@ -278,7 +278,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         ),
         unexpectedSequenceCacheDir = Some(unexpectedSequenceCacheDir.toJava.toPath),
         rowBarcodePolicyStr = "PREFIX:ACCG@7:19",
-        colBarcodePolicyStr = "FIXED@0",
+        colBarcodePolicyStr = Some("FIXED@0"),
         reportsDialect = PoolQ2Dialect
       )
 
@@ -321,7 +321,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         ),
         unexpectedSequenceCacheDir = Some(unexpectedSequenceCacheDir.toJava.toPath),
         rowBarcodePolicyStr = "FIXED@16",
-        colBarcodePolicyStr = "FIXED@0",
+        colBarcodePolicyStr = Some("FIXED@0"),
         reportsDialect = PoolQ2Dialect
       )
 

@@ -73,7 +73,7 @@ final case class PoolQConfig(
   countAmbiguous: Boolean = false,
   rowBarcodePolicyStr: String = "",
   reverseRowBarcodePolicyStr: Option[String] = None,
-  colBarcodePolicyStr: String = "",
+  colBarcodePolicyStr: Option[String] = None,
   umiBarcodePolicyStr: Option[String] = None,
   skipUnexpectedSequenceReport: Boolean = false,
   unexpectedSequenceCacheDir: Option[Path] = None,
@@ -197,7 +197,7 @@ object PoolQConfig {
         }
 
         val _ = opt[String]("col-barcode-policy").valueName("<barcode-policy>").action { (p, c) =>
-          c.copy(colBarcodePolicyStr = p)
+          c.copy(colBarcodePolicyStr = Some(p))
         }
 
         val _ = opt[String]("umi-barcode-policy").valueName("<barcode-policy>").action { (p, c) =>
@@ -339,7 +339,7 @@ object PoolQConfig {
     }
     args += (("row-barcode-policy", config.rowBarcodePolicyStr))
     config.reverseRowBarcodePolicyStr.foreach(p => args += (("rev-row-barcode-policy", p)))
-    args += (("col-barcode-policy", config.colBarcodePolicyStr))
+    config.colBarcodePolicyStr.foreach(pol => args += (("col-barcode-policy", pol)))
     umiInfo.map(_._2).foreach(str => args += (("umi-barcode-policy", str)))
 
     // deal with the unexpected sequence options

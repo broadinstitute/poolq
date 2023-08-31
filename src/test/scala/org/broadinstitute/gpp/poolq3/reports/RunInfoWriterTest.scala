@@ -38,7 +38,7 @@ class RunInfoWriterTest extends FunSuite {
         ),
         rowBarcodePolicyStr = "PREFIX:CACCG@18",
         reverseRowBarcodePolicyStr = Some("PREFIX:GCCAC@13"),
-        colBarcodePolicyStr = "FIXED@0",
+        colBarcodePolicyStr = Some("FIXED@0"),
         reportsDialect = PoolQ2Dialect
       )
       val _ = RunInfoWriter.write(outputFile, config)

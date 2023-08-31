@@ -50,7 +50,7 @@ class UnlabeledConditionsTest extends CatsEffectSuite with TestResources {
         output = poolQOutput,
         unexpectedSequenceCacheDir = None,
         rowBarcodePolicyStr = "FIXED@3",
-        colBarcodePolicyStr = "FIXED@0",
+        colBarcodePolicyStr = Some("FIXED@0"),
         reportsDialect = PoolQ2Dialect
       )
 
