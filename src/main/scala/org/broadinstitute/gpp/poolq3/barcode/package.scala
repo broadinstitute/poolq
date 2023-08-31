@@ -10,7 +10,14 @@ import java.nio.file.Path
 import scala.collection.mutable
 
 import org.broadinstitute.gpp.poolq3.ReadsSource
-import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, CloseableIterator, FastqParser, SamParser, TextParser}
+import org.broadinstitute.gpp.poolq3.parser.{
+  CloseableIterable,
+  CloseableIterator,
+  DmuxedIterable,
+  FastqParser,
+  SamParser,
+  TextParser
+}
 import org.broadinstitute.gpp.poolq3.types.{BamType, FastqType, Read, ReadsFileType, SamType, TextType}
 
 package object barcode {
@@ -45,6 +52,21 @@ package object barcode {
         )
       case (ReadsSource.SelfContained(paths), None, Some(colBarcodePolicy)) =>
         new SingleFileBarcodeSource(parserFor(paths.toList), rowBarcodePolicy, colBarcodePolicy, umiBarcodePolicyOpt)
+      case (ReadsSource.Dmuxed(read1), _, _) =>
+        new DmuxedBarcodeSource(
+          DmuxedIterable(read1.toList, parserFor(_).iterator),
+          rowBarcodePolicy,
+          umiBarcodePolicyOpt
+        )
+      case (ReadsSource.DmuxedPairedEnd(read1, read2), Some(revRowBarcodePolicy), _) =>
+        new DmuxedPairedEndBarcodeSource(
+          DmuxedIterable(read1.toList, parserFor(_).iterator),
+          DmuxedIterable(read2.toList, parserFor(_).iterator),
+          rowBarcodePolicy,
+          revRowBarcodePolicy,
+          umiBarcodePolicyOpt,
+          config.readIdCheckPolicy
+        )
       case _ =>
         throw new IllegalArgumentException("Incompatible reads and barcode policy settings")
     }
