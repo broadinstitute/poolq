@@ -45,7 +45,7 @@ class UnlabeledConditionsTest extends CatsEffectSuite with TestResources {
         input = PoolQInput(
           rowReference = resourcePath("reference.csv"),
           colReference = resourcePath("unlabeled-conditions.csv"),
-          reads = Some(resourcePath("reads.fastq"))
+          reads = Some((None, resourcePath("reads.fastq")))
         ),
         output = poolQOutput,
         unexpectedSequenceCacheDir = None,

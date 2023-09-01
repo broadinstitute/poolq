@@ -215,7 +215,7 @@ object PoolQ {
     rowReferenceData: ReferenceData,
     rowBarcodePolicyStr: String,
     reverseRowBarcodePolicyStr: Option[String],
-    reverseRowReads: Option[Path],
+    reverseRowReads: Option[(Option[String], Path)],
     skipShortReads: Boolean
   ): (BarcodePolicy, Option[BarcodePolicy], Int) =
     (reverseRowBarcodePolicyStr, reverseRowReads)
