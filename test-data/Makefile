@@ -197,3 +197,18 @@ test-demultiplexed:
      diff lognormalized-counts.txt ../../test-data/lognormalized-counts.txt && \
      diff barcode-counts.txt ../../test-data/barcode-counts.txt && \
      diff correlation.txt ../../test-data/correlation.txt)
+
+test-demultiplexed-paired-end: wd = $(test-output-dir)/demultiplexed-paired-end
+test-demultiplexed-paired-end:
+	@rm -rf $(wd)
+	@mkdir -p $(wd)
+	(cd $(wd); java $(jvm-args) -jar $(poolq-jar) \
+	--compat \
+	--col-reference ../../test-data/demultiplexed-paired-end/conditions.csv \
+	--row-reference ../../test-data/demultiplexed-paired-end/reference.csv \
+	--demultiplexed \
+	--row-reads AGAATGAG:../../test-data/demultiplexed-paired-end/AGAATGAG.1.construct.fastq,ATCCGTCC:../../test-data/demultiplexed-paired-end/ATCCGTCC.1.construct.fastq,CAGGCATA:../../test-data/demultiplexed-paired-end/CAGGCATA.1.construct.fastq,CGTCTTGG:../../test-data/demultiplexed-paired-end/CGTCTTGG.1.construct.fastq,GAACAAAG:../../test-data/demultiplexed-paired-end/GAACAAAG.1.construct.fastq,TCTGGACT:../../test-data/demultiplexed-paired-end/TCTGGACT.1.construct.fastq \
+	--rev-row-reads AGAATGAG:../../test-data/demultiplexed-paired-end/AGAATGAG.2.construct.fastq,ATCCGTCC:../../test-data/demultiplexed-paired-end/ATCCGTCC.2.construct.fastq,CAGGCATA:../../test-data/demultiplexed-paired-end/CAGGCATA.2.construct.fastq,CGTCTTGG:../../test-data/demultiplexed-paired-end/CGTCTTGG.2.construct.fastq,GAACAAAG:../../test-data/demultiplexed-paired-end/GAACAAAG.2.construct.fastq,TCTGGACT:../../test-data/demultiplexed-paired-end/TCTGGACT.2.construct.fastq \
+	--row-barcode-policy PREFIX:CACCG@11 \
+	--rev-row-barcode-policy PREFIX:CGGTG@11)
+	(cd $(wd); diff counts.txt ../../test-data/paired-end/expected-counts.txt)
