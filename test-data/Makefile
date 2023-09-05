@@ -163,7 +163,7 @@ test-paired-end:
 	--row-barcode-policy PREFIX:CACCG@11 \
 	--rev-row-barcode-policy PREFIX:CGGTG@11 \
 	--col-barcode-policy FIXED@0)
-	(cd $(wd); diff counts.txt ../../test-data/paired-end/expected-counts.txt)	
+	(cd $(wd); diff counts.txt ../../test-data/paired-end/expected-counts.txt)
 
 test-multiple-inputs: wd = $(test-output-dir)/multiple-inputs
 test-multiple-inputs:
@@ -177,6 +177,22 @@ test-multiple-inputs:
 	--col-reads ../../test-data/multiple-inputs/scenario4.barcode_1.fastq,../../test-data/multiple-inputs/scenario4.barcode_2.fastq,../../test-data/multiple-inputs/scenario4.barcode_3.fastq,../../test-data/multiple-inputs/scenario4.barcode_4.fastq \
 	--row-barcode-policy PREFIX:CACCG@18 \
 	--col-barcode-policy FIXED@0)
+	(cd $(wd); diff counts.txt ../../test-data/expected-counts.txt && \
+     diff lognormalized-counts.txt ../../test-data/lognormalized-counts.txt && \
+     diff barcode-counts.txt ../../test-data/barcode-counts.txt && \
+     diff correlation.txt ../../test-data/correlation.txt)
+
+test-demultiplexed: wd = $(test-output-dir)/demultiplexed
+test-demultiplexed:
+	@rm -rf $(wd)
+	@mkdir -p $(wd)
+	(cd $(wd); java $(jvm-args) -jar $(poolq-jar) \
+	--compat \
+	--col-reference $(conditions) \
+	--row-reference $(reference) \
+	--demultiplexed \
+	--reads TTGAACCG:../../test-data/demultiplexed/TTGAACCG.construct.fastq,CCGAGTTA:../../test-data/demultiplexed/CCGAGTTA.construct.fastq,TTGAGTAT:../../test-data/demultiplexed/TTGAGTAT.construct.fastq,CCTCCAAT:../../test-data/demultiplexed/CCTCCAAT.construct.fastq,GGTCACCG:../../test-data/demultiplexed/GGTCACCG.construct.fastq,TTGACAAT:../../test-data/demultiplexed/TTGACAAT.construct.fastq,AATCCAAT:../../test-data/demultiplexed/AATCCAAT.construct.fastq,TTCTCATA:../../test-data/demultiplexed/TTCTCATA.construct.fastq,AATCCACG:../../test-data/demultiplexed/AATCCACG.construct.fastq,AATCGTGC:../../test-data/demultiplexed/AATCGTGC.construct.fastq,AAGAACTA:../../test-data/demultiplexed/AAGAACTA.construct.fastq,CCAGTGAT:../../test-data/demultiplexed/CCAGTGAT.construct.fastq,GGTCGTGC:../../test-data/demultiplexed/GGTCGTGC.construct.fastq,TTAGACCG:../../test-data/demultiplexed/TTAGACCG.construct.fastq,GGTCCACG:../../test-data/demultiplexed/GGTCCACG.construct.fastq,CCGAACTA:../../test-data/demultiplexed/CCGAACTA.construct.fastq,AACTCACG:../../test-data/demultiplexed/AACTCACG.construct.fastq,AATCACTA:../../test-data/demultiplexed/AATCACTA.construct.fastq,GGTCCATA:../../test-data/demultiplexed/GGTCCATA.construct.fastq,GGTCTGCG:../../test-data/demultiplexed/GGTCTGCG.construct.fastq,CCAGTGGC:../../test-data/demultiplexed/CCAGTGGC.construct.fastq,AACTTGCG:../../test-data/demultiplexed/AACTTGCG.construct.fastq \
+	--row-barcode-policy PREFIX:CACCG@18)
 	(cd $(wd); diff counts.txt ../../test-data/expected-counts.txt && \
      diff lognormalized-counts.txt ../../test-data/lognormalized-counts.txt && \
      diff barcode-counts.txt ../../test-data/barcode-counts.txt && \
