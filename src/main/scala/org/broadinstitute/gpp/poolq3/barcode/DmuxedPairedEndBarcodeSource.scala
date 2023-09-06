@@ -17,7 +17,9 @@ class DmuxedPairedEndBarcodeSource(
   readIdCheckPolicy: ReadIdCheckPolicy
 ) extends CloseableIterable[Barcodes] {
 
-  private def colBarcodeOpt = rowParser.indexBarcode.map(bc => FoundBarcode(bc.toCharArray, 0))
+  // the index barcode _is_ the column barcode; we get it from the row parser
+  // because the demultiplexed file is associated with the index barcode
+  private def colBarcodeOpt = rowParser.indexBarcode
 
   private[this] class BarcodeIterator(rowIterator: CloseableIterator[Read], revRowIterator: CloseableIterator[Read])
       extends CloseableIterator[Barcodes] {

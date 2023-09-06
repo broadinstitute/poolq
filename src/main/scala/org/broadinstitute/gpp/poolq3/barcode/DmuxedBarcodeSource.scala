@@ -11,7 +11,7 @@ import org.broadinstitute.gpp.poolq3.types.Read
 final class DmuxedBarcodeSource(parser: DmuxedIterable, rowPolicy: BarcodePolicy, umiPolicyOpt: Option[BarcodePolicy])
     extends CloseableIterable[Barcodes] {
 
-  private def colBarcodeOpt = parser.indexBarcode.map(bc => FoundBarcode(bc.toCharArray, 0))
+  private def colBarcodeOpt = parser.indexBarcode
 
   private[this] class BarcodeIterator(iterator: CloseableIterator[Read]) extends CloseableIterator[Barcodes] {
     override def hasNext: Boolean = iterator.hasNext

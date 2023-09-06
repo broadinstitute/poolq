@@ -9,6 +9,7 @@ import java.nio.file.Path
 
 import scala.collection.mutable
 
+import org.broadinstitute.gpp.poolq3.barcode.FoundBarcode
 import org.broadinstitute.gpp.poolq3.types.Read
 
 abstract class CloseableIterable[A] extends Iterable[A] {
@@ -33,7 +34,11 @@ object CloseableIterable {
 abstract class DmuxedIterable extends CloseableIterable[Read] {
 
   /** `Some(barcode)` or else `None` if unmatched */
-  def indexBarcode: Option[String]
+  // hack: this is sort of an encapsulation violation because ordinarily the
+  // iterable is not supposed to know about barcodes, but the demultiplexed
+  // case inherently crosses those lines and defining this here avoids recomputing
+  // the same value potentially millions of times in a row
+  def indexBarcode: Option[FoundBarcode]
 }
 
 object DmuxedIterable {
@@ -55,7 +60,7 @@ object DmuxedIterable {
 
     var current: CloseableIterator[Read] = _
 
-    var indexBarcode: Option[String] = _
+    var indexBarcode: Option[FoundBarcode] = _
 
     override def iterator: CloseableIterator[Read] = new CloseableIterator[Read] {
 
@@ -65,7 +70,7 @@ object DmuxedIterable {
           val head = queue.dequeue()
           if (head != null) {
             val old = current
-            indexBarcode = head._1
+            indexBarcode = head._1.map(bc => FoundBarcode(bc.toCharArray, 0))
             current = makeIterator(head._2)
             if (old != null) {
               old.close()
