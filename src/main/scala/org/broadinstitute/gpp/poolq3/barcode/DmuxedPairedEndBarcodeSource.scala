@@ -5,50 +5,44 @@
  */
 package org.broadinstitute.gpp.poolq3.barcode
 
-import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, CloseableIterator}
+import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, CloseableIterator, DmuxedIterable}
 import org.broadinstitute.gpp.poolq3.types.{Read, ReadIdCheckPolicy}
 
-final class ThreeFileBarcodeSource(
-  rowParser: CloseableIterable[Read],
-  revRowParser: CloseableIterable[Read],
-  colParser: CloseableIterable[Read],
+class DmuxedPairedEndBarcodeSource(
+  rowParser: DmuxedIterable,
+  revRowParser: DmuxedIterable,
   rowPolicy: BarcodePolicy,
   revRowPolicy: BarcodePolicy,
-  columnPolicy: BarcodePolicy,
   umiPolicyOpt: Option[BarcodePolicy],
   readIdCheckPolicy: ReadIdCheckPolicy
 ) extends CloseableIterable[Barcodes] {
 
-  private[this] class BarcodeIterator(
-    rowIterator: CloseableIterator[Read],
-    revRowIterator: CloseableIterator[Read],
-    colIterator: CloseableIterator[Read]
-  ) extends CloseableIterator[Barcodes] {
+  // the index barcode _is_ the column barcode; we get it from the row parser
+  // because the demultiplexed file is associated with the index barcode
+  private def colBarcodeOpt = rowParser.indexBarcode
 
-    final override def hasNext: Boolean = rowIterator.hasNext && revRowIterator.hasNext && colIterator.hasNext
+  private[this] class BarcodeIterator(rowIterator: CloseableIterator[Read], revRowIterator: CloseableIterator[Read])
+      extends CloseableIterator[Barcodes] {
+
+    final override def hasNext: Boolean = rowIterator.hasNext && revRowIterator.hasNext
 
     final override def next(): Barcodes = {
       val nextRow = rowIterator.next()
       val nextRevRow = revRowIterator.next()
-      val nextCol = colIterator.next()
       readIdCheckPolicy.check(nextRow, nextRevRow)
-      readIdCheckPolicy.check(nextRow, nextCol)
       val rowBarcodeOpt = rowPolicy.find(nextRow)
       val revRowBarcodeOpt = revRowPolicy.find(nextRevRow)
-      val colBarcodeOpt = columnPolicy.find(nextCol)
       val umiBarcodeOpt = umiPolicyOpt.flatMap(_.find(nextRow))
       Barcodes(rowBarcodeOpt, revRowBarcodeOpt, colBarcodeOpt, umiBarcodeOpt)
     }
 
     final override def close(): Unit =
       try rowIterator.close()
-      finally
-        try revRowIterator.close()
-        finally colIterator.close()
+      finally revRowIterator.close()
 
   }
 
   override def iterator: CloseableIterator[Barcodes] =
-    new BarcodeIterator(rowParser.iterator, revRowParser.iterator, colParser.iterator)
+    new BarcodeIterator(rowParser.iterator, revRowParser.iterator)
 
 }

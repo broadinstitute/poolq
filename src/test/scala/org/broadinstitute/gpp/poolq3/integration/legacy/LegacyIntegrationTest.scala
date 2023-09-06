@@ -42,7 +42,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         input = PoolQInput(
           rowReference = resourcePath("reference-8.csv"),
           colReference = resourcePath("conditions-42.csv"),
-          reads = Some(resourcePath("reads-10000.fastq"))
+          reads = Some((None, resourcePath("reads-10000.fastq")))
         ),
         output = PoolQOutput(
           countsFile = countsFile.toJava.toPath,
@@ -55,7 +55,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         ),
         unexpectedSequenceCacheDir = Some(unexpectedSequenceCacheDir.toJava.toPath),
         rowBarcodePolicyStr = "FIXED@16:20",
-        colBarcodePolicyStr = "FIXED@0",
+        colBarcodePolicyStr = Some("FIXED@0"),
         reportsDialect = PoolQ2Dialect
       )
 
@@ -84,7 +84,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         input = PoolQInput(
           rowReference = resourcePath("reference-8.csv"),
           colReference = resourcePath("conditions-42.csv"),
-          reads = Some(resourcePath("reads-10000.fastq"))
+          reads = Some((None, resourcePath("reads-10000.fastq")))
         ),
         output = PoolQOutput(
           countsFile = countsFile.toJava.toPath,
@@ -98,7 +98,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         unexpectedSequenceCacheDir = Some(unexpectedSequenceCacheDir.toJava.toPath),
         removeUnexpectedSequenceCache = false,
         rowBarcodePolicyStr = "FIXED@16:20",
-        colBarcodePolicyStr = "FIXED@0",
+        colBarcodePolicyStr = Some("FIXED@0"),
         reportsDialect = PoolQ2Dialect
       )
 
@@ -135,7 +135,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         input = PoolQInput(
           rowReference = resourcePath("reference-8.csv"),
           colReference = resourcePath("conditions-42.csv"),
-          reads = Some(resourcePath("long-reads.fastq"))
+          reads = Some((None, resourcePath("long-reads.fastq")))
         ),
         output = PoolQOutput(
           countsFile = countsFile.toJava.toPath,
@@ -148,7 +148,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         ),
         unexpectedSequenceCacheDir = Some(unexpectedSequenceCacheDir.toJava.toPath),
         rowBarcodePolicyStr = "FIXED@16:20",
-        colBarcodePolicyStr = "FIXED@0",
+        colBarcodePolicyStr = Some("FIXED@0"),
         reportsDialect = PoolQ2Dialect
       )
 
@@ -179,7 +179,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         input = PoolQInput(
           rowReference = resourcePath("reference-8.csv"),
           colReference = resourcePath("overlapping-barcode-conditions.csv"),
-          reads = Some(resourcePath("long-reads.fastq"))
+          reads = Some((None, resourcePath("long-reads.fastq")))
         ),
         output = PoolQOutput(
           countsFile = countsFile.toJava.toPath,
@@ -192,7 +192,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         ),
         unexpectedSequenceCacheDir = Some(unexpectedSequenceCacheDir.toJava.toPath),
         rowBarcodePolicyStr = "FIXED@16:20",
-        colBarcodePolicyStr = "FIXED@0",
+        colBarcodePolicyStr = Some("FIXED@0"),
         reportsDialect = PoolQ2Dialect
       )
 
@@ -224,7 +224,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         input = PoolQInput(
           rowReference = resourcePath("next500-reference.txt"),
           colReference = resourcePath("next500-conditions.txt"),
-          rowReads = Some(resourcePath("next500-construct.fastq")),
+          rowReads = Some((None, resourcePath("next500-construct.fastq"))),
           colReads = Some(resourcePath("next500-dmux.fastq"))
         ),
         output = PoolQOutput(
@@ -238,7 +238,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         ),
         unexpectedSequenceCacheDir = Some(unexpectedSequenceCacheDir.toJava.toPath),
         rowBarcodePolicyStr = "PREFIX:ACCG@7:20",
-        colBarcodePolicyStr = "FIXED@0",
+        colBarcodePolicyStr = Some("FIXED@0"),
         reportsDialect = PoolQ2Dialect
       )
 
@@ -264,7 +264,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         input = PoolQInput(
           rowReference = resourcePath("next500-reference.txt"),
           colReference = resourcePath("next500-conditions.txt"),
-          rowReads = Some(resourcePath("next500-construct-short.fastq")),
+          rowReads = Some((None, resourcePath("next500-construct-short.fastq"))),
           colReads = Some(resourcePath("next500-dmux.fastq"))
         ),
         output = PoolQOutput(
@@ -278,7 +278,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         ),
         unexpectedSequenceCacheDir = Some(unexpectedSequenceCacheDir.toJava.toPath),
         rowBarcodePolicyStr = "PREFIX:ACCG@7:19",
-        colBarcodePolicyStr = "FIXED@0",
+        colBarcodePolicyStr = Some("FIXED@0"),
         reportsDialect = PoolQ2Dialect
       )
 
@@ -308,7 +308,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         input = PoolQInput(
           rowReference = resourcePath("reference-9.csv"),
           colReference = resourcePath("conditions-42.csv"),
-          reads = Some(resourcePath("long-reads.fastq"))
+          reads = Some((None, resourcePath("long-reads.fastq")))
         ),
         output = PoolQOutput(
           countsFile = countsFile.toJava.toPath,
@@ -321,7 +321,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
         ),
         unexpectedSequenceCacheDir = Some(unexpectedSequenceCacheDir.toJava.toPath),
         rowBarcodePolicyStr = "FIXED@16",
-        colBarcodePolicyStr = "FIXED@0",
+        colBarcodePolicyStr = Some("FIXED@0"),
         reportsDialect = PoolQ2Dialect
       )
 

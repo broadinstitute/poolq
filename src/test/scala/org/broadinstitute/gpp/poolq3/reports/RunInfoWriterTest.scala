@@ -23,8 +23,8 @@ class RunInfoWriterTest extends FunSuite {
           rowReference = Paths.get("/gpp/reference/reference_20191115.csv"),
           colReference = Paths.get("/gpp/experiments/conditions_20191115_USE_THIS_ONE.csv"),
           globalReference = Some(Paths.get("/gpp/reference/every_sgrna_ever.csv")),
-          rowReads = Some(Paths.get("/sequencing/walkoff/5/fastq5.fastq.gz")),
-          reverseRowReads = Some(Paths.get("/sequencing/walkoff/5/fastq5.1.fastq.gz")),
+          rowReads = Some((None, Paths.get("/sequencing/walkoff/5/fastq5.fastq.gz"))),
+          reverseRowReads = Some((None, Paths.get("/sequencing/walkoff/5/fastq5.1.fastq.gz"))),
           colReads = Some(Paths.get("/sequencing/walkoff/5/fastq5_barcode.fastq.gz"))
         ),
         output = PoolQOutput(
@@ -38,7 +38,7 @@ class RunInfoWriterTest extends FunSuite {
         ),
         rowBarcodePolicyStr = "PREFIX:CACCG@18",
         reverseRowBarcodePolicyStr = Some("PREFIX:GCCAC@13"),
-        colBarcodePolicyStr = "FIXED@0",
+        colBarcodePolicyStr = Some("FIXED@0"),
         reportsDialect = PoolQ2Dialect
       )
       val _ = RunInfoWriter.write(outputFile, config)

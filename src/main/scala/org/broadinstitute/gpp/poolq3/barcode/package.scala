@@ -10,7 +10,14 @@ import java.nio.file.Path
 import scala.collection.mutable
 
 import org.broadinstitute.gpp.poolq3.ReadsSource
-import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, CloseableIterator, FastqParser, SamParser, TextParser}
+import org.broadinstitute.gpp.poolq3.parser.{
+  CloseableIterable,
+  CloseableIterator,
+  DmuxedIterable,
+  FastqParser,
+  SamParser,
+  TextParser
+}
 import org.broadinstitute.gpp.poolq3.types.{BamType, FastqType, Read, ReadsFileType, SamType, TextType}
 
 package object barcode {
@@ -19,11 +26,11 @@ package object barcode {
     config: PoolQInput,
     rowBarcodePolicy: BarcodePolicy,
     revRowBarcodePolicyOpt: Option[BarcodePolicy],
-    colBarcodePolicy: BarcodePolicy,
+    colBarcodePolicyOpt: Option[BarcodePolicy],
     umiBarcodePolicyOpt: Option[BarcodePolicy]
   ): CloseableIterable[Barcodes] =
-    (config.readsSource, revRowBarcodePolicyOpt) match {
-      case (ReadsSource.Split(index, forward), None) =>
+    (config.readsSource, revRowBarcodePolicyOpt, colBarcodePolicyOpt) match {
+      case (ReadsSource.Split(index, forward), None, Some(colBarcodePolicy)) =>
         new TwoFileBarcodeSource(
           parserFor(forward.toList),
           parserFor(index.toList),
@@ -32,7 +39,7 @@ package object barcode {
           umiBarcodePolicyOpt,
           config.readIdCheckPolicy
         )
-      case (ReadsSource.PairedEnd(index, forward, reverse), Some(revRowBarcodePolicy)) =>
+      case (ReadsSource.PairedEnd(index, forward, reverse), Some(revRowBarcodePolicy), Some(colBarcodePolicy)) =>
         new ThreeFileBarcodeSource(
           parserFor(forward.toList),
           parserFor(reverse.toList),
@@ -43,8 +50,23 @@ package object barcode {
           umiBarcodePolicyOpt,
           config.readIdCheckPolicy
         )
-      case (ReadsSource.SelfContained(paths), None) =>
+      case (ReadsSource.SelfContained(paths), None, Some(colBarcodePolicy)) =>
         new SingleFileBarcodeSource(parserFor(paths.toList), rowBarcodePolicy, colBarcodePolicy, umiBarcodePolicyOpt)
+      case (ReadsSource.Dmuxed(read1), _, _) =>
+        new DmuxedBarcodeSource(
+          DmuxedIterable(read1.toList, parserFor(_).iterator),
+          rowBarcodePolicy,
+          umiBarcodePolicyOpt
+        )
+      case (ReadsSource.DmuxedPairedEnd(read1, read2), Some(revRowBarcodePolicy), _) =>
+        new DmuxedPairedEndBarcodeSource(
+          DmuxedIterable(read1.toList, parserFor(_).iterator),
+          DmuxedIterable(read2.toList, parserFor(_).iterator),
+          rowBarcodePolicy,
+          revRowBarcodePolicy,
+          umiBarcodePolicyOpt,
+          config.readIdCheckPolicy
+        )
       case _ =>
         throw new IllegalArgumentException("Incompatible reads and barcode policy settings")
     }

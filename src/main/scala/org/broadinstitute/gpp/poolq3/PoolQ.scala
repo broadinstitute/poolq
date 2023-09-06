@@ -82,8 +82,8 @@ object PoolQ {
         config.skipShortReads
       )
 
-    val colBarcodePolicy =
-      BarcodePolicy(config.colBarcodePolicyStr, colReferenceData.barcodeLength, config.skipShortReads)
+    val colBarcodePolicyOpt =
+      config.colBarcodePolicyStr.map(pol => BarcodePolicy(pol, colReferenceData.barcodeLength, config.skipShortReads))
 
     val umiInfo = (config.input.umiReference, config.umiBarcodePolicyStr).mapN { (r, p) =>
       log.info("Reading UMI reference data")
@@ -102,10 +102,11 @@ object PoolQ {
       )
 
     log.info("Building column reference")
+    val colBarcodeLength = colBarcodePolicyOpt.map(_.length).getOrElse(colReferenceData.barcodeLength)
     val colReference: Reference =
       referenceFor(
         config.colMatchFn,
-        ReferenceData.truncator(colBarcodePolicy.length),
+        ReferenceData.truncator(colBarcodeLength),
         config.countAmbiguous,
         colReferenceData.mappings
       )
@@ -116,7 +117,7 @@ object PoolQ {
     }
 
     val barcodes: CloseableIterable[Barcodes] =
-      barcodeSource(config.input, rowBarcodePolicy, revRowBarcodePolicyOpt, colBarcodePolicy, umiInfo.map(_._2))
+      barcodeSource(config.input, rowBarcodePolicy, revRowBarcodePolicyOpt, colBarcodePolicyOpt, umiInfo.map(_._2))
 
     lazy val unexpectedSequenceCacheDir: Option[Path] =
       if (config.skipUnexpectedSequenceReport) None
@@ -214,7 +215,7 @@ object PoolQ {
     rowReferenceData: ReferenceData,
     rowBarcodePolicyStr: String,
     reverseRowBarcodePolicyStr: Option[String],
-    reverseRowReads: Option[Path],
+    reverseRowReads: Option[(Option[String], Path)],
     skipShortReads: Boolean
   ): (BarcodePolicy, Option[BarcodePolicy], Int) =
     (reverseRowBarcodePolicyStr, reverseRowReads)

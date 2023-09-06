@@ -16,7 +16,7 @@ class PoolQTest extends FunSuite {
     val rd = new ReferenceData(List(ReferenceEntry("AAAA;CCCC", "a sea")))
 
     val (rowPol, revPolOpt, len) =
-      PoolQ.makeRowBarcodePolicy(rd, "PREFIX:CACCG@11", Some("PREFIX:CACCG@11"), Some(Paths.get(".")), false)
+      PoolQ.makeRowBarcodePolicy(rd, "PREFIX:CACCG@11", Some("PREFIX:CACCG@11"), Some(None -> Paths.get(".")), false)
 
     assertEquals(4, rowPol.length)
     assertEquals(len, 8)

@@ -16,5 +16,9 @@ object ReadsSource {
   final case class SelfContained(paths: Nel[Path]) extends ReadsSource
   final case class Split(index: Nel[Path], forward: Nel[Path]) extends ReadsSource
   final case class PairedEnd(index: Nel[Path], forward: Nel[Path], reverse: Nel[Path]) extends ReadsSource
+  final case class Dmuxed(read1: Nel[(Option[String], Path)]) extends ReadsSource
+
+  final case class DmuxedPairedEnd(read1: Nel[(Option[String], Path)], read2: Nel[(Option[String], Path)])
+      extends ReadsSource
 
 }
