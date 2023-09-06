@@ -10,9 +10,9 @@ test-output-dir := ../test-output
 poolq-jar := $(if $(wildcard ../poolq3.jar),../..,../../target/bin)/poolq3.jar
 
 # run integration tests
-.PHONY: all clean test-scenario-1 test-scenario-2 test-scenario-3 test-scenario-4 test-scenario-5 test-scenario-6 test-long-template test-umi test-paired-end test-multiple-inputs
+.PHONY: all clean test-scenario-1 test-scenario-2 test-scenario-3 test-scenario-4 test-scenario-5 test-scenario-6 test-long-template test-umi test-paired-end test-multiple-inputs test-demultiplexed test-demultiplexed-paired-end
 
-all: test-scenario-1 test-scenario-2 test-scenario-3 test-scenario-4 test-scenario-5 test-scenario-6 test-long-template test-umi test-paired-end test-multiple-inputs
+all: test-scenario-1 test-scenario-2 test-scenario-3 test-scenario-4 test-scenario-5 test-scenario-6 test-long-template test-umi test-paired-end test-multiple-inputs test-demultiplexed test-demultiplexed-paired-end
 
 clean:
 	rm -rf test-output
