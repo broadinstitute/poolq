@@ -175,7 +175,7 @@ object PoolQConfig {
         val _ = opt[List[(Option[String], Path)]]("row-reads")
           .valueName("<files>")
           .action { case (ps, c) => c.copy(input = c.input.copy(rowReads = ps.headOption, addlRowReads = ps.drop(1))) }
-          .text("required if reads are split between two files")
+          .text("required if reads are split between two files or for demultiplexed data")
           .validate(_.view.map(_._2).toList.traverse_(existsAndIsReadable))
 
         val _ = opt[List[(Option[String], Path)]]("rev-row-reads")
