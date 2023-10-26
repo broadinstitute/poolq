@@ -587,6 +587,8 @@ You can also test them individually by running:
     % (cd test-data; make test-scenario6)
     % (cd test-data; make test-long-template)
     % (cd test-data; make test-paired-end)
+    % (cd test-data; make test-demultiplexed)
+    % (cd test-data; make test-demultiplexed-paired-end)
 
 ## Recommended JVM Settings
 
@@ -632,7 +634,7 @@ command-line options:
       --col-reference <file>   reference file for column barcodes (i.e., conditions)
       --umi-reference <file>
       --global-reference <file>
-      --row-reads <files>      required if reads are split between two files
+      --row-reads <files>      required if reads are split between two files or for demultiplexed data
       --rev-row-reads <files>  required for processing paired-end sequencing data
       --col-reads <files>      required if reads are split between two files
       --reads <files>          required if reads are contained in a single file

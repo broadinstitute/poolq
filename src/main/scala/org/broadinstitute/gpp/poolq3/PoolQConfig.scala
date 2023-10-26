@@ -39,10 +39,12 @@ final case class PoolQInput(
   def readsSourceE: Either[Exception, ReadsSource] = (rowReads, reverseRowReads, colReads, reads, demultiplexed) match {
     case (None, None, None, Some(r), false) =>
       Right(ReadsSource.SelfContained(Nel(r._2, addlReads.view.map(_._2).toList)))
+
     case (Some(rr), None, Some(cr), None, false) =>
       val rs = ReadsSource.Split(Nel(cr, addlColReads), Nel(rr._2, addlRowReads.view.map(_._2).toList))
       if (rs.forward.length == rs.index.length) Right(rs)
       else Left(PoolQException("Number of row, column, and reverse reads files must match"))
+
     case (Some(rr), Some(rrr), Some(cr), None, false) =>
       val rs = ReadsSource.PairedEnd(
         Nel(cr, addlColReads),
@@ -51,12 +53,15 @@ final case class PoolQInput(
       )
       if (rs.forward.length == rs.index.length && rs.forward.length == rs.reverse.length) Right(rs)
       else Left(PoolQException("Number of row and column reads files must match"))
-    case (None, None, None, Some(r), true) =>
-      Right(ReadsSource.Dmuxed(Nel(r, addlReads)))
+
+    case (Some(rr), None, None, None, true) =>
+      Right(ReadsSource.Dmuxed(Nel(rr, addlRowReads)))
+
     case (Some(rr), Some(rrr), None, None, true) =>
       val rs = ReadsSource.DmuxedPairedEnd(Nel(rr, addlRowReads), Nel(rrr, addlReverseRowReads))
       if (rs.read1.map(_._1) == rs.read2.map(_._1)) Right(rs)
       else Left(PoolQException("Row and column reads files must match"))
+
     case _ => Left(PoolQException("Conflicting input options"))
   }
 
@@ -170,7 +175,7 @@ object PoolQConfig {
         val _ = opt[List[(Option[String], Path)]]("row-reads")
           .valueName("<files>")
           .action { case (ps, c) => c.copy(input = c.input.copy(rowReads = ps.headOption, addlRowReads = ps.drop(1))) }
-          .text("required if reads are split between two files")
+          .text("required if reads are split between two files or for demultiplexed data")
           .validate(_.view.map(_._2).toList.traverse_(existsAndIsReadable))
 
         val _ = opt[List[(Option[String], Path)]]("rev-row-reads")
