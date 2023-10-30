@@ -8,8 +8,15 @@ package org.broadinstitute.gpp.poolq3.barcode
 import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, CloseableIterator, DmuxedIterable}
 import org.broadinstitute.gpp.poolq3.types.Read
 
-final class DmuxedBarcodeSource(parser: DmuxedIterable, rowPolicy: BarcodePolicy, umiPolicyOpt: Option[BarcodePolicy])
-    extends CloseableIterable[Barcodes] {
+final class DmuxedBarcodeSource(
+  parser: DmuxedIterable,
+  rowPolicy: BarcodePolicy,
+  umiPolicyOpt: Option[BarcodePolicy],
+  colBarcodeLength: Int
+) extends CloseableIterable[Barcodes] {
+
+  // used to attempt to parse barcodes out of ids if the file has no associated barcode
+  private val colBarcodeParser = Dmuxed.barcodeFromId(colBarcodeLength)
 
   private def colBarcodeOpt = parser.indexBarcode
 
@@ -20,7 +27,7 @@ final class DmuxedBarcodeSource(parser: DmuxedIterable, rowPolicy: BarcodePolicy
       val nextRead = iterator.next()
       val rowBarcodeOpt = rowPolicy.find(nextRead)
       val umiBarcodeOpt = umiPolicyOpt.flatMap(_.find(nextRead))
-      Barcodes(rowBarcodeOpt, None, colBarcodeOpt, umiBarcodeOpt)
+      Barcodes(rowBarcodeOpt, None, colBarcodeOpt.orElse(colBarcodeParser(nextRead.id)), umiBarcodeOpt)
     }
 
     override def close(): Unit = iterator.close()

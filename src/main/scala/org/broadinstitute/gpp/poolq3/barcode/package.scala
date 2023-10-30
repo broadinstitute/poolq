@@ -26,11 +26,11 @@ package object barcode {
     config: PoolQInput,
     rowBarcodePolicy: BarcodePolicy,
     revRowBarcodePolicyOpt: Option[BarcodePolicy],
-    colBarcodePolicyOpt: Option[BarcodePolicy],
+    colBarcodePolicyOpt: Either[Int, BarcodePolicy],
     umiBarcodePolicyOpt: Option[BarcodePolicy]
   ): CloseableIterable[Barcodes] =
     (config.readsSource, revRowBarcodePolicyOpt, colBarcodePolicyOpt) match {
-      case (ReadsSource.Split(index, forward), None, Some(colBarcodePolicy)) =>
+      case (ReadsSource.Split(index, forward), None, Right(colBarcodePolicy)) =>
         new TwoFileBarcodeSource(
           parserFor(forward.toList),
           parserFor(index.toList),
@@ -39,7 +39,7 @@ package object barcode {
           umiBarcodePolicyOpt,
           config.readIdCheckPolicy
         )
-      case (ReadsSource.PairedEnd(index, forward, reverse), Some(revRowBarcodePolicy), Some(colBarcodePolicy)) =>
+      case (ReadsSource.PairedEnd(index, forward, reverse), Some(revRowBarcodePolicy), Right(colBarcodePolicy)) =>
         new ThreeFileBarcodeSource(
           parserFor(forward.toList),
           parserFor(reverse.toList),
@@ -50,22 +50,24 @@ package object barcode {
           umiBarcodePolicyOpt,
           config.readIdCheckPolicy
         )
-      case (ReadsSource.SelfContained(paths), None, Some(colBarcodePolicy)) =>
+      case (ReadsSource.SelfContained(paths), None, Right(colBarcodePolicy)) =>
         new SingleFileBarcodeSource(parserFor(paths.toList), rowBarcodePolicy, colBarcodePolicy, umiBarcodePolicyOpt)
-      case (ReadsSource.Dmuxed(read1), _, _) =>
+      case (ReadsSource.Dmuxed(read1), _, Left(colBarcodeLength)) =>
         new DmuxedBarcodeSource(
           DmuxedIterable(read1.toList, parserFor(_).iterator),
           rowBarcodePolicy,
-          umiBarcodePolicyOpt
+          umiBarcodePolicyOpt,
+          colBarcodeLength
         )
-      case (ReadsSource.DmuxedPairedEnd(read1, read2), Some(revRowBarcodePolicy), _) =>
+      case (ReadsSource.DmuxedPairedEnd(read1, read2), Some(revRowBarcodePolicy), Left(colBarcodeLength)) =>
         new DmuxedPairedEndBarcodeSource(
           DmuxedIterable(read1.toList, parserFor(_).iterator),
           DmuxedIterable(read2.toList, parserFor(_).iterator),
           rowBarcodePolicy,
           revRowBarcodePolicy,
           umiBarcodePolicyOpt,
-          config.readIdCheckPolicy
+          config.readIdCheckPolicy,
+          colBarcodeLength
         )
       case _ =>
         throw new IllegalArgumentException("Incompatible reads and barcode policy settings")
