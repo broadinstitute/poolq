@@ -116,8 +116,10 @@ object PoolQ {
       ExactReference(referenceData.mappings, identity, includeAmbiguous = false)
     }
 
+    val colBarcodePolicyOrLength: Either[Int, BarcodePolicy] = colBarcodePolicyOpt.toRight(colReference.barcodeLength)
+
     val barcodes: CloseableIterable[Barcodes] =
-      barcodeSource(config.input, rowBarcodePolicy, revRowBarcodePolicyOpt, colBarcodePolicyOpt, umiInfo.map(_._2))
+      barcodeSource(config.input, rowBarcodePolicy, revRowBarcodePolicyOpt, colBarcodePolicyOrLength, umiInfo.map(_._2))
 
     lazy val unexpectedSequenceCacheDir: Option[Path] =
       if (config.skipUnexpectedSequenceReport) None

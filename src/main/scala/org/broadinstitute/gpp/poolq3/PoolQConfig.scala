@@ -105,8 +105,12 @@ final case class PoolQConfig(
   def isPairedEnd =
     reverseRowBarcodePolicyStr.isDefined &&
       (input.readsSourceE match {
-        case Right(ReadsSource.PairedEnd(_, _, _)) => true
-        case _                                     => false
+        case Right(ReadsSource.PairedEnd(_, _, _))    => true
+        case Right(ReadsSource.DmuxedPairedEnd(_, _)) => true
+        case Right(ReadsSource.SelfContained(_))      => false
+        case Right(ReadsSource.Split(_, _))           => false
+        case Right(ReadsSource.Dmuxed(_))             => false
+        case Left(_)                                  => false
       })
 
 }

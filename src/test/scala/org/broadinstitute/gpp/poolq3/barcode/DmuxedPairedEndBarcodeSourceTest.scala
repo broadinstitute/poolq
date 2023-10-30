@@ -8,7 +8,7 @@ package org.broadinstitute.gpp.poolq3.barcode
 import cats.syntax.all._
 import munit.FunSuite
 import org.broadinstitute.gpp.poolq3.parser.DmuxedIterable
-import org.broadinstitute.gpp.poolq3.types.ReadIdCheckPolicy
+import org.broadinstitute.gpp.poolq3.types.{Read, ReadIdCheckPolicy}
 
 class DmuxedPairedEndBarcodeSourceTest extends FunSuite {
 
@@ -32,7 +32,7 @@ class DmuxedPairedEndBarcodeSourceTest extends FunSuite {
 
     val iter2 = DmuxedIterable(List(None -> List("AGA", "CTC", "GAG"), Some("CTCGAG") -> List("TGT", "CAC", "TCT")))
 
-    val src = new DmuxedPairedEndBarcodeSource(iter1, iter2, rowPolicy, revRowPolicy, None, ReadIdCheckPolicy.Lax)
+    val src = new DmuxedPairedEndBarcodeSource(iter1, iter2, rowPolicy, revRowPolicy, None, ReadIdCheckPolicy.Lax, 8)
     assertEquals(
       src.toList,
       List(
@@ -46,10 +46,31 @@ class DmuxedPairedEndBarcodeSourceTest extends FunSuite {
     )
   }
 
+  test("barcodes from read IDs") {
+    val undeterminedRead1s = List(Read("@eeeeee ACGTAA", "AAAA"), Read("@eeeeee ACTCAG", "CCCC"))
+    val undeterminedRead2s = List(Read("@eeeeee ACGTAA", "AAA"), Read("@eeeeee ACTCAG", "CCC"))
+    val aacctgRead1s = List(Read("@a read", "GGGG"), Read("@another read", "TTTT"))
+    val aacctgRead2s = List(Read("@a read", "GGG"), Read("@another read", "TTT"))
+
+    val iter1 = DmuxedIterable.forReads(List(None -> undeterminedRead1s, Some("AACCTG") -> aacctgRead1s))
+    val iter2 = DmuxedIterable.forReads(List(None -> undeterminedRead2s, Some("AACCTG") -> aacctgRead2s))
+
+    val src = new DmuxedPairedEndBarcodeSource(iter1, iter2, rowPolicy, revRowPolicy, None, ReadIdCheckPolicy.Lax, 6)
+    assertEquals(
+      src.toList,
+      List(
+        fb("ACGTAA", "AAAA", "AAA"),
+        fb("ACTCAG", "CCCC", "CCC"),
+        fb("AACCTG", "GGGG", "GGG"),
+        fb("AACCTG", "TTTT", "TTT")
+      )
+    )
+  }
+
   test("nothing works") {
     val i1 = DmuxedIterable(Nil)
     val i2 = DmuxedIterable(Nil)
-    val src = new DmuxedPairedEndBarcodeSource(i1, i2, rowPolicy, revRowPolicy, None, ReadIdCheckPolicy.Illumina)
+    val src = new DmuxedPairedEndBarcodeSource(i1, i2, rowPolicy, revRowPolicy, None, ReadIdCheckPolicy.Illumina, 8)
     assertEquals(src.toList, Nil)
   }
 
