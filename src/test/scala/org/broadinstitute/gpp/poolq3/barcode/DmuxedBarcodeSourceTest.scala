@@ -8,6 +8,7 @@ package org.broadinstitute.gpp.poolq3.barcode
 import cats.syntax.all._
 import munit.FunSuite
 import org.broadinstitute.gpp.poolq3.parser.DmuxedIterable
+import org.broadinstitute.gpp.poolq3.types.Read
 
 class DmuxedBarcodeSourceTest extends FunSuite {
 
@@ -26,7 +27,7 @@ class DmuxedBarcodeSourceTest extends FunSuite {
       )
     )
 
-    val src = new DmuxedBarcodeSource(iterable, rowPolicy, None)
+    val src = new DmuxedBarcodeSource(iterable, rowPolicy, None, 8)
     assertEquals(
       src.toList,
       List(
@@ -40,9 +41,26 @@ class DmuxedBarcodeSourceTest extends FunSuite {
     )
   }
 
+  test("barcodes from read IDs") {
+    val undeterminedReads = List(Read("@eeeeee ACGTAA", "AAAAAAAAAA"), Read("@eeeeee ACTCAG", "CCCCCCCCCC"))
+    val aacctgReads = List(Read("@a read", "GGGGGGGGGG"), Read("@another read", "TTTTTTTTTT"))
+    val iterable = DmuxedIterable.forReads(List(None -> undeterminedReads, Some("AACCTG") -> aacctgReads))
+
+    val src = new DmuxedBarcodeSource(iterable, rowPolicy, None, 6)
+    assertEquals(
+      src.toList,
+      List(
+        fb("ACGTAA", "AAAAAAAAAA"),
+        fb("ACTCAG", "CCCCCCCCCC"),
+        fb("AACCTG", "GGGGGGGGGG"),
+        fb("AACCTG", "TTTTTTTTTT")
+      )
+    )
+  }
+
   test("nothing works") {
     val iterable = DmuxedIterable(Nil)
-    val src = new DmuxedBarcodeSource(iterable, rowPolicy, None)
+    val src = new DmuxedBarcodeSource(iterable, rowPolicy, None, 8)
     assertEquals(src.toList, Nil)
   }
 

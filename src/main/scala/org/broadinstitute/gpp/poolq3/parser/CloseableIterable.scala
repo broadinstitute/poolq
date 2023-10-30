@@ -50,8 +50,11 @@ object DmuxedIterable {
     val data2: List[(Option[String], List[Read])] = data.map { case (bco, seqs) =>
       (bco, seqs.zipWithIndex.map { case (seq, i) => Read(i.toString, seq) })
     }
-    new DmuxedIterableImpl(data2, CloseableIterator.ofList)
+    DmuxedIterable.forReads(data2)
   }
+
+  def forReads(data: List[(Option[String], List[Read])]): DmuxedIterable =
+    new DmuxedIterableImpl(data, CloseableIterator.ofList)
 
   private class DmuxedIterableImpl[A](src: Iterable[(Option[String], A)], makeIterator: A => CloseableIterator[Read])
       extends DmuxedIterable {
