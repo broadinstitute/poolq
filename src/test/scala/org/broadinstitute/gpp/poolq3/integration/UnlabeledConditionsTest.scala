@@ -18,7 +18,7 @@ import org.broadinstitute.gpp.poolq3.{PoolQ, PoolQConfig, PoolQInput, PoolQOutpu
 class UnlabeledConditionsTest extends CatsEffectSuite with TestResources {
 
   val outputFilesResources: Resource[IO, PoolQOutput] =
-    for {
+    for
       countsFile <- tempFile[IO]("counts", ".txt")
       barcodeCountsFile <- tempFile[IO]("barcode-counts", ".txt")
       normalizedCountsFile <- tempFile[IO]("normcounts", ".txt")
@@ -26,7 +26,7 @@ class UnlabeledConditionsTest extends CatsEffectSuite with TestResources {
       correlationFile <- tempFile[IO]("correlation", ".txt")
       unexpectedSequencesFile <- tempFile[IO]("unexpected", ".txt")
       runInfoFile <- tempFile[IO]("runinfo", ".txt")
-    } yield {
+    yield {
       PoolQOutput(
         countsFile = countsFile,
         normalizedCountsFile = normalizedCountsFile,

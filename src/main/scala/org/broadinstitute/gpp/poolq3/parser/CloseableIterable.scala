@@ -68,14 +68,14 @@ object DmuxedIterable {
     override def iterator: CloseableIterator[Read] = new CloseableIterator[Read] {
 
       override def hasNext: Boolean = {
-        var currentHasNext = if (current == null) false else current.hasNext
-        while (!currentHasNext && queue.nonEmpty) {
+        var currentHasNext = if current == null then false else current.hasNext
+        while !currentHasNext && queue.nonEmpty do {
           val head = queue.dequeue()
-          if (head != null) {
+          if head != null then {
             val old = current
             indexBarcode = head._1.map(bc => FoundBarcode(bc.toCharArray, 0))
             current = makeIterator(head._2)
-            if (old != null) {
+            if old != null then {
               old.close()
             }
             currentHasNext = current.hasNext
@@ -85,7 +85,7 @@ object DmuxedIterable {
       }
 
       override def next(): Read =
-        if (current == null) throw new NoSuchElementException
+        if current == null then throw new NoSuchElementException
         else current.next()
 
       override def close(): Unit = {

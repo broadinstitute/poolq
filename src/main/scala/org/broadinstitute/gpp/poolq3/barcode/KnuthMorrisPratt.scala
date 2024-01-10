@@ -17,13 +17,13 @@ final class KnuthMorrisPratt(word: String) {
     val wordLength = word.length
     var m = fromIndex
     var i = 0
-    while ((m + i) < toIndex) {
-      if (word.charAt(i) == text.charAt(m + i)) {
-        if (i == (wordLength - 1)) return Some(m)
+    while (m + i) < toIndex do {
+      if word.charAt(i) == text.charAt(m + i) then {
+        if i == (wordLength - 1) then return Some(m)
         i += 1
       } else {
         val fi = f(i)
-        if (fi > -1) {
+        if fi > -1 then {
           m = m + i - fi
           i = fi
         } else {
@@ -51,12 +51,12 @@ object KnuthMorrisPratt {
     var wi = 2 // the word index
     var si = 0 // the substring index
 
-    while (wi < word.length) {
-      if (word(wi - 1) == word(si)) {
+    while wi < word.length do {
+      if word(wi - 1) == word(si) then {
         f(wi) = si + 1
         si = si + 1
         wi = wi + 1
-      } else if (si > 0) {
+      } else if si > 0 then {
         si = f(si)
       } else {
         f(wi) = 0

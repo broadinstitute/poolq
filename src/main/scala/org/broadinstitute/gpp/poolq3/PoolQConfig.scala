@@ -11,7 +11,7 @@ import java.nio.file.{Files, Path, Paths}
 import scala.collection.mutable
 
 import cats.data.{NonEmptyList => Nel}
-import cats.syntax.all._
+import cats.syntax.all.*
 import org.broadinstitute.gpp.poolq3.PoolQConfig.DefaultPath
 import org.broadinstitute.gpp.poolq3.reports.{GctDialect, PoolQ2Dialect, PoolQ3Dialect, ReportsDialect}
 import org.broadinstitute.gpp.poolq3.types.{PoolQException, ReadIdCheckPolicy}
@@ -42,7 +42,7 @@ final case class PoolQInput(
 
     case (Some(rr), None, Some(cr), None, false) =>
       val rs = ReadsSource.Split(Nel(cr, addlColReads), Nel(rr._2, addlRowReads.view.map(_._2).toList))
-      if (rs.forward.length == rs.index.length) Right(rs)
+      if rs.forward.length == rs.index.length then Right(rs)
       else Left(PoolQException("Number of row, column, and reverse reads files must match"))
 
     case (Some(rr), Some(rrr), Some(cr), None, false) =>
@@ -51,7 +51,7 @@ final case class PoolQInput(
         Nel(rr._2, addlRowReads.view.map(_._2).toList),
         Nel(rrr._2, addlReverseRowReads.view.map(_._2).toList)
       )
-      if (rs.forward.length == rs.index.length && rs.forward.length == rs.reverse.length) Right(rs)
+      if rs.forward.length == rs.index.length && rs.forward.length == rs.reverse.length then Right(rs)
       else Left(PoolQException("Number of row and column reads files must match"))
 
     case (Some(rr), None, None, None, true) =>
@@ -59,7 +59,7 @@ final case class PoolQInput(
 
     case (Some(rr), Some(rrr), None, None, true) =>
       val rs = ReadsSource.DmuxedPairedEnd(Nel(rr, addlRowReads), Nel(rrr, addlReverseRowReads))
-      if (rs.read1.map(_._1) == rs.read2.map(_._1)) Right(rs)
+      if rs.read1.map(_._1) == rs.read2.map(_._1) then Right(rs)
       else Left(PoolQException("Row and column reads files must match"))
 
     case _ => Left(PoolQException("Conflicting input options"))
@@ -147,8 +147,8 @@ object PoolQConfig {
 
     val parser: OptionParser[PoolQConfig] = new OptionParser[PoolQConfig]("poolq") {
       private[this] def existsAndIsReadable(f: Path): Either[String, Unit] =
-        if (!Files.exists(f)) failure(s"Could not find ${f.toAbsolutePath}")
-        else if (!Files.isReadable(f)) failure(s"Could not read ${f.toAbsolutePath}")
+        if !Files.exists(f) then failure(s"Could not find ${f.toAbsolutePath}")
+        else if !Files.isReadable(f) then failure(s"Could not read ${f.toAbsolutePath}")
         else success
 
       locally {
@@ -283,7 +283,7 @@ object PoolQConfig {
           .valueName("<number>")
           .action((n, c) => c.copy(unexpectedSequencesToReport = n))
           .validate { n =>
-            if (n > 0) success
+            if n > 0 then success
             else failure(s"Unexpected sequence threshold must be greater than 0, got: $n")
           }
 
@@ -388,7 +388,7 @@ object PoolQConfig {
     // run control
     args += (("row-matcher", config.rowMatchFn))
     args += (("col-matcher", config.colMatchFn))
-    if (config.countAmbiguous) {
+    if config.countAmbiguous then {
       args += (("count-ambiguous", ""))
     }
     args += (("row-barcode-policy", config.rowBarcodePolicyStr))
@@ -397,7 +397,7 @@ object PoolQConfig {
     umiInfo.map(_._2).foreach(str => args += (("umi-barcode-policy", str)))
 
     // deal with the unexpected sequence options
-    if (config.skipUnexpectedSequenceReport) {
+    if config.skipUnexpectedSequenceReport then {
       args += (("skip-unexpected-sequence-report", ""))
     } else {
       // give whatever path we were given here - this _may_ not need to be included at all, honestly
@@ -405,10 +405,10 @@ object PoolQConfig {
       args += (("unexpected-sequence-threshold", config.unexpectedSequencesToReport.toString))
     }
 
-    if (config.skipShortReads) {
+    if config.skipShortReads then {
       args += (("skip-short-reads", ""))
     }
-    if (config.reportsDialect == PoolQ2Dialect) {
+    if config.reportsDialect == PoolQ2Dialect then {
       args += (("compat", ""))
     }
 
@@ -424,10 +424,10 @@ object PoolQConfig {
       output.umiCountsFilesDir.foreach(d => args += (("umi-counts-dir", d.toString)))
       output.umiBarcodeCountsFilesDir.foreach(d => args += (("umi-barcode-counts-dir", d.toString)))
     }
-    if (!config.skipUnexpectedSequenceReport) {
+    if !config.skipUnexpectedSequenceReport then {
       args += (("unexpected-sequences", output.unexpectedSequencesFile.getFileName.toString))
     }
-    if (config.alwaysCountColumnBarcodes) {
+    if config.alwaysCountColumnBarcodes then {
       args += (("always-count-col-barcodes", ""))
     }
     args += (("run-info", output.runInfoFile.getFileName.toString))

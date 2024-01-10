@@ -10,7 +10,7 @@ import java.nio.file.Path
 
 import scala.util.Using
 
-import com.github.tototoshi.csv._
+import com.github.tototoshi.csv.*
 import org.apache.commons.io.ByteOrderMark
 import org.apache.commons.io.input.BOMInputStream
 import org.broadinstitute.gpp.poolq3.reports.{GctDialect, PoolQ2Dialect, ReportsDialect}
@@ -27,7 +27,7 @@ class ReferenceData(val mappings: Seq[ReferenceEntry]) {
 
   def forColumnBarcodes(dialect: ReportsDialect): ReferenceData = {
     val columnBarcodeMappings = mappings.map { m =>
-      if (m.referenceId.isEmpty) m.copy(referenceId = ReferenceData.unlabeled(dialect)) else m
+      if m.referenceId.isEmpty then m.copy(referenceId = ReferenceData.unlabeled(dialect)) else m
     }
     new ReferenceData(columnBarcodeMappings)
   }
@@ -57,7 +57,7 @@ object ReferenceData {
     br.mark(1024)
     val iter = br.lines().iterator()
     val ret =
-      if (iter.hasNext) {
+      if iter.hasNext then {
         iter.next() match {
           case DelimiterRegex(d) => d.head
           case _                 => ','
@@ -94,8 +94,8 @@ object ReferenceData {
             // DNA string, we must accept the row. However, sometimes Excel leaves empty lines in exported CSV; as
             // long as *both* the barcode and ID are empty, it's safe to just skip the row. For now we'll be paranoid
             // and reject cases where the barcode is empty but the ID is non-empty
-            if (barcode.isEmpty && id.isEmpty) None
-            else if (isReferenceBarcode(barcode)) Some(ReferenceEntry(barcode, id))
+            if barcode.isEmpty && id.isEmpty then None
+            else if isReferenceBarcode(barcode) then Some(ReferenceEntry(barcode, id))
             else throw InvalidFileException(file, s"Invalid DNA barcode '$barcode' for ID '$id'")
           case _ =>
             throw InvalidFileException(
@@ -105,7 +105,7 @@ object ReferenceData {
         }
       }
 
-      if (barcodes.isEmpty) {
+      if barcodes.isEmpty then {
         throw InvalidFileException(file, "Empty reference file")
       }
 
@@ -115,7 +115,7 @@ object ReferenceData {
 
   private[parser] def checkLengths(mappings: Seq[ReferenceEntry]): Unit = {
     val barcodesByLength = mappings.groupBy(_.barcodeLength)
-    if (barcodesByLength.keySet.size == 1) ()
+    if barcodesByLength.keySet.size == 1 then ()
     else {
       // grab the first thing in each size grouping
       val examples = barcodesByLength.toSeq.flatMap { case (length, barcodes) =>

@@ -24,14 +24,14 @@ class UmiQualityTest extends FunSuite with TestResources {
     )
 
     val umi: LazyList[String] =
-      for {
+      for
         b1 <- LazyList('A', 'C', 'G', 'T')
         b2 <- LazyList('A', 'C', 'G', 'T')
         b3 <- LazyList('A', 'C', 'G', 'T')
         b4 <- LazyList('A', 'C', 'G', 'T')
         b5 <- LazyList('A', 'C', 'G', 'T')
         b6 <- LazyList('A', 'C', 'G', 'T')
-      } yield s"$b1$b2$b3$b4$b5$b6"
+      yield s"$b1$b2$b3$b4$b5$b6"
 
     val (expectedUmiLL, rest) = umi.splitAt(96)
     val expectedUmi = expectedUmiLL.toList.zipWithIndex.map { case (x, i) => (x, i + 1) }

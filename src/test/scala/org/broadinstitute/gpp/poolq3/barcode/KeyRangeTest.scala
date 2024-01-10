@@ -6,7 +6,7 @@
 package org.broadinstitute.gpp.poolq3.barcode
 
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers.*
 
 /** @author
   *   Broad Institute Genetic Perturbation Platform

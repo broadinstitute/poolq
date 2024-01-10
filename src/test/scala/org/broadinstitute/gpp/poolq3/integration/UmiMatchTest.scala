@@ -7,7 +7,7 @@ package org.broadinstitute.gpp.poolq3.integration
 
 import scala.util.Random
 
-import cats.syntax.all._
+import cats.syntax.all.*
 import munit.FunSuite
 import org.broadinstitute.gpp.poolq3.PoolQ
 import org.broadinstitute.gpp.poolq3.barcode.{Barcodes, FoundBarcode}
@@ -86,13 +86,13 @@ class UmiMatchTest extends FunSuite {
     assertEquals(state.exactMatches, 56)
 
     val hist = state.known
-    for {
+    for
       row <- rowReference.allBarcodes
       col <- colReference.allBarcodes
       umi <- umiBarcodes.barcodes
       tuple = (row.some, col.some, umi.some)
       expectedTupleCount = expectedCounts.getOrElse(tuple, 0)
-    } {
+    do {
       assertEquals(hist.forShard(umi.some).count((row, col)), expectedTupleCount)
     }
 

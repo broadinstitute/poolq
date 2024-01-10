@@ -28,10 +28,10 @@ case object TextType extends ReadsFileType {
 object ReadsFileType {
 
   def fromFilename(n: String): Option[ReadsFileType] =
-    if (n.endsWith(".fastq") || n.endsWith(".fastq.gz")) Some(FastqType)
-    else if (n.endsWith(".sam")) Some(SamType)
-    else if (n.endsWith(".bam")) Some(BamType)
-    else if (n.endsWith(".txt") || n.endsWith(".txt.gz")) Some(TextType)
+    if n.endsWith(".fastq") || n.endsWith(".fastq.gz") then Some(FastqType)
+    else if n.endsWith(".sam") then Some(SamType)
+    else if n.endsWith(".bam") then Some(BamType)
+    else if n.endsWith(".txt") || n.endsWith(".txt.gz") then Some(TextType)
     else None
 
 }

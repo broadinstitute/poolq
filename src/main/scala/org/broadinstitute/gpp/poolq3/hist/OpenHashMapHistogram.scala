@@ -5,7 +5,7 @@
  */
 package org.broadinstitute.gpp.poolq3.hist
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 

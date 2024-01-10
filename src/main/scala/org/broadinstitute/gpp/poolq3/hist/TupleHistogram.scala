@@ -17,7 +17,7 @@ class TupleHistogram[A] extends Histogram[(A, A)] {
   override def increment(k: (A, A)): Int = {
     val (fst, snd) = k
     val sndMap = hist.get(fst)
-    if (sndMap != null) sndMap.addTo(snd, 1)
+    if sndMap != null then sndMap.addTo(snd, 1)
     else {
       val newSndMap = new Object2IntOpenHashMap[A]()
       newSndMap.put(snd, 1)
@@ -30,7 +30,7 @@ class TupleHistogram[A] extends Histogram[(A, A)] {
   override def count(k: (A, A)): Int = {
     val (fst, snd) = k
     val sndMap = hist.get(fst)
-    if (sndMap == null) 0
+    if sndMap == null then 0
     else sndMap.getOrDefault(snd, 0)
   }
 

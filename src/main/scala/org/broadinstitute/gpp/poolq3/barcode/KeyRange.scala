@@ -16,7 +16,7 @@ final case class KeyRange(start0: Int, end0: Int) {
 
   def end1: Int = end0 + 1
 
-  override def toString: String = if (length == 1) start1.toString else s"$start1..$end1"
+  override def toString: String = if length == 1 then start1.toString else s"$start1..$end1"
 
 }
 

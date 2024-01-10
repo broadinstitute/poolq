@@ -22,7 +22,7 @@ object ReferenceCollisionWriter {
         .map(bc => (bc, reference.idsForBarcode(bc)))
         .filter { case (_, ids) => ids.lengthCompare(1) > 1 }
         .foreach { case (bc, ids) =>
-          if (compat) writer.println(s"$bc:\t${ids.mkString("\t")}")
+          if compat then writer.println(s"$bc:\t${ids.mkString("\t")}")
           else writer.println(s"$bc\t${ids.mkString(",")}")
         }
     }

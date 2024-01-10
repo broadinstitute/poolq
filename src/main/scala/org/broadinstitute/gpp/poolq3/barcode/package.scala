@@ -9,7 +9,6 @@ import java.nio.file.Path
 
 import scala.collection.mutable
 
-import org.broadinstitute.gpp.poolq3.ReadsSource
 import org.broadinstitute.gpp.poolq3.parser.{
   CloseableIterable,
   CloseableIterator,
@@ -94,13 +93,13 @@ package object barcode {
         var current: CloseableIterator[B] = _
 
         override def hasNext: Boolean = {
-          var currentHasNext = if (current == null) false else current.hasNext
-          while (!currentHasNext && queue.nonEmpty) {
+          var currentHasNext = if current == null then false else current.hasNext
+          while !currentHasNext && queue.nonEmpty do {
             val head = queue.dequeue()
-            if (head != null) {
+            if head != null then {
               val old = current
               current = mkIterator(head)
-              if (old != null) {
+              if old != null then {
                 old.close()
               }
               currentHasNext = current.hasNext
@@ -109,7 +108,7 @@ package object barcode {
           currentHasNext
         }
 
-        override def next(): B = if (current == null) throw new NoSuchElementException else current.next()
+        override def next(): B = if current == null then throw new NoSuchElementException else current.next()
 
         override def close(): Unit = Option(current).foreach(_.close())
 

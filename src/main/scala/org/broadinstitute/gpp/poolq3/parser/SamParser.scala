@@ -27,7 +27,7 @@ final class SamParser(file: Path) extends CloseableIterable[Read] {
     final override def next(): Read = {
       val samRecord = samIterator.next()
       val readSequence =
-        if (samRecord.getReadNegativeStrandFlag) reverseComplement(samRecord.getReadString)
+        if samRecord.getReadNegativeStrandFlag then reverseComplement(samRecord.getReadString)
         else samRecord.getReadString
       Read(samRecord.getReadName, readSequence)
     }

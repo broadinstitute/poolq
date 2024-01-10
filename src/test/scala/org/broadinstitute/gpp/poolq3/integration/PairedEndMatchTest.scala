@@ -84,12 +84,12 @@ class PairedEndMatchTest extends FunSuite {
     assertEquals(state.exactMatches, 102)
 
     val hist = state.known
-    for {
+    for
       row <- rowReference.allBarcodes
       col <- colReference.allBarcodes
       tuple = (Some(row), Some(col))
       expectedTupleCount = expectedCounts.getOrElse(tuple, 0)
-    } {
+    do {
       assertEquals(hist.forShard(None).count((row, col)), expectedTupleCount)
     }
 

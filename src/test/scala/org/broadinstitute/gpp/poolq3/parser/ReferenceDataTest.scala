@@ -10,7 +10,7 @@ import java.io.{BufferedReader, StringReader}
 import org.broadinstitute.gpp.poolq3.TestResources
 import org.broadinstitute.gpp.poolq3.reports.PoolQ2Dialect
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers.*
 
 class ReferenceDataTest extends AnyFlatSpec with TestResources {
 

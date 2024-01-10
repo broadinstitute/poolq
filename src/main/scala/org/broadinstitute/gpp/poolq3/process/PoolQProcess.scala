@@ -44,7 +44,7 @@ final class PoolQProcess(
         log.info(s"Processed $n reads in $dt ms ($avg reads/ms). Match percent: $pct; queue size: ${queue.size()}")
       }
 
-      while (!done || !queue.isEmpty) { // as long as we're not done OR there is still work in the queue
+      while !done || !queue.isEmpty do { // as long as we're not done OR there is still work in the queue
         try {
           Option(queue.poll(100, TimeUnit.MILLISECONDS)).foreach(next => consumer.consume(next))
         } catch {
@@ -56,7 +56,7 @@ final class PoolQProcess(
         }
         // update the log periodically
         val n = consumer.readsProcessed
-        if (n % reportFrequency == 0) {
+        if n % reportFrequency == 0 then {
           logProgress(n)
         }
       }

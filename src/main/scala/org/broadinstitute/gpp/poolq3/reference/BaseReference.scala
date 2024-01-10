@@ -24,7 +24,7 @@ abstract class BaseReference(
 
   final def idsForBarcode(barcode: String): Seq[String] = {
     val ids = barcodeEntries.get(barcode)
-    if (ids == null) Vector.empty
+    if ids == null then Vector.empty
     else ids.toVector
   }
 
@@ -44,7 +44,7 @@ abstract class BaseReference(
 
   def referenceBarcodeForDnaBarcode(matchingBarcode: String): String = {
     val inputBarcode = barcodeToInputBarcode.get(matchingBarcode)
-    if (inputBarcode == null) throw new IllegalArgumentException(s"Unknown matching barcode $matchingBarcode")
+    if inputBarcode == null then throw new IllegalArgumentException(s"Unknown matching barcode $matchingBarcode")
     else inputBarcode
   }
 

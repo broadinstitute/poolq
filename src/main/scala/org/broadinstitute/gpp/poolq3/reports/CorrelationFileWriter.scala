@@ -30,7 +30,7 @@ object CorrelationFileWriter {
     rowReference: Reference,
     colReference: Reference
   ): Try[Option[CorrelationFileType.type]] = {
-    if (colReference.allIds.size < 2 || rowReference.allBarcodes.size < 2) {
+    if colReference.allIds.size < 2 || rowReference.allBarcodes.size < 2 then {
       log.warn(
         "Skipping correlation file for trivial dataset " +
           s"(${colReference.allIds.size} columns and ${rowReference.allBarcodes.size} rows)"
@@ -43,9 +43,9 @@ object CorrelationFileWriter {
 
       Using(new PrintWriter(file.toFile)) { pw =>
         printHeaders(colReference, pw)
-        for (i <- colReference.allIds.indices) {
+        for i <- colReference.allIds.indices do {
           pw.print(colReference.allIds(i))
-          for (j <- colReference.allIds.indices) {
+          for j <- colReference.allIds.indices do {
             pw.print("\t" + Decimal00Format.format(pearsonMatrix.getEntry(i, j)))
           }
           pw.println()
@@ -66,12 +66,11 @@ object CorrelationFileWriter {
   ): Array[Array[Double]] = {
     val matrix = Array.ofDim[Double](rowReference.allBarcodes.size, colReference.allIds.size)
 
-    for (i <- rowReference.allBarcodes.indices) {
+    for i <- rowReference.allBarcodes.indices do {
       val row = rowReference.allBarcodes(i)
       val rowCounts = counts(row)
 
-      for (j <- colReference.allIds.indices)
-        matrix(i)(j) = rowCounts(colReference.allIds(j))
+      for j <- colReference.allIds.indices do matrix(i)(j) = rowCounts(colReference.allIds(j))
     }
 
     matrix

@@ -11,7 +11,7 @@ case class ReferenceEntry(referenceBarcode: String, referenceId: String) {
 
   def barcodeLengths: (Int, Int) = {
     val split = referenceBarcode.indexWhere(Set(';', ':', '-'))
-    if (split > 0) {
+    if split > 0 then {
       (split, barcodeLength - split)
     } else {
       (barcodeLength, 0)

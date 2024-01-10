@@ -40,10 +40,10 @@ package object reports {
   ): Map[String, Int] =
     colReference.allIds.map { colId =>
       val readCount =
-        (for {
+        (for
           colBarcodeLong <- colReference.barcodesForId(colId)
           rowBarcodeLong <- rowReference.allBarcodes
-        } yield hist.count((rowBarcodeLong, colBarcodeLong))).sum
+        yield hist.count((rowBarcodeLong, colBarcodeLong))).sum
 
       colId -> readCount
     }.toMap
@@ -52,7 +52,7 @@ package object reports {
     val nameStr = p.getFileName.toString
     val lastDotIdx = nameStr.lastIndexOf('.')
     val (base, ext) =
-      if (lastDotIdx == -1) (nameStr, None)
+      if lastDotIdx == -1 then (nameStr, None)
       else {
         val (b, e) = nameStr.splitAt(lastDotIdx)
         (b, Some(e))

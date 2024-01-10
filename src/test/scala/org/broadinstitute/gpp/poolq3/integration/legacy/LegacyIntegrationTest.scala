@@ -7,12 +7,12 @@ package org.broadinstitute.gpp.poolq3.integration.legacy
 
 import java.nio.file.Path
 
-import better.files._
+import better.files.*
 import org.broadinstitute.gpp.poolq3.reports.PoolQ2Dialect
 import org.broadinstitute.gpp.poolq3.testutil.contents
 import org.broadinstitute.gpp.poolq3.{PoolQ, PoolQConfig, PoolQInput, PoolQOutput, TestResources}
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers.*
 
 class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
 
@@ -28,7 +28,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
     * NOTE: the correctness of the results was verified by hand.
     */
   "PoolQ" should "testPoolQReads10000Reference8Conditions42" in {
-    for {
+    for
       countsFile <- File.temporaryFile("counts", ".txt")
       barcodeCountsFile <- File.temporaryFile("barcode-counts", ".txt")
       normalizedCountsFile <- File.temporaryFile("normcounts", ".txt")
@@ -37,7 +37,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
       unexpectedSequencesFile <- File.temporaryFile("unexpected", ".txt")
       unexpectedSequenceCacheDir <- File.temporaryDirectory("unexpected-cache")
       runInfoFile <- File.temporaryFile("runinfo", ".txt")
-    } {
+    do {
       val config = PoolQConfig(
         input = PoolQInput(
           rowReference = resourcePath("reference-8.csv"),
@@ -70,7 +70,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
   }
 
   "PoolQ" should "optionally not remove the unexpected sequence cache" in {
-    for {
+    for
       countsFile <- File.temporaryFile("counts", ".txt")
       barcodeCountsFile <- File.temporaryFile("barcode-counts", ".txt")
       normalizedCountsFile <- File.temporaryFile("normcounts", ".txt")
@@ -79,7 +79,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
       unexpectedSequencesFile <- File.temporaryFile("unexpected", ".txt")
       unexpectedSequenceCacheDir <- File.temporaryDirectory("unexpected-cache")
       runInfoFile <- File.temporaryFile("runinfo", ".txt")
-    } {
+    do {
       val config = PoolQConfig(
         input = PoolQInput(
           rowReference = resourcePath("reference-8.csv"),
@@ -121,7 +121,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
     * the conditions file one successful read each for the first 10 conditions
     */
   it should "testPoolQLongerReads" in {
-    for {
+    for
       countsFile <- File.temporaryFile("counts", ".txt")
       normalizedCountsFile <- File.temporaryFile("normcounts", ".txt")
       barcodeCountsFile <- File.temporaryFile("barcode-counts", ".txt")
@@ -130,7 +130,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
       unexpectedSequencesFile <- File.temporaryFile("unexpected", ".txt")
       unexpectedSequenceCacheDir <- File.temporaryDirectory("unexpected-cache")
       runInfoFile <- File.temporaryFile("runinfo", ".txt")
-    } {
+    do {
       val config = PoolQConfig(
         input = PoolQInput(
           rowReference = resourcePath("reference-8.csv"),
@@ -165,7 +165,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
     * also test the fact that PoolQ ignores any bases in the read that follow the construct.
     */
   it should "testPoolQMultipleBarcodesPerCondition" in {
-    for {
+    for
       countsFile <- File.temporaryFile("counts", ".txt")
       normalizedCountsFile <- File.temporaryFile("normcounts", ".txt")
       barcodeCountsFile <- File.temporaryFile("barcode-counts", ".txt")
@@ -174,7 +174,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
       unexpectedSequencesFile <- File.temporaryFile("unexpected", ".txt")
       unexpectedSequenceCacheDir <- File.temporaryDirectory("unexpected-cache")
       runInfoFile <- File.temporaryFile("runinfo", ".txt")
-    } {
+    do {
       val config = PoolQConfig(
         input = PoolQInput(
           rowReference = resourcePath("reference-8.csv"),
@@ -210,7 +210,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
     * sequence.
     */
   it should "testPoolQMultiplexedReads" in {
-    for {
+    for
       countsFile <- File.temporaryFile("counts", ".txt")
       normalizedCountsFile <- File.temporaryFile("normcounts", ".txt")
       barcodeCountsFile <- File.temporaryFile("barcode-counts", ".txt")
@@ -219,7 +219,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
       unexpectedSequencesFile <- File.temporaryFile("unexpected", ".txt")
       unexpectedSequenceCacheDir <- File.temporaryDirectory("unexpected-cache")
       runInfoFile <- File.temporaryFile("runinfo", ".txt")
-    } {
+    do {
       val config = PoolQConfig(
         input = PoolQInput(
           rowReference = resourcePath("next500-reference.txt"),
@@ -250,7 +250,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
   }
 
   it should "testPoolQMultiplexedShortReads" in {
-    for {
+    for
       countsFile <- File.temporaryFile("counts", ".txt")
       normalizedCountsFile <- File.temporaryFile("normcounts", ".txt")
       barcodeCountsFile <- File.temporaryFile("barcode-counts", ".txt")
@@ -259,7 +259,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
       unexpectedSequencesFile <- File.temporaryFile("unexpected", ".txt")
       unexpectedSequenceCacheDir <- File.temporaryDirectory("unexpected-cache")
       runInfoFile <- File.temporaryFile("runinfo", ".txt")
-    } {
+    do {
       val config = PoolQConfig(
         input = PoolQInput(
           rowReference = resourcePath("next500-reference.txt"),
@@ -294,7 +294,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
     * barcode maps to multiple construct IDs.
     */
   it should "testPoolQDuplicateConstructs" in {
-    for {
+    for
       countsFile <- File.temporaryFile("counts", ".txt")
       normalizedCountsFile <- File.temporaryFile("normcounts", ".txt")
       barcodeCountsFile <- File.temporaryFile("barcode-counts", ".txt")
@@ -303,7 +303,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
       unexpectedSequencesFile <- File.temporaryFile("unexpected", ".txt")
       unexpectedSequenceCacheDir <- File.temporaryDirectory("unexpected-cache")
       runInfoFile <- File.temporaryFile("runinfo", ".txt")
-    } {
+    do {
       val config = PoolQConfig(
         input = PoolQInput(
           rowReference = resourcePath("reference-9.csv"),

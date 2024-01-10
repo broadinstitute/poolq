@@ -9,8 +9,8 @@ import org.broadinstitute.gpp.poolq3.gen.barcode
 import org.broadinstitute.gpp.poolq3.parser.ReferenceEntry
 import org.scalacheck.Gen
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers._
-import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks._
+import org.scalatest.matchers.should.Matchers.*
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks.*
 
 class ExactReferenceTest extends AnyFlatSpec {
   val referenceGen: Gen[List[String]] = Gen.listOfN(1000, barcode)

@@ -9,10 +9,10 @@ import java.io.{BufferedReader, FileInputStream, InputStreamReader}
 import java.nio.file.Path
 import java.util.stream.Collectors
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 import scala.util.{Failure, Success, Try, Using}
 
-import cats.syntax.all._
+import cats.syntax.all.*
 import org.apache.commons.io.ByteOrderMark
 import org.apache.commons.io.input.BOMInputStream
 
@@ -56,7 +56,7 @@ object BarcodeSet {
     }
 
   def checkSet(file: Path, barcodeSet: BarcodeSet): Try[Unit] =
-    if (barcodeSet.barcodes.isEmpty) Failure(InvalidFileException(file, s"Empty barcode file"))
+    if barcodeSet.barcodes.isEmpty then Failure(InvalidFileException(file, s"Empty barcode file"))
     else {
       val expectedLength = barcodeSet.barcodeLength
       barcodeSet.barcodes.find(_.length != expectedLength) match {

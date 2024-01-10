@@ -8,8 +8,8 @@ package org.broadinstitute.gpp.poolq3.barcode
 import org.broadinstitute.gpp.poolq3.gen.{acgtn, dnaSeq}
 import org.scalacheck.Gen
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers._
-import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks._
+import org.scalatest.matchers.should.Matchers.*
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks.*
 
 class KnuthMorrisPrattTest extends AnyFlatSpec {
 

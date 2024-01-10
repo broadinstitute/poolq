@@ -30,7 +30,7 @@ final class VariantReference private[VariantReference] (
     singleNIndex(bases) match {
       case NoN =>
         val exact = truncationVariants.get(barcode)
-        if (exact.nonEmpty) exact.map(MatchedBarcode(_, 0))
+        if exact.nonEmpty then exact.map(MatchedBarcode(_, 0))
         else mismatchVariants.get(barcode).map(MatchedBarcode(_, 1))
 
       case PolyN => Seq.empty[MatchedBarcode]
@@ -40,7 +40,7 @@ final class VariantReference private[VariantReference] (
         val variants = posVariants(bases, n)
 
         val matchingReferenceBarcodes = variants.flatMap(truncationVariants.get(_))
-        if (includeAmbiguous || matchingReferenceBarcodes.lengthCompare(1) == 0) {
+        if includeAmbiguous || matchingReferenceBarcodes.lengthCompare(1) == 0 then {
           // this works because the variants have the `N` replaced, so they contain only [ACGT] - that is, they must
           // match _exactly_ to a barcode in the reference file; we report an edit distance of 1 because we have to
           // assume the `N` was a mismatch
@@ -70,12 +70,12 @@ final class VariantReference private[VariantReference] (
       allBarcodes.map(bc => (barcodeProcessor(bc), bc))
 
     val mismatchVariants: Seq[(String, String)] =
-      for {
+      for
         (variant, barcode) <- initialVariants
         bases = variant.toArray
         i <- bases.indices
         v <- posVariants(bases, i, bases(i))
-      } yield (v, barcode)
+      yield (v, barcode)
 
     // build the resulting map of variant to seq of originals
     val map = new Object2ObjectOpenHashMap[String, List[String]]
@@ -87,7 +87,7 @@ final class VariantReference private[VariantReference] (
       map.put(variant, barcode :: bcs)
     }
 
-    if (!includeAmbiguous) {
+    if !includeAmbiguous then {
       Reference.pruneAmbiguous(map)
     }
 

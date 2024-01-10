@@ -31,7 +31,7 @@ package object tools {
   def withNs(barcode: String, n: Int): String = {
     require(n <= barcode.length)
     val bases = barcode.toCharArray
-    while (nCount(bases) < n) {
+    while nCount(bases) < n do {
       bases(Random.nextInt(bases.length)) = 'N'
     }
     new String(bases)

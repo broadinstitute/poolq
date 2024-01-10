@@ -10,7 +10,7 @@ import java.nio.file.{Files, Path}
 
 import scala.util.{Try, Using}
 
-import cats.syntax.all._
+import cats.syntax.all.*
 import org.broadinstitute.gpp.poolq3.hist.{ReadOnlyHistogram, ShardedHistogram}
 import org.broadinstitute.gpp.poolq3.parser.BarcodeSet
 import org.broadinstitute.gpp.poolq3.reference.Reference

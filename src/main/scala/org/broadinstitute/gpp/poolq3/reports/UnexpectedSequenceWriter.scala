@@ -14,7 +14,7 @@ import scala.util.control.NonFatal
 import scala.util.{Try, Using}
 
 import it.unimi.dsi.fastutil.objects.{Object2IntOpenHashMap, Object2ObjectMap, Object2ObjectOpenHashMap}
-import org.broadinstitute.gpp.poolq3.collection._
+import org.broadinstitute.gpp.poolq3.collection.*
 import org.broadinstitute.gpp.poolq3.reference.Reference
 import org.log4s.{Logger, getLogger}
 
@@ -98,7 +98,7 @@ object UnexpectedSequenceWriter {
     Using.resource(Source.fromFile(file)) { src =>
       src.getLines().zipWithIndex1.foreach { case (line: String, lineNo: Int) =>
         val fields = line.split(",", -1)
-        if (fields.size != 2) {
+        if fields.size != 2 then {
           log.warn(s"Found ${fields.size} fields on line $lineNo of $file, expected 2")
         } else {
           val rowBc = fields(0)

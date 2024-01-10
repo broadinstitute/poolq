@@ -17,10 +17,10 @@ class ReadIdCheckPolicyTest extends FunSuite {
   val pes = List(pe1, pe2, pe3)
 
   val pairedEndTuples =
-    for {
+    for
       a <- pes
       b <- pes if a != b
-    } yield (a, b)
+    yield (a, b)
 
   test("Illumina policy checks up to the first space") {
     pairedEndTuples.foreach { case (a, b) => ReadIdCheckPolicy.Illumina.check(a, b) }

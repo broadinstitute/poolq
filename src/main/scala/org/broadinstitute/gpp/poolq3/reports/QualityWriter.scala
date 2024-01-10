@@ -25,7 +25,7 @@ object QualityWriter {
   ): Try[Unit] =
     Using(new PrintWriter(file.toFile)) { writer =>
       val barcodeLocationStats =
-        if (isPairedEnd) {
+        if isPairedEnd then {
           s"""Reads with no construct barcode: ${state.rowBarcodeNotFound + state.revRowBarcodeNotFound - state.neitherRowBarcodeFound}
              |
              |Reads with no forward construct barcode: ${state.rowBarcodeNotFound}

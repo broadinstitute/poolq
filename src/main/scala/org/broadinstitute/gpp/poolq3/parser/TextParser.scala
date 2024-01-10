@@ -18,7 +18,7 @@ class TextParser(file: Path) extends CloseableIterable[Read] {
     private[this] var line = reader.readLine()
 
     final override def next(): Read =
-      if (line == null) throw new NoSuchElementException
+      if line == null then throw new NoSuchElementException
       else {
         val ret = Read(s"Line $lineNo", line)
         line = reader.readLine()

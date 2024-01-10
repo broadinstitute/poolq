@@ -9,7 +9,7 @@ import java.nio.file.{Files, Path}
 import java.util.function.Predicate
 import java.util.stream.Collectors
 
-import cats.syntax.all._
+import cats.syntax.all.*
 import munit.FunSuite
 import org.broadinstitute.gpp.poolq3.PoolQ
 import org.broadinstitute.gpp.poolq3.barcode.{Barcodes, FoundBarcode}

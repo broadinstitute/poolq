@@ -51,11 +51,11 @@ final class UnexpectedSequenceTracker(reportDir: Path) extends Closeable {
   }
 
   private[this] def enumeratePrefixes: Iterable[String] =
-    for {
+    for
       b1 <- Bases
       b2 <- Bases
       b3 <- Bases
       b4 <- Bases
-    } yield s"$b1$b2$b3$b4"
+    yield s"$b1$b2$b3$b4"
 
 }

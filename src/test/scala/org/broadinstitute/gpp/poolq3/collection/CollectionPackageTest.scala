@@ -6,7 +6,7 @@
 package org.broadinstitute.gpp.poolq3.collection
 
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers.*
 
 class CollectionPackageTest extends AnyFlatSpec {
 

@@ -59,9 +59,9 @@ object Reference {
     mappings.foreach { referenceEntry =>
       barcodes += referenceEntry.dnaBarcode
       // check that for any barcode used in matching, only one _input_ barcode reduces to it
-      if (barcodeToInputBarcode.containsKey(referenceEntry.dnaBarcode)) {
+      if barcodeToInputBarcode.containsKey(referenceEntry.dnaBarcode) then {
         val witness = barcodeToInputBarcode.get(referenceEntry.dnaBarcode)
-        if (witness != referenceEntry.referenceBarcode) {
+        if witness != referenceEntry.referenceBarcode then {
           throw new ConflictingBarcodeException(referenceEntry.referenceBarcode, referenceEntry.referenceId, witness)
         }
       } else {
@@ -72,7 +72,7 @@ object Reference {
       // with the exception that `.putIfAbsent` requires a new set to be constructed every time
       // regardless of whether it's used, since it's a Java API and Java doesn't support by-name
       // parameters
-      if (barcodeIds.containsKey(referenceEntry.dnaBarcode)) {
+      if barcodeIds.containsKey(referenceEntry.dnaBarcode) then {
         barcodeIds.get(referenceEntry.dnaBarcode) += referenceEntry.referenceId
       } else {
         val set = mutable.LinkedHashSet[String]()
@@ -98,7 +98,7 @@ object Reference {
     }
 
     // truncation is one of 2 ways we can end up with ambiguous matches
-    if (!includeAmbiguous) {
+    if !includeAmbiguous then {
       Reference.pruneAmbiguous(map)
     }
 
@@ -109,7 +109,7 @@ object Reference {
     // list ambiguous variants
     var ambiguousVariants: List[String] = Nil
     barcodeVariants.forEach { (variant, barcodes) =>
-      if (barcodes.size > 1) {
+      if barcodes.size > 1 then {
         ambiguousVariants ::= variant
       }
     }

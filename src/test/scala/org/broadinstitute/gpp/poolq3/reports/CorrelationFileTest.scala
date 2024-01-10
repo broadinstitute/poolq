@@ -16,7 +16,7 @@ import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, ReferenceEntry}
 import org.broadinstitute.gpp.poolq3.process.ScoringConsumer
 import org.broadinstitute.gpp.poolq3.reference.ExactReference
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers.*
 
 class CorrelationFileTest extends AnyFlatSpec {
 

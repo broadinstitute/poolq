@@ -40,8 +40,8 @@ final case class FixedOffsetPolicy(startPos0: Int, length: Int, skipShortReads: 
   private[this] val endPos0: Int = startPos0 + length
 
   override def find(read: Read): Option[FoundBarcode] =
-    if (read.seq.length < minLength) {
-      if (skipShortReads) None
+    if read.seq.length < minLength then {
+      if skipShortReads then None
       else throw ReadTooShortException(read.seq, startPos0, minLength)
     } else Some(FoundBarcode(copyOfRange(read.seq.toCharArray, startPos0, endPos0), startPos0))
 
@@ -83,9 +83,9 @@ final case class IndexOfKnownPrefixPolicy(
   override def find(read: Read): Option[FoundBarcode] = {
     val index = read.seq.indexOf(prefix, minPrefixStartPosInt)
     val barcodeStart = index + prefixLength
-    if (index < 0) None
-    else if (index > maxPrefixStartPosInt) None
-    else if ((read.seq.length - barcodeStart) < length) None
+    if index < 0 then None
+    else if index > maxPrefixStartPosInt then None
+    else if (read.seq.length - barcodeStart) < length then None
     else Some(FoundBarcode(copyOfRange(read.seq.toCharArray, barcodeStart, barcodeStart + length), barcodeStart))
   }
 
@@ -141,7 +141,7 @@ object TemplatePolicy {
       case Regex1(ctx, minStr, maxStr) =>
         ctx match {
           case Regex2(p1, b1, gap, p2, b2) =>
-            if ((b1.length + b2.length) != refBarcodeLength) {
+            if (b1.length + b2.length) != refBarcodeLength then {
               throw new IllegalArgumentException(s"$s is not compatible with the provided reference file")
             }
             val min = Option(minStr).map(_.toInt)
@@ -149,7 +149,7 @@ object TemplatePolicy {
             SplitBarcodePolicy(p1.toUpperCase, b1.length, gap.length, p2.toUpperCase, b2.length, min, max)
           case _ =>
             val km = KeyMask(ctx)
-            if (km.keyLengthInBases != refBarcodeLength) {
+            if km.keyLengthInBases != refBarcodeLength then {
               throw new IllegalArgumentException(s"$s is not compatible with the provided reference file")
             }
             val min = Option(minStr).map(_.toInt)
@@ -200,8 +200,8 @@ object TemplatePolicy {
 
   final def satisfies(template: Array[Char], seq: String, seqOffset: Int): Boolean = {
     var i = 0
-    while (i < template.length) {
-      if (!compatible(template(i), seq(seqOffset + i))) return false
+    while i < template.length do {
+      if !compatible(template(i), seq(seqOffset + i)) then return false
       i += 1
     }
     true
@@ -230,8 +230,8 @@ final case class GeneralTemplatePolicy(template: KeyMask, minStartPos: Option[In
 
     @tailrec
     def find(i: Int): Option[Int] =
-      if (i > maxPos) None
-      else if (TemplatePolicy.satisfies(templateChars, read.seq, i)) Some(i)
+      if i > maxPos then None
+      else if TemplatePolicy.satisfies(templateChars, read.seq, i) then Some(i)
       else find(i + 1)
 
     find(minStartPosInt).map(i => extract(read, i))
@@ -273,13 +273,13 @@ final case class SplitBarcodePolicy(
     @tailrec
     def loop(start: Int): Option[FoundBarcode] = {
       val e = math.min(maxPrefix1StartPosInt, read.seq.length - patternLength)
-      if (start > e) None
+      if start > e then None
       else {
         indexOf(prefix1, read.seq, start, e) match {
           case None => None
           case Some(p1Index) =>
             val p2Index = p1Index + expectedP2Offset
-            if (matches(prefix2, read.seq, p2Index)) {
+            if matches(prefix2, read.seq, p2Index) then {
               val dest = Array.ofDim[Char](length)
               // copy in the the barcodes
               read.seq.getChars(p1Index + p1Length, p1Index + p1Length + b1Length, dest, 0)
@@ -306,10 +306,10 @@ object SplitBarcodePolicy {
   final private[barcode] def indexOf(needle: String, haystack: String, start: Int, end: Int): Option[Int] = {
     @tailrec
     def loop(i: Int): Option[Int] =
-      if (i > math.min(haystack.length - needle.length, end)) {
+      if i > math.min(haystack.length - needle.length, end) then {
         None
       } else {
-        if (matches(needle, haystack, i)) Some(i)
+        if matches(needle, haystack, i) then Some(i)
         else loop(i + 1)
       }
     loop(start)
@@ -318,9 +318,9 @@ object SplitBarcodePolicy {
   final private def matches(needle: String, haystack: String, haystackOffset: Int): Boolean = {
     @tailrec
     def loop(i: Int): Boolean =
-      if (i >= needle.length) true
+      if i >= needle.length then true
       else {
-        if (needle(i) != haystack(haystackOffset + i)) false
+        if needle(i) != haystack(haystackOffset + i) then false
         else loop(i + 1)
       }
     loop(0)

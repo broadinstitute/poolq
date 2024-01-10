@@ -40,8 +40,7 @@ object KeyMask {
     mergedRanges.length match {
       case 1 =>
         val r = mergedRanges.head
-        if (r.start0 == 0 && r.length == pattern.length)
-          KeyMask0(pattern)
+        if r.start0 == 0 && r.length == pattern.length then KeyMask0(pattern)
         else KeyMask1(pattern, r)
       case 2 =>
         KeyMask2(pattern, mergedRanges(0), mergedRanges(1))
@@ -64,8 +63,7 @@ object KeyMask {
       acc match {
         case Nil => current :: Nil
         case head :: tail =>
-          if (head.end0 >= current.start0 - 1)
-            KeyRange(head.start0, current.end0) :: tail
+          if head.end0 >= current.start0 - 1 then KeyRange(head.start0, current.end0) :: tail
           else current :: acc
       }
     // but use an IndexedSeq for efficiency later

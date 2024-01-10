@@ -22,7 +22,7 @@ package object parser {
   def inputStream(file: Path): InputStream = {
     val rawStream = new FileInputStream(file.toFile)
     val bufferedStream = new BufferedInputStream(rawStream)
-    if (isGzipped(file)) new GZIPInputStream(bufferedStream, 8192)
+    if isGzipped(file) then new GZIPInputStream(bufferedStream, 8192)
     else bufferedStream
   }
 

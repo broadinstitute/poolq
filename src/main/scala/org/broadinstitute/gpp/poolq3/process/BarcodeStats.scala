@@ -18,7 +18,7 @@ class BarcodeStats {
   def notFound(totalReads: Int): Int = totalReads - found
 
   def avg: Option[Double] =
-    if (found < 1) None
+    if found < 1 then None
     else Some(sum / found.toDouble)
 
   def update(pos: Int): Unit = {
@@ -28,7 +28,7 @@ class BarcodeStats {
     sum += pos
   }
 
-  def minPosStr = if (min == Int.MaxValue) "N/A" else min.toString
-  def maxPosStr = if (min < 0) "N/A" else max.toString
+  def minPosStr = if min == Int.MaxValue then "N/A" else min.toString
+  def maxPosStr = if min < 0 then "N/A" else max.toString
 
 }

@@ -33,14 +33,14 @@ final class FastqParser(file: Path) extends CloseableIterable[Read] {
       val line2 = nextLine()
       val line3 = nextLine()
 
-      if (line0.charAt(0) != '@') {
+      if line0.charAt(0) != '@' then {
         throw InvalidFileException(file, "Corrupt or incorrect FASTQ: field 1 must begin with '@'")
       }
-      if (line2.charAt(0) != '+') {
+      if line2.charAt(0) != '+' then {
         throw InvalidFileException(file, "Corrupt or incorrect FASTQ: field 3 must begin with '+'")
       }
 
-      if (line3 == null) throw InvalidFileException(file, "File contains an incomplete FASTQ read")
+      if line3 == null then throw InvalidFileException(file, "File contains an incomplete FASTQ read")
       else Read(line0, line1)
     }
 

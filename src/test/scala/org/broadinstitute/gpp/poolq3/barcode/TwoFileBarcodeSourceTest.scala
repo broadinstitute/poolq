@@ -5,7 +5,7 @@
  */
 package org.broadinstitute.gpp.poolq3.barcode
 
-import cats.syntax.all._
+import cats.syntax.all.*
 import munit.FunSuite
 import org.broadinstitute.gpp.poolq3.parser.CloseableIterable
 import org.broadinstitute.gpp.poolq3.types.{Read, ReadIdCheckPolicy}

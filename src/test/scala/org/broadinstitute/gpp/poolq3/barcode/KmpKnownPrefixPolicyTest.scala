@@ -9,8 +9,8 @@ import org.broadinstitute.gpp.poolq3.gen.{acgt, acgtn, dnaSeqMaxN, dnaSeqOfN}
 import org.broadinstitute.gpp.poolq3.types.Read
 import org.scalacheck.Gen
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers._
-import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks._
+import org.scalatest.matchers.should.Matchers.*
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks.*
 
 class KmpKnownPrefixPolicyTest extends AnyFlatSpec {
 

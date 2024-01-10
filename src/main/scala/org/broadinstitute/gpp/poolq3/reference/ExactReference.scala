@@ -9,7 +9,7 @@ import scala.collection.mutable
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap
 import org.broadinstitute.gpp.poolq3.parser.ReferenceEntry
-import org.broadinstitute.gpp.poolq3.seq._
+import org.broadinstitute.gpp.poolq3.seq.*
 
 final class ExactReference private[ExactReference] (
   allBarcodes: Seq[String],
@@ -24,10 +24,10 @@ final class ExactReference private[ExactReference] (
     Reference.truncationVariants(allBarcodes, barcodeProcessor, includeAmbiguous)
 
   def find(barcode: String): Seq[MatchedBarcode] =
-    if (containsN(barcode)) Vector.empty[MatchedBarcode]
+    if containsN(barcode) then Vector.empty[MatchedBarcode]
     else {
       val barcodes: List[String] = truncationVariants.get(barcode)
-      if (barcodes == null) Vector.empty[MatchedBarcode]
+      if barcodes == null then Vector.empty[MatchedBarcode]
       else barcodes.map(MatchedBarcode(_, 0))
     }
 

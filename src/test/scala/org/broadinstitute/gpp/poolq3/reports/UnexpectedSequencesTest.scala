@@ -10,16 +10,18 @@ import java.nio.file.Files
 import scala.io.Source
 import scala.util.{Random, Using}
 
-import better.files._
+import better.files.*
 import org.broadinstitute.gpp.poolq3.PoolQ
 import org.broadinstitute.gpp.poolq3.barcode.{Barcodes, FoundBarcode}
 import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, ReferenceEntry}
 import org.broadinstitute.gpp.poolq3.process.ScoringConsumer
 import org.broadinstitute.gpp.poolq3.reference.{ExactReference, VariantReference}
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers.*
 
 class UnexpectedSequencesTest extends AnyFlatSpec {
+
+  private val rand: Random = Random(1704927514760L)
 
   private[this] val rowReferenceBarcodes =
     List("AAAAAAAAAAAAAAAAAAAA", "AAAAAAAAAAAAAAAAAAAC", "AAAAAAAAAAAAAAAAAAAG", "AAAAAAAAAAAAAAAAAAAT").map(b =>
@@ -39,8 +41,8 @@ class UnexpectedSequencesTest extends AnyFlatSpec {
   private[this] val globalReference =
     ExactReference(List(ReferenceEntry("GATGTGCAGTGAGTAGCGAG", "Oh, that one")), identity, includeAmbiguous = false)
 
-  private[this] val unexpectedReadCount = Random.nextInt(200)
-  private[this] val expectedReadCount = Random.nextInt(1000)
+  private[this] val unexpectedReadCount = rand.nextInt(200)
+  private[this] val expectedReadCount = rand.nextInt(1000)
 
   // these reads should not be included in the unexpected sequence report for reasons noted below
   private[this] val expectedReads =
@@ -59,7 +61,7 @@ class UnexpectedSequencesTest extends AnyFlatSpec {
     )
 
   private[this] val underlyingBarcodes =
-    Random.shuffle(
+    rand.shuffle(
       List.fill(expectedReadCount)(expectedReads).flatten ++ List.fill(unexpectedReadCount)(unexpectedReads).flatten
     )
 

@@ -9,7 +9,7 @@ import java.nio.file.{Files, Path}
 
 import scala.util.{Failure, Success, Try, Using}
 
-import cats.syntax.all._
+import cats.syntax.all.*
 import org.broadinstitute.gpp.poolq3.PoolQConfig.synthesizeArgs
 import org.broadinstitute.gpp.poolq3.barcode.{BarcodePolicy, Barcodes, barcodeSource}
 import org.broadinstitute.gpp.poolq3.parser.{BarcodeSet, CloseableIterable, ReferenceData}
@@ -122,7 +122,7 @@ object PoolQ {
       barcodeSource(config.input, rowBarcodePolicy, revRowBarcodePolicyOpt, colBarcodePolicyOrLength, umiInfo.map(_._2))
 
     lazy val unexpectedSequenceCacheDir: Option[Path] =
-      if (config.skipUnexpectedSequenceReport) None
+      if config.skipUnexpectedSequenceReport then None
       else {
         val ret = config.unexpectedSequenceCacheDir.map(Files.createDirectories(_)).orElse {
           val ret: Path = Files.createTempDirectory("unexpected-sequence-cache")
@@ -133,7 +133,7 @@ object PoolQ {
       }
 
     val consumer =
-      if (config.noopConsumer) new NoOpConsumer
+      if config.noopConsumer then new NoOpConsumer
       else
         new ScoringConsumer(
           rowReference,
@@ -145,7 +145,7 @@ object PoolQ {
           config.isPairedEnd
         )
 
-    for {
+    for
       runSummary <- runProcess(barcodes, consumer)
       state = runSummary.state
       counts = state.known
@@ -195,7 +195,7 @@ object PoolQ {
               globalReference
             )
             .as(UnexpectedSequencesFileType.some)
-        if (config.removeUnexpectedSequenceCache) {
+        if config.removeUnexpectedSequenceCache then {
           log.info(s"Removing unexpected sequence cache ${config.unexpectedSequenceCacheDir}")
           UnexpectedSequenceWriter.removeCache(dir)
         }
@@ -204,7 +204,7 @@ object PoolQ {
       _ = log.info(s"Writing run info ${config.output.unexpectedSequencesFile}")
       _ <- RunInfoWriter.write(config.output.runInfoFile, config)
       _ = log.info("PoolQ complete")
-    } yield PoolQSummary(runSummary, AlwaysWrittenFiles ++ Set(cfto, usfto).flatten)
+    yield PoolQSummary(runSummary, AlwaysWrittenFiles ++ Set(cfto, usfto).flatten)
   }
 
   def runProcess(barcodes: CloseableIterable[Barcodes], consumer: Consumer): Try[PoolQRunSummary] =

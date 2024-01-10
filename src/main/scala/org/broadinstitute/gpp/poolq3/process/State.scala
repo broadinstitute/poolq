@@ -25,7 +25,7 @@ final class State(
   val revRowBarcodeStats: BarcodeStats = new BarcodeStats
 
   def matchPercent: Double =
-    if (reads < 1) 0.0
+    if reads < 1 then 0.0
     else 100L * matches / reads.toDouble
 
 }

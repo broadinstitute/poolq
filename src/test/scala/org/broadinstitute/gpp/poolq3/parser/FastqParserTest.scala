@@ -5,9 +5,9 @@
  */
 package org.broadinstitute.gpp.poolq3.parser
 
-import better.files._
+import better.files.*
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers.*
 
 class FastqParserTest extends AnyFlatSpec {
 

@@ -29,7 +29,7 @@ object ReadIdCheckPolicy {
   case object Strict extends ReadIdCheckPolicy {
 
     def check(r1: Read, r2: Read): Unit =
-      if (r1.id != r2.id) throw UncoordinatedReadsException(r1.id, r2.id)
+      if r1.id != r2.id then throw UncoordinatedReadsException(r1.id, r2.id)
       else ()
 
     val name: String = "strict"
@@ -49,13 +49,13 @@ object ReadIdCheckPolicy {
 
       @tailrec
       def loop(i: Int): Unit = {
-        if (i >= end) ()
+        if i >= end then ()
         else {
           val c1 = rid1.charAt(i)
           val c2 = rid2.charAt(i)
-          if (c1 == ' ' && c2 == ' ') ()
+          if c1 == ' ' && c2 == ' ' then ()
           else {
-            if (c1 != c2) throw UncoordinatedReadsException(rid1, rid2)
+            if c1 != c2 then throw UncoordinatedReadsException(rid1, rid2)
             loop(i + 1)
           }
         }
