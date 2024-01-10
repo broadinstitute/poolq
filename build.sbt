@@ -13,22 +13,21 @@ lazy val versions = new {
   val acyclic = "0.2.1"
   val betterFiles = "3.9.2"
   val betterMonadicFor = "0.3.1"
-  val catsEffect3 = "3.5.1"
+  val catsEffect3 = "3.5.2"
   val cats = "2.10.0"
-  val commonsIo = "2.13.0"
-  val commonsText = "1.10.0"
+  val commonsIo = "2.15.1"
+  val commonsText = "1.11.0"
   val commonsMath3 = "3.6.1"
   val fastutil = "8.5.12"
-  val fs2 = "3.8.0"
-  val kantanCodecs = "0.5.3"
-  val kantanCsv = "0.7.0"
+  val fs2 = "3.9.3"
   val log4s = "1.10.0"
-  val logback = "1.2.11"
+  val logback = "1.2.13"
   val munit = "0.7.29"
   val munitCatsEffect3 = "1.0.7"
   val samTools = "3.0.5"
   val scalaCheck = "1.17.0"
-  val scalaTest = "3.2.16"
+  val scalaCsv = "1.3.10"
+  val scalaTest = "3.2.17"
   val scalaTestPlusScalaCheck = "3.2.2.0"
   val scopt = "4.1.0"
   val slf4j = "1.7.36"
@@ -45,12 +44,11 @@ lazy val libraries = new {
   val fastutil = "it.unimi.dsi" % "fastutil" % versions.fastutil
   val fs2Core = "co.fs2" %% "fs2-core" % versions.fs2
   val fs2Io = "co.fs2" %% "fs2-io" % versions.fs2
-  val kantanCodecs = "com.nrinaudo" %% "kantan.codecs" % versions.kantanCodecs
-  val kantanCsv = "com.nrinaudo" %% "kantan.csv" % versions.kantanCsv
   val log4s = "org.log4s" %% "log4s" % versions.log4s
   val logbackCore = "ch.qos.logback" % "logback-core" % versions.logback
   val logbackClassic = "ch.qos.logback" % "logback-classic" % versions.logback
   val samtools = "com.github.samtools" % "htsjdk" % versions.samTools
+  val scalaCsv = "com.github.tototoshi" %% "scala-csv" % versions.scalaCsv
   val scopt = "com.github.scopt" %% "scopt" % versions.scopt
   val slf4j = "org.slf4j" % "slf4j-api" % versions.slf4j
 
@@ -71,12 +69,11 @@ lazy val dependencies =
     libraries.commonsIo,
     libraries.commonsMath3,
     libraries.fastutil,
-    libraries.kantanCodecs,
-    libraries.kantanCsv,
     libraries.log4s,
     libraries.logbackCore % Runtime,
     libraries.logbackClassic % Runtime,
     libraries.samtools,
+    libraries.scalaCsv,
     libraries.scopt,
     libraries.slf4j,
     libraries.betterFiles % Test,
@@ -107,8 +104,11 @@ lazy val headerSettings = List(
 lazy val assemblySettings = List(
   assembly / assemblyJarName := "../bin/poolq3.jar",
   assembly / assemblyMergeStrategy := {
-    case "logback.xml"      => MergeStrategy.first
-    case "logback-test.xml" => MergeStrategy.discard
+    case "logback.xml"                                                 => MergeStrategy.first
+    case "logback-test.xml"                                            => MergeStrategy.discard
+    case PathList("module-info.class")                                 => MergeStrategy.discard
+    case PathList("META-INF", "versions", xs @ _, "module-info.class") => MergeStrategy.discard
+    case "module-info.class"                                           => MergeStrategy.first
     case x =>
       val old = (assembly / assemblyMergeStrategy).value
       old(x)
