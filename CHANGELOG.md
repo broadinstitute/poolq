@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.8.0
+* Replace kantan.csv with scala-csv
+
+## 3.7.2
+* Parse barcodes from read IDs in demultiplexed mode
+
+## 3.7.1
+* Adjust handling of command-line arguments in demultiplexed FASTQ file case
+
 ## 3.7.0
 * Support for processing demultiplexed FASTQ files
 
