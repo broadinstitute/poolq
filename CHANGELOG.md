@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.9.0
+* Remove unused BKTree implementation
+* Port to Scala 3
+
 ## 3.8.0
 * Replace kantan.csv with scala-csv
 
