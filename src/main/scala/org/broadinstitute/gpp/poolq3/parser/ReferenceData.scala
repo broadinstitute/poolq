@@ -10,8 +10,7 @@ import java.nio.file.Path
 
 import scala.util.Using
 
-import kantan.csv._
-import kantan.csv.ops._
+import com.github.tototoshi.csv._
 import org.apache.commons.io.ByteOrderMark
 import org.apache.commons.io.input.BOMInputStream
 import org.broadinstitute.gpp.poolq3.reports.{GctDialect, PoolQ2Dialect, ReportsDialect}
@@ -77,34 +76,34 @@ object ReferenceData {
         .setInclude(false)
         .get()
       val br = new BufferedReader(new InputStreamReader(in))
-      val delimiter = guessDelimiter(br)
-      val config =
-        CsvConfiguration(delimiter, quote, CsvConfiguration.QuotePolicy.WhenNeeded, CsvConfiguration.Header.None)
+      val guessedDelimiter = guessDelimiter(br)
+      implicit object CSVFormat extends DefaultCSVFormat {
+        override val delimiter = guessedDelimiter
+        override val quoteChar: Char = quote
+      }
       skipHeader(br, LineRegex)
-      val reader = br.asCsvReader[List[String]](config)
-      val barcodes = reader.map {
-        case Right(xs) =>
-          xs match {
-            case barcodeRaw :: idRaw :: _ =>
-              // if the CSV parser leaves spaces, we should remove them
-              val barcode = barcodeRaw.trim()
-              val id = idRaw.trim()
+      val rows = CSVReader.open(br).all()
+      val barcodes = rows.map { case xs =>
+        xs match {
+          case barcodeRaw :: idRaw :: _ =>
+            // if the CSV parser leaves spaces, we should remove them
+            val barcode = barcodeRaw.trim()
+            val id = idRaw.trim()
 
-              // N.B. empty IDs are commonly used and must be supported; as long as the barcode is a non-empty, valid
-              // DNA string, we must accept the row. However, sometimes Excel leaves empty lines in exported CSV; as
-              // long as *both* the barcode and ID are empty, it's safe to just skip the row. For now we'll be paranoid
-              // and reject cases where the barcode is empty but the ID is non-empty
-              if (barcode.isEmpty && id.isEmpty) None
-              else if (isReferenceBarcode(barcode)) Some(ReferenceEntry(barcode, id))
-              else throw InvalidFileException(file, s"Invalid DNA barcode '$barcode' for ID '$id'")
-            case _ =>
-              throw InvalidFileException(
-                file,
-                s"Incorrect number of columns. At least 2 required, got: ${xs.length}: $xs"
-              )
-          }
-        case Left(value) => throw InvalidFileException(file, s"Unable to parse data ${value.getMessage}")
-      }.toList
+            // N.B. empty IDs are commonly used and must be supported; as long as the barcode is a non-empty, valid
+            // DNA string, we must accept the row. However, sometimes Excel leaves empty lines in exported CSV; as
+            // long as *both* the barcode and ID are empty, it's safe to just skip the row. For now we'll be paranoid
+            // and reject cases where the barcode is empty but the ID is non-empty
+            if (barcode.isEmpty && id.isEmpty) None
+            else if (isReferenceBarcode(barcode)) Some(ReferenceEntry(barcode, id))
+            else throw InvalidFileException(file, s"Invalid DNA barcode '$barcode' for ID '$id'")
+          case _ =>
+            throw InvalidFileException(
+              file,
+              s"Incorrect number of columns. At least 2 required, got: ${xs.length}: $xs"
+            )
+        }
+      }
 
       if (barcodes.isEmpty) {
         throw InvalidFileException(file, "Empty reference file")
