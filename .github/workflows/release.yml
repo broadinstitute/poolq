@@ -13,9 +13,7 @@ jobs:
     - uses: actions/checkout@v3.1.0
     - run: git config --global user.email "gpp-informatics@broadinstitute.org"
     - run: git config --global user.name "GPP Informatics"
-    - uses: jrouly/scalafmt-native-action@v2
-      with:
-        version: '3.5.8'
+    - uses: jrouly/scalafmt-native-action@v3
     - name: Set up JDK 8
       uses: actions/setup-java@v3.6.0
       with:
