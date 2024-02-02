@@ -13,7 +13,13 @@ import cats.syntax.all._
 import org.broadinstitute.gpp.poolq3.PoolQConfig.synthesizeArgs
 import org.broadinstitute.gpp.poolq3.barcode.{BarcodePolicy, Barcodes, barcodeSource}
 import org.broadinstitute.gpp.poolq3.parser.{BarcodeSet, CloseableIterable, ReferenceData}
-import org.broadinstitute.gpp.poolq3.process.{Consumer, NoOpConsumer, PoolQProcess, ScoringConsumer}
+import org.broadinstitute.gpp.poolq3.process.{
+  Consumer,
+  NoOpConsumer,
+  PoolQProcess,
+  ScoringConsumer,
+  UnexpectedSequenceTracker
+}
 import org.broadinstitute.gpp.poolq3.reference.{ExactReference, Reference, referenceFor}
 import org.broadinstitute.gpp.poolq3.reports.{
   BarcodeCountsWriter,
@@ -132,6 +138,9 @@ object PoolQ {
         ret
       }
 
+    lazy val unexpectedSequenceTrackerOpt: Option[UnexpectedSequenceTracker] =
+      unexpectedSequenceCacheDirOpt.map(new UnexpectedSequenceTracker(_, colReference))
+
     val consumer =
       if (config.noopConsumer) new NoOpConsumer
       else
@@ -141,7 +150,7 @@ object PoolQ {
           config.countAmbiguous,
           config.alwaysCountColumnBarcodes,
           umiInfo.map(_._1),
-          unexpectedSequenceCacheDirOpt,
+          unexpectedSequenceTrackerOpt,
           config.isPairedEnd
         )
 

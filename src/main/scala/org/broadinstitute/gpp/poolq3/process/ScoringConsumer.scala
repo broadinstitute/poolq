@@ -5,7 +5,6 @@
  */
 package org.broadinstitute.gpp.poolq3.process
 
-import java.nio.file.Path
 import java.util.concurrent.{ArrayBlockingQueue, TimeUnit}
 
 import org.broadinstitute.gpp.poolq3.barcode.{Barcodes, FoundBarcode}
@@ -21,7 +20,7 @@ final class ScoringConsumer(
   countAmbiguous: Boolean,
   alwaysCountColumnBarcodes: Boolean,
   umiReference: Option[BarcodeSet],
-  unexpectedReportCache: Option[Path],
+  unexpectedSequenceTrackerOpt: Option[UnexpectedSequenceTracker],
   pairedEndMode: Boolean
 ) extends Consumer {
 
@@ -29,9 +28,6 @@ final class ScoringConsumer(
 
   private[this] val unexpectedSequenceQueue: ArrayBlockingQueue[(Array[Char], Array[Char])] =
     new ArrayBlockingQueue(1000)
-
-  private[this] val unexpectedSequenceTrackerOpt: Option[UnexpectedSequenceTracker] =
-    unexpectedReportCache.map(new UnexpectedSequenceTracker(_))
 
   // used to tell the unexpected sequence tracker thread when processing is done
   @volatile private[this] var done = false
@@ -65,11 +61,11 @@ final class ScoringConsumer(
   }
 
   override def start(): Unit = {
-    unexpectedReportCache.foreach(_ => unexpectedSequenceTrackerThread.start())
+    unexpectedSequenceTrackerOpt.foreach(_ => unexpectedSequenceTrackerThread.start())
   }
 
   override def close(): Unit =
-    unexpectedReportCache.foreach { _ =>
+    unexpectedSequenceTrackerOpt.foreach { _ =>
       done = true
       unexpectedSequenceTrackerThread.join()
       unexpectedSequenceTrackerOpt.foreach(_.close())
@@ -103,7 +99,9 @@ final class ScoringConsumer(
           // if we are tracking unexpected sequences and we matched the column barcode to the reference data but didn't
           // match the row barcode to the reference data, and the row barcode doesn't have an N in it, then queue the
           // row barcode for inclusion in the unexpected sequence report
-          if (unexpectedReportCache.isDefined && colBc.nonEmpty && rowBc.isEmpty && !containsN(parsedRow.barcode)) {
+          if (
+            unexpectedSequenceTrackerOpt.isDefined && colBc.nonEmpty && rowBc.isEmpty && !containsN(parsedRow.barcode)
+          ) {
             unexpectedSequenceQueue.put((parsedRow.barcode, parsedCol.barcode))
           }
         }
@@ -128,7 +126,9 @@ final class ScoringConsumer(
         // if we are tracking unexpected sequences and we matched the column barcode to the reference data but didn't
         // match the row barcode to the reference data, and the row barcode doesn't have an N in it, then queue the
         // row barcode for inclusion in the unexpected sequence report
-        if (unexpectedReportCache.isDefined && colBc.nonEmpty && rowBc.isEmpty && !containsN(parsedRow.barcode)) {
+        if (
+          unexpectedSequenceTrackerOpt.isDefined && colBc.nonEmpty && rowBc.isEmpty && !containsN(parsedRow.barcode)
+        ) {
           unexpectedSequenceQueue.put((parsedRow.barcode, parsedCol.barcode))
         }
 
