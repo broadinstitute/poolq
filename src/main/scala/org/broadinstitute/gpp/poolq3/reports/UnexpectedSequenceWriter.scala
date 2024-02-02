@@ -5,7 +5,7 @@
  */
 package org.broadinstitute.gpp.poolq3.reports
 
-import java.io.{File, PrintWriter}
+import java.io.PrintWriter
 import java.nio.file.{Files, Path}
 
 import scala.collection.mutable
@@ -13,8 +13,7 @@ import scala.io.Source
 import scala.util.control.NonFatal
 import scala.util.{Try, Using}
 
-import it.unimi.dsi.fastutil.objects.{Object2IntOpenHashMap, Object2ObjectMap, Object2ObjectOpenHashMap}
-import org.broadinstitute.gpp.poolq3.collection._
+import org.broadinstitute.gpp.poolq3.process.UnexpectedSequenceTracker.nameFor
 import org.broadinstitute.gpp.poolq3.reference.Reference
 import org.log4s.{Logger, getLogger}
 
@@ -25,11 +24,14 @@ object UnexpectedSequenceWriter {
   def write(
     outputFile: Path,
     unexpectedSequenceCacheDir: Path,
-    sequencesToReport: Int,
+    unexpectedBarcodeCounts: Map[String, Int],
+    nSequencesToReport: Int,
     colReference: Reference,
-    globalReference: Option[Reference]
+    globalReference: Option[Reference],
+    samplePct: Float
   ): Try[Unit] = {
-    val (h, r) = loadCache(unexpectedSequenceCacheDir, sequencesToReport)
+    val sequencesToReport = sampleCache(unexpectedSequenceCacheDir, samplePct, colReference, unexpectedBarcodeCounts)
+    val (h, r) = loadCache(unexpectedSequenceCacheDir, colReference, sequencesToReport, nSequencesToReport)
 
     Using(new PrintWriter(outputFile.toFile))(pw => printUnexpectedCounts(colReference, globalReference, h, r, pw))
   }
@@ -48,40 +50,110 @@ object UnexpectedSequenceWriter {
     tryDelete(unexpectedSequenceCacheDir)
   }
 
+  // builds the set of unexpected sequences we will actually count data for
+  private[reports] def sampleCache(
+    cacheDir: Path,
+    samplePct: Float,
+    colReference: Reference,
+    unexpectedCountsByBarcode: Map[String, Int]
+  ): Set[String] = {
+    val ret = mutable.HashSet[String]()
+    colReference.allBarcodes.foreach { dnaBarcode =>
+      val linesToRead: Int =
+        math.floor((unexpectedCountsByBarcode.getOrElse(dnaBarcode, 0) * samplePct).toDouble).toInt
+      val file = cacheDir.resolve(nameFor(dnaBarcode))
+      if (Files.exists(file)) {
+        Using.resource(Source.fromFile(file.toFile)) { src =>
+          src.getLines().take(linesToRead).foreach(line => ret += line)
+        }
+      } else {
+        log.info(s"No unexpected cache file found for $dnaBarcode")
+      }
+    }
+    ret.toSet
+  }
+
   private[reports] def loadCache(
     cacheDir: Path,
-    sequencesToReport: Int
-  ): (Object2ObjectMap[String, Object2IntOpenHashMap[String]], Map[String, Int]) = {
-    val h = new Object2ObjectOpenHashMap[String, Object2IntOpenHashMap[String]]()
-    val r = new scala.collection.mutable.HashMap[String, Int]()
+    colReference: Reference,
+    sequencesToReport: Set[String],
+    nSequencesToReport: Int
+  ): (Map[String, Map[String, Int]], Vector[String]) = {
+    val rowColBarcodeCounts = new mutable.HashMap[String, mutable.Map[String, Int]]()
+    val allRowBarcodeCounts = new mutable.HashMap[String, Int]()
 
-    cacheDir.toFile.listFiles().foreach { file =>
-      log.debug(s"Processing ${file.getName}")
-      parseFile(h, r, file)
+    colReference.allBarcodes.foreach { colBc =>
+      val rowCountMap = parseFile(cacheDir, colBc, sequencesToReport)
 
-      // now truncate the histograms to the top N
-      truncateToN(h, r, sequencesToReport)
+      rowCountMap.foreach { case (rowBc, count) =>
+        val colBarcodeCounts = rowColBarcodeCounts.getOrElseUpdate(rowBc, mutable.HashMap[String, Int]())
+        val _ = colBarcodeCounts.updateWith(colBc) {
+          case None                 => Some(count)
+          case Some(prevColBcCount) => Some(prevColBcCount + count)
+        }
+        allRowBarcodeCounts.updateWith(rowBc) {
+          case None     => Some(count)
+          case Some(pc) => Some(pc + count)
+        }
+      }
     }
-    (h, r.toMap)
+
+    // find the most popular N row barcodes
+    val mostCommonRowBarcodesRanked = allRowBarcodeCounts.toVector.sortBy(-_._2).take(nSequencesToReport).map(_._1)
+    val mostCommonRowBarcodes = mostCommonRowBarcodesRanked.toSet
+
+    // filter out everything else and convert to an immutable map
+    (
+      rowColBarcodeCounts
+        .filterInPlace { case (rowBc, _) => mostCommonRowBarcodes(rowBc) }
+        .view
+        .mapValues(m => m.toMap)
+        .toMap,
+      mostCommonRowBarcodesRanked
+    )
+  }
+
+  // n.b. returns a mutable map from row barcode to counts
+  private[reports] def parseFile(
+    cacheDir: Path,
+    colBc: String,
+    sequencesToReport: Set[String]
+  ): mutable.Map[String, Int] = {
+    val r = mutable.HashMap[String, Int]()
+    val file = cacheDir.resolve(nameFor(colBc))
+    if (Files.exists(file)) {
+      log.debug(s"Processing ${file.getName}")
+      Using.resource(Source.fromFile(file.toFile)) { src =>
+        src.getLines().foreach { rowBc =>
+          // can't avoid the double hash lookup here without a big hassle
+          if (sequencesToReport.contains(rowBc)) {
+            r.updateWith(rowBc) {
+              case None    => Some(1)
+              case Some(i) => Some(i + 1)
+            }
+          }
+        }
+      }
+    }
+    r
   }
 
   private[reports] def printUnexpectedCounts(
     colReference: Reference,
     globalReferenceOpt: Option[Reference],
-    h: Object2ObjectMap[String, Object2IntOpenHashMap[String]],
-    r: Map[String, Int],
+    h: Map[String, Map[String, Int]],
+    rows: Vector[String],
     pw: PrintWriter
   ): Unit = {
     val colBarcodes = colReference.allBarcodes.map(colReference.referenceBarcodeForDnaBarcode)
 
     pw.println(headerText(colBarcodes))
-    val rows = r.toSeq.sortBy { case (bc, count) => (-count, bc) }.map { case (k, _) => k }
 
     rows.foreach { rowBc =>
-      val rowCounts = h.get(rowBc)
+      val rowCounts = h.getOrElse(rowBc, Map.empty)
       val possibleIds =
         globalReferenceOpt.map(globalReference => globalReference.idsForBarcode(rowBc).mkString(",")).getOrElse("")
-      val counts = colReference.allBarcodes.map(colBc => rowCounts.getInt(colBc))
+      val counts = colReference.allBarcodes.map(colBc => rowCounts.getOrElse(colBc, 0))
       val total = counts.sum
       pw.println(s"$rowBc\t$total\t${counts.mkString("\t")}\t$possibleIds")
     }
@@ -89,40 +161,5 @@ object UnexpectedSequenceWriter {
 
   private[reports] def headerText(colBarcodes: Seq[String]): String =
     s"Sequence\tTotal\t${colBarcodes.mkString("\t")}\tPotential IDs"
-
-  private[reports] def parseFile(
-    h: Object2ObjectMap[String, Object2IntOpenHashMap[String]],
-    r: mutable.Map[String, Int],
-    file: File
-  ): Unit = {
-    Using.resource(Source.fromFile(file)) { src =>
-      src.getLines().zipWithIndex1.foreach { case (line: String, lineNo: Int) =>
-        val fields = line.split(",", -1)
-        if (fields.size != 2) {
-          log.warn(s"Found ${fields.size} fields on line $lineNo of $file, expected 2")
-        } else {
-          val rowBc = fields(0)
-          val colBc = fields(1)
-
-          // can't avoid the double hash lookup here without a big hassle
-          val _ = r.put(rowBc, r.getOrElseUpdate(rowBc, 0) + 1)
-          h.putIfAbsent(rowBc, new Object2IntOpenHashMap[String]())
-          h.get(rowBc).addTo(colBc, 1)
-        }
-      }
-    }
-  }
-
-  private[reports] def truncateToN[A](
-    h: Object2ObjectMap[A, Object2IntOpenHashMap[A]],
-    r: mutable.Map[A, Int],
-    n: Int
-  ): Unit = {
-    val drop = r.toSeq.sortBy { case (_, count) => -count }.drop(n)
-    drop.foreach { case (bc, _) =>
-      val _ = r.remove(bc)
-      h.remove(bc)
-    }
-  }
 
 }
