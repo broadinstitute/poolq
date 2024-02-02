@@ -14,7 +14,7 @@ import better.files._
 import org.broadinstitute.gpp.poolq3.PoolQ
 import org.broadinstitute.gpp.poolq3.barcode.{Barcodes, FoundBarcode}
 import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, ReferenceEntry}
-import org.broadinstitute.gpp.poolq3.process.ScoringConsumer
+import org.broadinstitute.gpp.poolq3.process.{ScoringConsumer, UnexpectedSequenceTracker}
 import org.broadinstitute.gpp.poolq3.reference.{ExactReference, VariantReference}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
@@ -72,13 +72,22 @@ class UnexpectedSequencesTest extends AnyFlatSpec {
     try {
       val outputFile = tmpPath.resolve("unexpected-sequences.txt")
       val cachePath = tmpPath.resolve("cache")
+      val ust = new UnexpectedSequenceTracker(cachePath, colReference)
       val consumer =
-        new ScoringConsumer(rowReference, colReference, countAmbiguous = true, false, None, Some(cachePath), false)
+        new ScoringConsumer(rowReference, colReference, countAmbiguous = true, false, None, Some(ust), false)
 
       // run PoolQ and write the file
       val _ = PoolQ.runProcess(barcodes, consumer)
 
-      val _ = UnexpectedSequenceWriter.write(outputFile, cachePath, 100, colReference, Some(globalReference))
+      val _ = UnexpectedSequenceWriter.write(
+        outputFile,
+        cachePath,
+        ust.unexpectedBarcodeCounts,
+        100,
+        colReference,
+        Some(globalReference),
+        1.0f
+      )
 
       val expected =
         s"""Sequence\tTotal\tAAAA\tAAAT\tCCCC\tCCCG\tPotential IDs
@@ -88,7 +97,8 @@ class UnexpectedSequencesTest extends AnyFlatSpec {
 
       Using.resource(Source.fromFile(outputFile.toFile)) { contents =>
         // now check the contents
-        contents.mkString should be(expected)
+        val actual = contents.mkString
+        actual should be (expected)
       }
 
     } finally {
