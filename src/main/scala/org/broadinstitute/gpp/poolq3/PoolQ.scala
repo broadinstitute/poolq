@@ -121,7 +121,7 @@ object PoolQ {
     val barcodes: CloseableIterable[Barcodes] =
       barcodeSource(config.input, rowBarcodePolicy, revRowBarcodePolicyOpt, colBarcodePolicyOrLength, umiInfo.map(_._2))
 
-    lazy val unexpectedSequenceCacheDir: Option[Path] =
+    lazy val unexpectedSequenceCacheDirOpt: Option[Path] =
       if (config.skipUnexpectedSequenceReport) None
       else {
         val ret = config.unexpectedSequenceCacheDir.map(Files.createDirectories(_)).orElse {
@@ -141,7 +141,7 @@ object PoolQ {
           config.countAmbiguous,
           config.alwaysCountColumnBarcodes,
           umiInfo.map(_._1),
-          unexpectedSequenceCacheDir,
+          unexpectedSequenceCacheDirOpt,
           config.isPairedEnd
         )
 
@@ -183,7 +183,7 @@ object PoolQ {
       )
       _ = log.info(s"Writing correlation file ${config.output.correlationFile}")
       cfto <- CorrelationFileWriter.write(config.output.correlationFile, normalizedCounts, rowReference, colReference)
-      usfto <- unexpectedSequenceCacheDir.fold(Try(Option.empty[OutputFileType])) { dir =>
+      usfto <- unexpectedSequenceCacheDirOpt.fold(Try(Option.empty[OutputFileType])) { dir =>
         log.info(s"Writing unexpected sequence report ${config.output.unexpectedSequencesFile}")
         val ret =
           UnexpectedSequenceWriter
@@ -192,7 +192,8 @@ object PoolQ {
               dir,
               config.unexpectedSequencesToReport,
               colReference,
-              globalReference
+              globalReference,
+              config.unexpectedSequenceSamplePct
             )
             .as(UnexpectedSequencesFileType.some)
         if (config.removeUnexpectedSequenceCache) {
