@@ -60,7 +60,7 @@ object UnexpectedSequenceWriter {
     val ret = mutable.HashSet[String]()
     colReference.allBarcodes.foreach { dnaBarcode =>
       val linesToRead: Int =
-        math.floor((unexpectedCountsByBarcode.getOrElse(dnaBarcode, 0) * samplePct).toDouble).toInt
+        math.ceil((unexpectedCountsByBarcode.getOrElse(dnaBarcode, 0) * samplePct).toDouble).toInt
       val file = cacheDir.resolve(nameFor(dnaBarcode))
       if (Files.exists(file)) {
         Using.resource(Source.fromFile(file.toFile)) { src =>
