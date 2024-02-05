@@ -11,7 +11,7 @@ import scala.io.Source
 import scala.util.{Random, Using}
 
 import better.files._
-import munit.FunSuite
+import munit.{FunSuite, Location}
 import org.broadinstitute.gpp.poolq3.PoolQ
 import org.broadinstitute.gpp.poolq3.barcode.{Barcodes, FoundBarcode}
 import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, ReferenceEntry}
@@ -38,9 +38,6 @@ class UnexpectedSequencesTest extends FunSuite {
   private[this] val globalReference =
     ExactReference(List(ReferenceEntry("GATGTGCAGTGAGTAGCGAG", "Oh, that one")), identity, includeAmbiguous = false)
 
-  private[this] val unexpectedReadCount = Random.nextInt(200)
-  private[this] val expectedReadCount = Random.nextInt(1000)
-
   // these reads should not be included in the unexpected sequence report for reasons noted below
   private[this] val expectedReads =
     List(
@@ -57,16 +54,49 @@ class UnexpectedSequencesTest extends FunSuite {
       ("GATGTGCAGTGAGTAGCGAG", "CCCG") // unknown row barcode, known column barcode
     )
 
-  private[this] val underlyingBarcodes =
-    Random.shuffle(
-      List.fill(expectedReadCount)(expectedReads).flatten ++ List.fill(unexpectedReadCount)(unexpectedReads).flatten
-    )
-
-  private[this] val barcodes = CloseableIterable.ofList(underlyingBarcodes.map { case (row, col) =>
-    Barcodes(Some(FoundBarcode(row.toCharArray, 0)), None, Some(FoundBarcode(col.toCharArray, 0)), None)
-  })
-
   test("PoolQ should report unexpected sequences") {
+    val unexpectedReadCount = Random.nextInt(200)
+    val expectedReadCount = Random.nextInt(1000)
+
+    val underlyingBarcodes =
+      Random.shuffle(
+        List.fill(expectedReadCount)(expectedReads).flatten ++ List.fill(unexpectedReadCount)(unexpectedReads).flatten
+      )
+
+    testIt(underlyingBarcodes, 1.0f, unexpectedReadCount)
+  }
+
+  test("PoolQ should report unexpected sequences found in its sample only") {
+    val unexpectedReadCount = Random.nextInt(200)
+    val expectedReadCount = Random.nextInt(1000)
+
+    val missedUnexpectedReadCount = Random.nextInt(100)
+
+    val missedUnexpectedReads = List(("CCCCCCCCAAAAAAAAAAAA", "AAAA"), ("GGGGGGGGGGTTTTTTTTTT", "CCCG"))
+
+    val underlyingBarcodes =
+      List.concat(
+        Random.shuffle(
+          List.concat(
+            List.fill(expectedReadCount)(expectedReads).flatten,
+            List.fill(unexpectedReadCount)(unexpectedReads).flatten
+          )
+        ),
+        // append a number of additional unexpected reads; these won't occur until late in processing,
+        // and thus won't be found in the report
+        List.fill(missedUnexpectedReadCount)(missedUnexpectedReads).flatten
+      )
+
+    testIt(underlyingBarcodes, 0.02f, unexpectedReadCount)
+
+  }
+
+  private def testIt(underlyingBarcodes: List[(String, String)], samplePct: Float, unexpectedReadCount: Int)(implicit
+    loc: Location
+  ): Unit = {
+    val barcodes = CloseableIterable.ofList(underlyingBarcodes.map { case (row, col) =>
+      Barcodes(Some(FoundBarcode(row.toCharArray, 0)), None, Some(FoundBarcode(col.toCharArray, 0)), None)
+    })
     val tmpPath = Files.createTempDirectory("unexpected-sequences-test")
     try {
       val outputFile = tmpPath.resolve("unexpected-sequences.txt")
@@ -85,7 +115,7 @@ class UnexpectedSequencesTest extends FunSuite {
         100,
         colReference,
         Some(globalReference),
-        1.0f
+        samplePct
       )
 
       val expected =
@@ -103,7 +133,6 @@ class UnexpectedSequencesTest extends FunSuite {
     } finally {
       val _ = tmpPath.toFile.toScala.delete()
     }
-
   }
 
 }
