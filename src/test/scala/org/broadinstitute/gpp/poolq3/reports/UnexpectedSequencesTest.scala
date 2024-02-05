@@ -11,15 +11,14 @@ import scala.io.Source
 import scala.util.{Random, Using}
 
 import better.files._
+import munit.FunSuite
 import org.broadinstitute.gpp.poolq3.PoolQ
 import org.broadinstitute.gpp.poolq3.barcode.{Barcodes, FoundBarcode}
 import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, ReferenceEntry}
 import org.broadinstitute.gpp.poolq3.process.{ScoringConsumer, UnexpectedSequenceTracker}
 import org.broadinstitute.gpp.poolq3.reference.{ExactReference, VariantReference}
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers._
 
-class UnexpectedSequencesTest extends AnyFlatSpec {
+class UnexpectedSequencesTest extends FunSuite {
 
   private[this] val rowReferenceBarcodes =
     List("AAAAAAAAAAAAAAAAAAAA", "AAAAAAAAAAAAAAAAAAAC", "AAAAAAAAAAAAAAAAAAAG", "AAAAAAAAAAAAAAAAAAAT").map(b =>
@@ -67,7 +66,7 @@ class UnexpectedSequencesTest extends AnyFlatSpec {
     Barcodes(Some(FoundBarcode(row.toCharArray, 0)), None, Some(FoundBarcode(col.toCharArray, 0)), None)
   })
 
-  "PoolQ" should "report unexpected sequences" in {
+  test("PoolQ should report unexpected sequences") {
     val tmpPath = Files.createTempDirectory("unexpected-sequences-test")
     try {
       val outputFile = tmpPath.resolve("unexpected-sequences.txt")
@@ -98,7 +97,7 @@ class UnexpectedSequencesTest extends AnyFlatSpec {
       Using.resource(Source.fromFile(outputFile.toFile)) { contents =>
         // now check the contents
         val actual = contents.mkString
-        actual should be (expected)
+        assertEquals(actual, expected)
       }
 
     } finally {
