@@ -34,7 +34,8 @@ final class UnexpectedSequenceTracker(cacheDir: Path, colReference: Reference) e
     val colBc = new String(columnBarcode)
 
     val writer = outputFileWriters(colBc)
-    writer.write(rowBc + "\n")
+    writer.write(rowBc)
+    writer.write("\n")
     val _ = unexpectedCountsByColBarcode.updateWith(colBc) {
       case None     => Some(1)
       case Some(pc) => Some(pc + 1)
