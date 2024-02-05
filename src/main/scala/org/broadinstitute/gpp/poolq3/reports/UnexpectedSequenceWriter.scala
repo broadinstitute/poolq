@@ -30,7 +30,9 @@ object UnexpectedSequenceWriter {
     globalReference: Option[Reference],
     samplePct: Float
   ): Try[Unit] = {
+    // build a "reference set" - a set of unexpected barcodes that we will track exact counts for (read `samplePct`% of each shard)
     val sequencesToReport = sampleCache(unexpectedSequenceCacheDir, samplePct, colReference, unexpectedBarcodeCounts)
+    // load the whole cache, tracking only sequences in the reference set
     val (h, r) = loadCache(unexpectedSequenceCacheDir, colReference, sequencesToReport, nSequencesToReport)
 
     Using(new PrintWriter(outputFile.toFile))(pw => printUnexpectedCounts(colReference, globalReference, h, r, pw))
@@ -57,12 +59,17 @@ object UnexpectedSequenceWriter {
     colReference: Reference,
     unexpectedCountsByBarcode: Map[String, Int]
   ): Set[String] = {
+    // this set will contain the barcodes to track for all shards
     val ret = mutable.HashSet[String]()
+
+    // read the shard for each column barcode in turn
     colReference.allBarcodes.foreach { dnaBarcode =>
+      // compute the number of lines to read for this shard by the samplePct and the number of reads we got for it
       val linesToRead: Int =
         math.ceil((unexpectedCountsByBarcode.getOrElse(dnaBarcode, 0) * samplePct).toDouble).toInt
       val file = cacheDir.resolve(nameFor(dnaBarcode))
       if (Files.exists(file)) {
+        // add all the row barcodes found in the first `linesToRead` lines to `ret`
         Using.resource(Source.fromFile(file.toFile)) { src =>
           src.getLines().take(linesToRead).foreach(line => ret += line)
         }
