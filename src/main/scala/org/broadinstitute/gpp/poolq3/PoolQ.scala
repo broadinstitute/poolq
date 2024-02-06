@@ -13,7 +13,13 @@ import cats.syntax.all._
 import org.broadinstitute.gpp.poolq3.PoolQConfig.synthesizeArgs
 import org.broadinstitute.gpp.poolq3.barcode.{BarcodePolicy, Barcodes, barcodeSource}
 import org.broadinstitute.gpp.poolq3.parser.{BarcodeSet, CloseableIterable, ReferenceData}
-import org.broadinstitute.gpp.poolq3.process.{Consumer, NoOpConsumer, PoolQProcess, ScoringConsumer}
+import org.broadinstitute.gpp.poolq3.process.{
+  Consumer,
+  NoOpConsumer,
+  PoolQProcess,
+  ScoringConsumer,
+  UnexpectedSequenceTracker
+}
 import org.broadinstitute.gpp.poolq3.reference.{ExactReference, Reference, referenceFor}
 import org.broadinstitute.gpp.poolq3.reports.{
   BarcodeCountsWriter,
@@ -121,7 +127,7 @@ object PoolQ {
     val barcodes: CloseableIterable[Barcodes] =
       barcodeSource(config.input, rowBarcodePolicy, revRowBarcodePolicyOpt, colBarcodePolicyOrLength, umiInfo.map(_._2))
 
-    lazy val unexpectedSequenceCacheDir: Option[Path] =
+    lazy val unexpectedSequenceCacheDirOpt: Option[Path] =
       if (config.skipUnexpectedSequenceReport) None
       else {
         val ret = config.unexpectedSequenceCacheDir.map(Files.createDirectories(_)).orElse {
@@ -132,6 +138,9 @@ object PoolQ {
         ret
       }
 
+    lazy val unexpectedSequenceTrackerOpt: Option[UnexpectedSequenceTracker] =
+      unexpectedSequenceCacheDirOpt.map(new UnexpectedSequenceTracker(_, colReference))
+
     val consumer =
       if (config.noopConsumer) new NoOpConsumer
       else
@@ -141,7 +150,7 @@ object PoolQ {
           config.countAmbiguous,
           config.alwaysCountColumnBarcodes,
           umiInfo.map(_._1),
-          unexpectedSequenceCacheDir,
+          unexpectedSequenceTrackerOpt,
           config.isPairedEnd
         )
 
@@ -183,16 +192,18 @@ object PoolQ {
       )
       _ = log.info(s"Writing correlation file ${config.output.correlationFile}")
       cfto <- CorrelationFileWriter.write(config.output.correlationFile, normalizedCounts, rowReference, colReference)
-      usfto <- unexpectedSequenceCacheDir.fold(Try(Option.empty[OutputFileType])) { dir =>
+      usfto <- unexpectedSequenceCacheDirOpt.fold(Try(Option.empty[OutputFileType])) { dir =>
         log.info(s"Writing unexpected sequence report ${config.output.unexpectedSequencesFile}")
         val ret =
           UnexpectedSequenceWriter
             .write(
               config.output.unexpectedSequencesFile,
               dir,
+              unexpectedSequenceTrackerOpt.map(_.unexpectedBarcodeCounts).getOrElse(Map.empty),
               config.unexpectedSequencesToReport,
               colReference,
-              globalReference
+              globalReference,
+              config.unexpectedSequenceSamplePct
             )
             .as(UnexpectedSequencesFileType.some)
         if (config.removeUnexpectedSequenceCache) {

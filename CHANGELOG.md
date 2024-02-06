@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.9.0
+* Use sampling technique for generating unexpected sequence reports
+
 ## 3.8.0
 * Replace kantan.csv with scala-csv
 

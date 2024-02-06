@@ -10,12 +10,12 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-    - uses: actions/checkout@v3.1.0
+    - uses: actions/checkout@v4
     - run: git config --global user.email "gpp-informatics@broadinstitute.org"
     - run: git config --global user.name "GPP Informatics"
     - uses: jrouly/scalafmt-native-action@v3
     - name: Set up JDK 8
-      uses: actions/setup-java@v3.6.0
+      uses: actions/setup-java@v4
       with:
         java-version: '8'
         distribution: 'temurin'

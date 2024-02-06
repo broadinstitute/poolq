@@ -11,15 +11,14 @@ import scala.io.Source
 import scala.util.{Random, Using}
 
 import better.files._
-import org.broadinstitute.gpp.poolq3.PoolQ
+import munit.{FunSuite, Location}
 import org.broadinstitute.gpp.poolq3.barcode.{Barcodes, FoundBarcode}
 import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, ReferenceEntry}
-import org.broadinstitute.gpp.poolq3.process.ScoringConsumer
+import org.broadinstitute.gpp.poolq3.process.{ScoringConsumer, UnexpectedSequenceTracker}
 import org.broadinstitute.gpp.poolq3.reference.{ExactReference, VariantReference}
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers._
+import org.broadinstitute.gpp.poolq3.{PoolQ, TestResources}
 
-class UnexpectedSequencesTest extends AnyFlatSpec {
+class UnexpectedSequencesTest extends FunSuite with TestResources {
 
   private[this] val rowReferenceBarcodes =
     List("AAAAAAAAAAAAAAAAAAAA", "AAAAAAAAAAAAAAAAAAAC", "AAAAAAAAAAAAAAAAAAAG", "AAAAAAAAAAAAAAAAAAAT").map(b =>
@@ -39,9 +38,6 @@ class UnexpectedSequencesTest extends AnyFlatSpec {
   private[this] val globalReference =
     ExactReference(List(ReferenceEntry("GATGTGCAGTGAGTAGCGAG", "Oh, that one")), identity, includeAmbiguous = false)
 
-  private[this] val unexpectedReadCount = Random.nextInt(200)
-  private[this] val expectedReadCount = Random.nextInt(1000)
-
   // these reads should not be included in the unexpected sequence report for reasons noted below
   private[this] val expectedReads =
     List(
@@ -58,27 +54,60 @@ class UnexpectedSequencesTest extends AnyFlatSpec {
       ("GATGTGCAGTGAGTAGCGAG", "CCCG") // unknown row barcode, known column barcode
     )
 
-  private[this] val underlyingBarcodes =
-    Random.shuffle(
-      List.fill(expectedReadCount)(expectedReads).flatten ++ List.fill(unexpectedReadCount)(unexpectedReads).flatten
-    )
+  test("PoolQ should report unexpected sequences") {
+    val unexpectedReadCount = Random.nextInt(200)
+    val expectedReadCount = Random.nextInt(1000)
 
-  private[this] val barcodes = CloseableIterable.ofList(underlyingBarcodes.map { case (row, col) =>
-    Barcodes(Some(FoundBarcode(row.toCharArray, 0)), None, Some(FoundBarcode(col.toCharArray, 0)), None)
-  })
+    val underlyingBarcodes =
+      Random.shuffle(
+        List.fill(expectedReadCount)(expectedReads).flatten ++ List.fill(unexpectedReadCount)(unexpectedReads).flatten
+      )
 
-  "PoolQ" should "report unexpected sequences" in {
-    val tmpPath = Files.createTempDirectory("unexpected-sequences-test")
+    testIt(underlyingBarcodes, 1.0, unexpectedReadCount)
+  }
+
+  test("PoolQ should report unexpected sequences found in its sample only") {
+    val unexpectedReadCount = Random.nextInt(200)
+    val expectedReadCount = Random.nextInt(1000)
+
+    val missedUnexpectedReadCount = Random.nextInt(100)
+
+    val missedUnexpectedReads = List(("CCCCCCCCAAAAAAAAAAAA", "AAAA"), ("GGGGGGGGGGTTTTTTTTTT", "CCCG"))
+
+    val underlyingBarcodes =
+      List.concat(
+        Random.shuffle(
+          List.concat(
+            List.fill(expectedReadCount)(expectedReads).flatten,
+            List.fill(unexpectedReadCount)(unexpectedReads).flatten
+          )
+        ),
+        // append a number of additional unexpected reads; these won't occur until late in processing,
+        // and thus won't be found in the report
+        List.fill(missedUnexpectedReadCount)(missedUnexpectedReads).flatten
+      )
+
+    testIt(underlyingBarcodes, 0.02, unexpectedReadCount)
+
+  }
+
+  test("read unexpected sequence cache") {
+    val cachePath = resourcePath("unexpected-sequences")
+    val outputFile = Files.createTempFile("unexpected", ".txt")
     try {
-      val outputFile = tmpPath.resolve("unexpected-sequences.txt")
-      val cachePath = tmpPath.resolve("cache")
-      val consumer =
-        new ScoringConsumer(rowReference, colReference, countAmbiguous = true, false, None, Some(cachePath), false)
+      val unexpectedReadCount = 9
 
-      // run PoolQ and write the file
-      val _ = PoolQ.runProcess(barcodes, consumer)
-
-      val _ = UnexpectedSequenceWriter.write(outputFile, cachePath, 100, colReference, Some(globalReference))
+      UnexpectedSequenceWriter
+        .write(
+          outputFile,
+          cachePath,
+          Map("AAAA" -> unexpectedReadCount, "CCCG" -> unexpectedReadCount, "AAAT" -> 0, "CCCC" -> 0),
+          100,
+          colReference,
+          Some(globalReference),
+          0.02
+        )
+        .get
 
       val expected =
         s"""Sequence\tTotal\tAAAA\tAAAT\tCCCC\tCCCG\tPotential IDs
@@ -88,13 +117,49 @@ class UnexpectedSequencesTest extends AnyFlatSpec {
 
       Using.resource(Source.fromFile(outputFile.toFile)) { contents =>
         // now check the contents
-        contents.mkString should be(expected)
+        val actual = contents.mkString
+        assertEquals(actual, expected)
       }
+    } finally {
+      val _ = Files.deleteIfExists(outputFile)
+    }
+  }
 
+  private def testIt(underlyingBarcodes: List[(String, String)], samplePct: Double, unexpectedReadCount: Int)(implicit
+    loc: Location
+  ): Unit = {
+    val barcodes = CloseableIterable.ofList(underlyingBarcodes.map { case (row, col) =>
+      Barcodes(Some(FoundBarcode(row.toCharArray, 0)), None, Some(FoundBarcode(col.toCharArray, 0)), None)
+    })
+    val tmpPath = Files.createTempDirectory("unexpected-sequences-test")
+    try {
+      val outputFile = tmpPath.resolve("unexpected-sequences.txt")
+      val cachePath = tmpPath.resolve("cache")
+      val ust = new UnexpectedSequenceTracker(cachePath, colReference)
+      val consumer =
+        new ScoringConsumer(rowReference, colReference, countAmbiguous = true, false, None, Some(ust), false)
+
+      // run PoolQ and write the file
+      val _ = PoolQ.runProcess(barcodes, consumer).get
+
+      UnexpectedSequenceWriter
+        .write(outputFile, cachePath, ust.unexpectedBarcodeCounts, 100, colReference, Some(globalReference), samplePct)
+        .get
+
+      val expected =
+        s"""Sequence\tTotal\tAAAA\tAAAT\tCCCC\tCCCG\tPotential IDs
+           |GATGTGCAGTGAGTAGCGAG\t$unexpectedReadCount\t0\t0\t0\t$unexpectedReadCount\tOh, that one
+           |TTTTTTTTTTTTTTTTTTTT\t$unexpectedReadCount\t$unexpectedReadCount\t0\t0\t0\t
+           |""".stripMargin
+
+      Using.resource(Source.fromFile(outputFile.toFile)) { contents =>
+        // now check the contents
+        val actual = contents.mkString
+        assertEquals(actual, expected)
+      }
     } finally {
       val _ = tmpPath.toFile.toScala.delete()
     }
-
   }
 
 }
