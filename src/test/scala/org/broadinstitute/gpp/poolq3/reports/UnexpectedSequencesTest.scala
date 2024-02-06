@@ -63,7 +63,7 @@ class UnexpectedSequencesTest extends FunSuite with TestResources {
         List.fill(expectedReadCount)(expectedReads).flatten ++ List.fill(unexpectedReadCount)(unexpectedReads).flatten
       )
 
-    testIt(underlyingBarcodes, 1.0f, unexpectedReadCount)
+    testIt(underlyingBarcodes, 1.0, unexpectedReadCount)
   }
 
   test("PoolQ should report unexpected sequences found in its sample only") {
@@ -87,7 +87,7 @@ class UnexpectedSequencesTest extends FunSuite with TestResources {
         List.fill(missedUnexpectedReadCount)(missedUnexpectedReads).flatten
       )
 
-    testIt(underlyingBarcodes, 0.02f, unexpectedReadCount)
+    testIt(underlyingBarcodes, 0.02, unexpectedReadCount)
 
   }
 
@@ -105,7 +105,7 @@ class UnexpectedSequencesTest extends FunSuite with TestResources {
           100,
           colReference,
           Some(globalReference),
-          0.02f
+          0.02
         )
         .get
 
@@ -125,7 +125,7 @@ class UnexpectedSequencesTest extends FunSuite with TestResources {
     }
   }
 
-  private def testIt(underlyingBarcodes: List[(String, String)], samplePct: Float, unexpectedReadCount: Int)(implicit
+  private def testIt(underlyingBarcodes: List[(String, String)], samplePct: Double, unexpectedReadCount: Int)(implicit
     loc: Location
   ): Unit = {
     val barcodes = CloseableIterable.ofList(underlyingBarcodes.map { case (row, col) =>
