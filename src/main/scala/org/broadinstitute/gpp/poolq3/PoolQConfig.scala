@@ -254,6 +254,11 @@ object PoolQConfig {
         val _ =
           opt[Path]("quality").valueName("<file>").action((f, c) => c.copy(output = c.output.copy(qualityFile = f)))
 
+        val _ =
+          opt[Path]("condition-barcode-counts-summary")
+            .valueName("<file>")
+            .action((f, c) => c.copy(output = c.output.copy(conditionBarcodeCountsSummaryFile = f)))
+
         val _ = opt[Path]("counts").valueName("<file>").action((f, c) => c.copy(output = c.output.copy(countsFile = f)))
 
         val _ = opt[Path]("normalized-counts").valueName("<file>").action { (f, c) =>
