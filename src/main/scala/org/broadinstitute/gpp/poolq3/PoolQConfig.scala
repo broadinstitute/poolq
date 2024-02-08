@@ -74,6 +74,7 @@ final case class PoolQOutput(
   normalizedCountsFile: Path = Paths.get("lognormalized-counts.txt"),
   barcodeCountsFile: Path = Paths.get("barcode-counts.txt"),
   qualityFile: Path = Paths.get("quality.txt"),
+  conditionBarcodeCountsSummaryFile: Path = Paths.get("condition-barcode-counts-summary.txt"),
   correlationFile: Path = Paths.get("correlation.txt"),
   unexpectedSequencesFile: Path = Paths.get("unexpected-sequences.txt"),
   umiQualityFile: Path = Paths.get("umi-quality.txt"),
