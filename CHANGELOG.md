@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.10.0
+* Machine-parseable condition barcode summary file
+
 ## 3.9.0
 * Use sampling technique for generating unexpected sequence reports
 
