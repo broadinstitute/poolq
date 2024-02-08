@@ -17,13 +17,13 @@ import org.broadinstitute.gpp.poolq3.reference.Reference
 object QualityWriter {
 
   def write(
-    file: Path,
+    qualityFile: Path,
     state: State,
     rowReference: Reference,
     colReference: Reference,
     isPairedEnd: Boolean
   ): Try[Unit] =
-    Using(new PrintWriter(file.toFile)) { writer =>
+    Using(new PrintWriter(qualityFile.toFile)) { writer =>
       val barcodeLocationStats =
         if (isPairedEnd) {
           s"""Reads with no construct barcode: ${state.rowBarcodeNotFound + state.revRowBarcodeNotFound - state.neitherRowBarcodeFound}
