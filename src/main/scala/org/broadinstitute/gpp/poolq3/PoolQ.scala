@@ -33,6 +33,7 @@ import org.broadinstitute.gpp.poolq3.reports.{
 }
 import org.broadinstitute.gpp.poolq3.types.{
   BarcodeCountsFileType,
+  ConditionBarcodeCountsSummaryFileType,
   CountsFileType,
   LogNormalizedCountsFileType,
   OutputFileType,
@@ -49,7 +50,14 @@ object PoolQ {
   private[this] val log: Logger = getLogger
 
   private[this] val AlwaysWrittenFiles: Set[OutputFileType] =
-    Set(CountsFileType, QualityFileType, LogNormalizedCountsFileType, BarcodeCountsFileType, RunInfoFileType)
+    Set(
+      CountsFileType,
+      QualityFileType,
+      ConditionBarcodeCountsSummaryFileType,
+      LogNormalizedCountsFileType,
+      BarcodeCountsFileType,
+      RunInfoFileType
+    )
 
   final def main(args: Array[String]): Unit =
     PoolQConfig.parse(args) match {
@@ -169,7 +177,14 @@ object PoolQ {
         config.reportsDialect
       )
       _ = log.info(s"Writing quality file ${config.output.qualityFile}")
-      _ <- QualityWriter.write(config.output.qualityFile, state, rowReference, colReference, config.isPairedEnd)
+      _ <- QualityWriter.write(
+        config.output.qualityFile,
+        config.output.conditionBarcodeCountsSummaryFile,
+        state,
+        rowReference,
+        colReference,
+        config.isPairedEnd
+      )
       _ <- umiInfo.fold(().pure[Try])(_ => UmiQualityWriter.write(config.output.umiQualityFile, state))
       _ = log.info(s"Writing log-normalized counts file ${config.output.normalizedCountsFile}")
       normalizedCounts = LogNormalizedCountsWriter.logNormalizedCounts(counts, rowReference, colReference)
