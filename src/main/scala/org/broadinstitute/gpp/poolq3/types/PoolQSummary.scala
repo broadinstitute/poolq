@@ -5,4 +5,4 @@
  */
 package org.broadinstitute.gpp.poolq3.types
 
-case class PoolQSummary(runSummary: PoolQRunSummary, outputFiles: Set[OutputFileType])
+final case class PoolQSummary(runSummary: PoolQRunSummary, outputFiles: Set[OutputFileType])
