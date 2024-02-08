@@ -33,6 +33,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
       barcodeCountsFile <- File.temporaryFile("barcode-counts", ".txt")
       normalizedCountsFile <- File.temporaryFile("normcounts", ".txt")
       qualityFile <- File.temporaryFile("quality", ".txt")
+      conditionBarcodeCountsSummaryFile <- File.temporaryFile("condition-barcode-counts-summary", ".txt")
       correlationFile <- File.temporaryFile("correlation", ".txt")
       unexpectedSequencesFile <- File.temporaryFile("unexpected", ".txt")
       unexpectedSequenceCacheDir <- File.temporaryDirectory("unexpected-cache")
@@ -49,6 +50,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
           normalizedCountsFile = normalizedCountsFile.toJava.toPath,
           barcodeCountsFile = barcodeCountsFile.toJava.toPath,
           qualityFile = qualityFile.toJava.toPath,
+          conditionBarcodeCountsSummaryFile = conditionBarcodeCountsSummaryFile.toJava.toPath,
           correlationFile = correlationFile.toJava.toPath,
           unexpectedSequencesFile = unexpectedSequencesFile.toJava.toPath,
           runInfoFile = runInfoFile.toJava.toPath
@@ -75,6 +77,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
       barcodeCountsFile <- File.temporaryFile("barcode-counts", ".txt")
       normalizedCountsFile <- File.temporaryFile("normcounts", ".txt")
       qualityFile <- File.temporaryFile("quality", ".txt")
+      conditionBarcodeCountsSummaryFile <- File.temporaryFile("condition-barcode-counts-summary", ".txt")
       correlationFile <- File.temporaryFile("correlation", ".txt")
       unexpectedSequencesFile <- File.temporaryFile("unexpected", ".txt")
       unexpectedSequenceCacheDir <- File.temporaryDirectory("unexpected-cache")
@@ -91,6 +94,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
           normalizedCountsFile = normalizedCountsFile.toJava.toPath,
           barcodeCountsFile = barcodeCountsFile.toJava.toPath,
           qualityFile = qualityFile.toJava.toPath,
+          conditionBarcodeCountsSummaryFile = conditionBarcodeCountsSummaryFile.toJava.toPath,
           correlationFile = correlationFile.toJava.toPath,
           unexpectedSequencesFile = unexpectedSequencesFile.toJava.toPath,
           runInfoFile = runInfoFile.toJava.toPath
@@ -126,6 +130,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
       normalizedCountsFile <- File.temporaryFile("normcounts", ".txt")
       barcodeCountsFile <- File.temporaryFile("barcode-counts", ".txt")
       qualityFile <- File.temporaryFile("quality", ".txt")
+      conditionBarcodeCountsSummaryFile <- File.temporaryFile("condition-barcode-counts-summary", ".txt")
       correlationFile <- File.temporaryFile("correlation", ".txt")
       unexpectedSequencesFile <- File.temporaryFile("unexpected", ".txt")
       unexpectedSequenceCacheDir <- File.temporaryDirectory("unexpected-cache")
@@ -142,6 +147,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
           normalizedCountsFile = normalizedCountsFile.toJava.toPath,
           barcodeCountsFile = barcodeCountsFile.toJava.toPath,
           qualityFile = qualityFile.toJava.toPath,
+          conditionBarcodeCountsSummaryFile = conditionBarcodeCountsSummaryFile.toJava.toPath,
           correlationFile = correlationFile.toJava.toPath,
           unexpectedSequencesFile = unexpectedSequencesFile.toJava.toPath,
           runInfoFile = runInfoFile.toJava.toPath
@@ -170,6 +176,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
       normalizedCountsFile <- File.temporaryFile("normcounts", ".txt")
       barcodeCountsFile <- File.temporaryFile("barcode-counts", ".txt")
       qualityFile <- File.temporaryFile("quality", ".txt")
+      conditionBarcodeCountsSummaryFile <- File.temporaryFile("condition-barcode-counts-summary", ".txt")
       correlationFile <- File.temporaryFile("correlation", ".txt")
       unexpectedSequencesFile <- File.temporaryFile("unexpected", ".txt")
       unexpectedSequenceCacheDir <- File.temporaryDirectory("unexpected-cache")
@@ -186,6 +193,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
           normalizedCountsFile = normalizedCountsFile.toJava.toPath,
           barcodeCountsFile = barcodeCountsFile.toJava.toPath,
           qualityFile = qualityFile.toJava.toPath,
+          conditionBarcodeCountsSummaryFile = conditionBarcodeCountsSummaryFile.toJava.toPath,
           correlationFile = correlationFile.toJava.toPath,
           unexpectedSequencesFile = unexpectedSequencesFile.toJava.toPath,
           runInfoFile = runInfoFile.toJava.toPath
@@ -215,6 +223,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
       normalizedCountsFile <- File.temporaryFile("normcounts", ".txt")
       barcodeCountsFile <- File.temporaryFile("barcode-counts", ".txt")
       qualityFile <- File.temporaryFile("quality", ".txt")
+      conditionBarcodeCountsSummaryFile <- File.temporaryFile("condition-barcode-counts-summary", ".txt")
       correlationFile <- File.temporaryFile("correlation", ".txt")
       unexpectedSequencesFile <- File.temporaryFile("unexpected", ".txt")
       unexpectedSequenceCacheDir <- File.temporaryDirectory("unexpected-cache")
@@ -232,6 +241,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
           normalizedCountsFile = normalizedCountsFile.toJava.toPath,
           barcodeCountsFile = barcodeCountsFile.toJava.toPath,
           qualityFile = qualityFile.toJava.toPath,
+          conditionBarcodeCountsSummaryFile = conditionBarcodeCountsSummaryFile.toJava.toPath,
           correlationFile = correlationFile.toJava.toPath,
           unexpectedSequencesFile = unexpectedSequencesFile.toJava.toPath,
           runInfoFile = runInfoFile.toJava.toPath
@@ -255,6 +265,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
       normalizedCountsFile <- File.temporaryFile("normcounts", ".txt")
       barcodeCountsFile <- File.temporaryFile("barcode-counts", ".txt")
       qualityFile <- File.temporaryFile("quality", ".txt")
+      conditionBarcodeCountsSummaryFile <- File.temporaryFile("condition-barcode-counts-summary", ".txt")
       correlationFile <- File.temporaryFile("correlation", ".txt")
       unexpectedSequencesFile <- File.temporaryFile("unexpected", ".txt")
       unexpectedSequenceCacheDir <- File.temporaryDirectory("unexpected-cache")
@@ -272,6 +283,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
           normalizedCountsFile = normalizedCountsFile.toJava.toPath,
           barcodeCountsFile = barcodeCountsFile.toJava.toPath,
           qualityFile = qualityFile.toJava.toPath,
+          conditionBarcodeCountsSummaryFile = conditionBarcodeCountsSummaryFile.toJava.toPath,
           correlationFile = correlationFile.toJava.toPath,
           unexpectedSequencesFile = unexpectedSequencesFile.toJava.toPath,
           runInfoFile = runInfoFile.toJava.toPath
@@ -299,6 +311,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
       normalizedCountsFile <- File.temporaryFile("normcounts", ".txt")
       barcodeCountsFile <- File.temporaryFile("barcode-counts", ".txt")
       qualityFile <- File.temporaryFile("quality", ".txt")
+      conditionBarcodeCountsSummaryFile <- File.temporaryFile("condition-barcode-counts-summary", ".txt")
       correlationFile <- File.temporaryFile("correlation", ".txt")
       unexpectedSequencesFile <- File.temporaryFile("unexpected", ".txt")
       unexpectedSequenceCacheDir <- File.temporaryDirectory("unexpected-cache")
@@ -315,6 +328,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources {
           normalizedCountsFile = normalizedCountsFile.toJava.toPath,
           barcodeCountsFile = barcodeCountsFile.toJava.toPath,
           qualityFile = qualityFile.toJava.toPath,
+          conditionBarcodeCountsSummaryFile = conditionBarcodeCountsSummaryFile.toJava.toPath,
           correlationFile = correlationFile.toJava.toPath,
           unexpectedSequencesFile = unexpectedSequencesFile.toJava.toPath,
           runInfoFile = runInfoFile.toJava.toPath
