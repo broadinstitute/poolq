@@ -2,7 +2,7 @@
 
 PoolQ is a counter for indexed samples from next-gen sequencing of pooled DNA.
 
-_This documentation covers PoolQ version 3.10.0 (last updated 02/12/2024)._
+_This documentation covers PoolQ version 3.11.0 (last updated 02/13/2024)._
 
 ## Background
 
@@ -559,7 +559,7 @@ PoolQ you will need a Java 8 JDK. You can download an appropriate JRE or JDK fro
 You can download PoolQ from an as yet undetermined location. The file you download is a ZIP file
 that you will need to unzip. In most cases, this is as simple as right-clicking on the zip file, and
 selecting something like "extract contents" from the popup menu. This will create a new folder on
-your computer named `poolq-3.10.0`, with the following contents:
+your computer named `poolq-3.11.0`, with the following contents:
 
 - `poolq3.jar`
 - `poolq3.bat`
@@ -610,7 +610,7 @@ You can run PoolQ from any Windows, Mac, or Linux machine, but it requires some 
 how to launch programs from the command line on your given operating system.
 
 1. Open a terminal window for your operating system
-2. Change directories to the `poolq-3.10.0` directory
+2. Change directories to the `poolq-3.11.0` directory
 
 - On Windows, run:
 
@@ -627,7 +627,7 @@ how to launch programs from the command line on your given operating system.
 If you successfully launched PoolQ, you should see a usage message explaining all of the
 command-line options:
 
-    poolq3 3.10.0
+    poolq3 3.11.0
     Usage: poolq [options]
 
       --row-reference <file>   reference file for row barcodes (i.e., constructs)
@@ -652,6 +652,7 @@ command-line options:
       --umi-counts-dir <file>
       --umi-barcode-counts-dir <file>
       --quality <file>
+      --condition-barcode-counts-summary <file>
       --counts <file>
       --normalized-counts <file>
       --barcode-counts <file>
