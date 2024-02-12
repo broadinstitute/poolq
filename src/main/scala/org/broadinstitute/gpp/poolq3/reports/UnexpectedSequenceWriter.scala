@@ -5,7 +5,7 @@
  */
 package org.broadinstitute.gpp.poolq3.reports
 
-import java.io.PrintWriter
+import java.io.{Closeable, PrintWriter}
 import java.nio.file.{Files, Path}
 
 import scala.collection.mutable
@@ -24,16 +24,14 @@ object UnexpectedSequenceWriter {
   def write(
     outputFile: Path,
     unexpectedSequenceCacheDir: Path,
-    unexpectedBarcodeCounts: Map[String, Int],
     nSequencesToReport: Int,
     colReference: Reference,
     globalReference: Option[Reference],
-    samplePct: Double
+    maxMapSize: Int = 10_000_000
   ): Try[Unit] = {
     // build a "reference set" - a set of unexpected barcodes that we will track exact counts for (read `samplePct`% of each shard)
-    val sequencesToReport = sampleCache(unexpectedSequenceCacheDir, samplePct, colReference, unexpectedBarcodeCounts)
     // load the whole cache, tracking only sequences in the reference set
-    val (h, r) = loadCache(unexpectedSequenceCacheDir, colReference, sequencesToReport, nSequencesToReport)
+    val (h, r) = loadCache(unexpectedSequenceCacheDir, colReference, nSequencesToReport, maxMapSize)
 
     Using(new PrintWriter(outputFile.toFile))(pw => printUnexpectedCounts(colReference, globalReference, h, r, pw))
   }
@@ -52,96 +50,123 @@ object UnexpectedSequenceWriter {
     tryDelete(unexpectedSequenceCacheDir)
   }
 
-  // builds the set of unexpected sequences we will actually count data for
-  private[reports] def sampleCache(
-    cacheDir: Path,
-    samplePct: Double,
-    colReference: Reference,
-    unexpectedCountsByBarcode: Map[String, Int]
-  ): Set[String] = {
-    // this set will contain the barcodes to track for all shards
-    val ret = mutable.HashSet[String]()
-
-    // read the shard for each column barcode in turn
-    colReference.allBarcodes.foreach { dnaBarcode =>
-      // compute the number of lines to read for this shard by the samplePct and the number of reads we got for it
-      val linesToRead: Int = math.ceil(unexpectedCountsByBarcode.getOrElse(dnaBarcode, 0) * samplePct).toInt
-      val file = cacheDir.resolve(nameFor(dnaBarcode))
-      if (Files.exists(file)) {
-        // add all the row barcodes found in the first `linesToRead` lines to `ret`
-        Using.resource(Source.fromFile(file.toFile)) { src =>
-          src.getLines().take(linesToRead).foreach(line => ret += line)
-        }
-      } else {
-        log.info(s"No unexpected cache file found for $dnaBarcode")
-      }
-    }
-    ret.toSet
+  // defining this as a trait is not useful in the main codebase but it makes testing easier
+  private[reports] trait CachedBarcodes extends Iterator[String] with Closeable {
+    def colBc: String
   }
 
-  private[reports] def loadCache(
+  final private[reports] class SourceCachedBarcodes(val colBc: String, source: Source) extends CachedBarcodes {
+    private val iter = source.getLines()
+    def close(): Unit = source.close()
+    def hasNext: Boolean = iter.hasNext
+    def next(): String = iter.next()
+  }
+
+  final private[reports] class BreadthFirstIterator(readers: mutable.ArrayBuffer[CachedBarcodes])
+      extends Iterator[(String, String)] {
+    private var i = 0
+
+    // this only works if all the readers were non-empty at the start
+    def hasNext: Boolean = readers.nonEmpty && readers(i).hasNext
+
+    def next(): (String, String) = {
+      val reader = readers(i)
+      val ret = (reader.next(), reader.colBc)
+
+      // if this reader won't produce another barcode after this, remove it
+      if (!reader.hasNext) {
+        val removed = readers.remove(i)
+        removed.close()
+        // in this case, we don't advance `i` because we've removed the current `i`, so `i`
+        // points to the next reader by virtue of the changed dat astructure
+        if (readers.nonEmpty) {
+          i = i % readers.length
+        }
+      } else if (readers.nonEmpty) {
+        // if readers is empty, `readers.length` will be 0 and % divides by zero; advancing `i` is only
+        // necessary if we can read more from the buffer anyway
+        i = (i + 1) % readers.length
+      }
+
+      ret
+    }
+
+  }
+
+  def loadCache(
     cacheDir: Path,
     colReference: Reference,
-    sequencesToReport: Set[String],
-    nSequencesToReport: Int
+    nSequencesToReport: Int,
+    maxMapSize: Int
   ): (Map[String, Map[String, Int]], Vector[String]) = {
     val rowColBarcodeCounts = new mutable.HashMap[String, mutable.Map[String, Int]]()
     val allRowBarcodeCounts = new mutable.HashMap[String, Int]()
 
-    colReference.allBarcodes.foreach { colBc =>
-      val rowCountMap = parseFile(cacheDir, colBc, sequencesToReport)
-
-      rowCountMap.foreach { case (rowBc, count) =>
-        val colBarcodeCounts = rowColBarcodeCounts.getOrElseUpdate(rowBc, mutable.HashMap[String, Int]())
-        val _ = colBarcodeCounts.updateWith(colBc) {
-          case None                 => Some(count)
-          case Some(prevColBcCount) => Some(prevColBcCount + count)
-        }
-        allRowBarcodeCounts.updateWith(rowBc) {
-          case None     => Some(count)
-          case Some(pc) => Some(pc + count)
-        }
-      }
-    }
-
-    // find the most popular N row barcodes
-    val mostCommonRowBarcodesRanked = allRowBarcodeCounts.toVector.sortBy(-_._2).take(nSequencesToReport).map(_._1)
-    val mostCommonRowBarcodes = mostCommonRowBarcodesRanked.toSet
-
-    // filter out everything else and convert to an immutable map
-    (
-      rowColBarcodeCounts
-        .filterInPlace { case (rowBc, _) => mostCommonRowBarcodes(rowBc) }
-        .view
-        .mapValues(m => m.toMap)
-        .toMap,
-      mostCommonRowBarcodesRanked
-    )
-  }
-
-  // n.b. returns a mutable map from row barcode to counts
-  private[reports] def parseFile(
-    cacheDir: Path,
-    colBc: String,
-    sequencesToReport: Set[String]
-  ): mutable.Map[String, Int] = {
-    val r = mutable.HashMap[String, Int]()
-    val file = cacheDir.resolve(nameFor(colBc))
-    if (Files.exists(file)) {
-      log.debug(s"Processing ${file.getName}")
-      Using.resource(Source.fromFile(file.toFile)) { src =>
-        src.getLines().foreach { rowBc =>
-          // can't avoid the double hash lookup here without a big hassle
-          if (sequencesToReport.contains(rowBc)) {
-            r.updateWith(rowBc) {
-              case None    => Some(1)
-              case Some(i) => Some(i + 1)
-            }
+    // create & populate the list of readers
+    val readers = mutable.ArrayBuffer[CachedBarcodes]()
+    try {
+      colReference.allBarcodes.foreach { colBc =>
+        val file = cacheDir.resolve(nameFor(colBc))
+        if (Files.exists(file)) {
+          val cbc = new SourceCachedBarcodes(colBc, Source.fromFile(file.toFile))
+          if (cbc.hasNext) {
+            readers.addOne(cbc)
           }
         }
       }
+
+      val iterator = new BreadthFirstIterator(readers)
+
+      while (rowColBarcodeCounts.keySet.size < maxMapSize && iterator.hasNext) {
+        val (rowBc, colBc) = iterator.next()
+        val colBarcodeMap = rowColBarcodeCounts.getOrElseUpdate(rowBc, mutable.HashMap())
+        val _ = colBarcodeMap.updateWith(colBc) {
+          case None    => Some(1)
+          case Some(c) => Some(c + 1)
+        }
+        val _ = allRowBarcodeCounts.updateWith(rowBc) {
+          case None    => Some(1)
+          case Some(c) => Some(c + 1)
+        }
+      }
+
+      // at this point, we either exhausted the readers or we filled the map; go through the remaining data
+      // and tally things up, but don't add new keys to the outer map
+      readers.foreach { rdr =>
+        val colBc = rdr.colBc
+        rdr.foreach { rowBc =>
+          // now, we only update if there was an existing entry in `rowColBarcodeCounts` because it means it's
+          // in the set of things we're keeping track of
+          rowColBarcodeCounts.get(rowBc).foreach { colBarcodeMap =>
+            val _ = colBarcodeMap.updateWith(colBc) {
+              case None    => Some(1)
+              case Some(c) => Some(c + 1)
+            }
+            val _ = allRowBarcodeCounts.updateWith(rowBc) {
+              case None    => Some(1)
+              case Some(c) => Some(c + 1)
+            }
+          }
+        }
+        rdr.close()
+      }
+
+      // find the most popular N row barcodes
+      val mostCommonRowBarcodesRanked = allRowBarcodeCounts.toVector.sortBy(-_._2).take(nSequencesToReport).map(_._1)
+      val mostCommonRowBarcodes = mostCommonRowBarcodesRanked.toSet
+
+      // filter out everything else and convert to an immutable map
+      (
+        rowColBarcodeCounts
+          .filterInPlace { case (rowBc, _) => mostCommonRowBarcodes(rowBc) }
+          .view
+          .mapValues(m => m.toMap)
+          .toMap,
+        mostCommonRowBarcodesRanked
+      )
+    } finally {
+      readers.foreach(_.close())
     }
-    r
   }
 
   private[reports] def printUnexpectedCounts(

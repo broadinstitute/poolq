@@ -96,7 +96,7 @@ final case class PoolQConfig(
   unexpectedSequenceCacheDir: Option[Path] = None,
   removeUnexpectedSequenceCache: Boolean = true,
   unexpectedSequencesToReport: Int = 100,
-  unexpectedSequenceSamplePct: Double = 0.02,
+  unexpectedSequenceMaxSampleSize: Int = 10_000_000,
   skipShortReads: Boolean = false,
   reportsDialect: ReportsDialect = PoolQ3Dialect,
   alwaysCountColumnBarcodes: Boolean = false,
@@ -288,8 +288,8 @@ object PoolQConfig {
             else failure(s"Unexpected sequence threshold must be greater than 0, got: $n")
           }
 
-        val _ = opt[Double]("unexpected-sequence-sample-pct").valueName("<pct>").action { (f, c) =>
-          c.copy(unexpectedSequenceSamplePct = f)
+        val _ = opt[Int]("unexpected-sequence-max-sample-size").valueName("<number>").action { (n, c) =>
+          c.copy(unexpectedSequenceMaxSampleSize = n)
         }
 
         val _ = opt[Path]("unexpected-sequences").valueName("<file>").action { (f, c) =>
