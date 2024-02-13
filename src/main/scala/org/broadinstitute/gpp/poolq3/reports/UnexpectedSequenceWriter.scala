@@ -117,7 +117,7 @@ object UnexpectedSequenceWriter {
 
       val iterator = new BreadthFirstIterator(readers)
 
-      while (rowColBarcodeCounts.keySet.size < maxMapSize && iterator.hasNext) {
+      while (rowColBarcodeCounts.size < maxMapSize && iterator.hasNext) {
         val (rowBc, colBc) = iterator.next()
         val colBarcodeMap = rowColBarcodeCounts.getOrElseUpdate(rowBc, mutable.HashMap())
         val _ = colBarcodeMap.updateWith(colBc) {
