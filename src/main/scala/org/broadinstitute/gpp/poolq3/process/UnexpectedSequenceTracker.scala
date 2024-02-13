@@ -8,7 +8,6 @@ package org.broadinstitute.gpp.poolq3.process
 import java.io.{BufferedWriter, Closeable, OutputStreamWriter}
 import java.nio.file.{Files, Path}
 
-import scala.collection.mutable
 import scala.util.control.NonFatal
 
 import org.broadinstitute.gpp.poolq3.process.UnexpectedSequenceTracker.nameFor
@@ -16,8 +15,6 @@ import org.broadinstitute.gpp.poolq3.reference.Reference
 import org.log4s.{Logger, getLogger}
 
 final class UnexpectedSequenceTracker(cacheDir: Path, colReference: Reference) extends Closeable {
-
-  private[this] val unexpectedCountsByColBarcode: mutable.Map[String, Int] = mutable.HashMap()
 
   private[this] val log: Logger = getLogger
 
@@ -36,13 +33,7 @@ final class UnexpectedSequenceTracker(cacheDir: Path, colReference: Reference) e
     val writer = outputFileWriters(colBc)
     writer.write(rowBc)
     writer.write("\n")
-    val _ = unexpectedCountsByColBarcode.updateWith(colBc) {
-      case None     => Some(1)
-      case Some(pc) => Some(pc + 1)
-    }
   }
-
-  def unexpectedBarcodeCounts: Map[String, Int] = unexpectedCountsByColBarcode.toMap
 
   override def close(): Unit =
     outputFileWriters.values.foreach { writer =>

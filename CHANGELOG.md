@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.10.0
+* More efficient and memory-safe sampling technique for unexpected sequence reporting
+
 ## 3.9.0
 * Use sampling technique for generating unexpected sequence reports
 

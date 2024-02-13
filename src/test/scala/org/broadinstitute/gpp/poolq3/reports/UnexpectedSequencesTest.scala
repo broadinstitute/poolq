@@ -63,7 +63,7 @@ class UnexpectedSequencesTest extends FunSuite with TestResources {
         List.fill(expectedReadCount)(expectedReads).flatten ++ List.fill(unexpectedReadCount)(unexpectedReads).flatten
       )
 
-    testIt(underlyingBarcodes, 1.0, unexpectedReadCount)
+    testIt(underlyingBarcodes, unexpectedReadCount, 1000)
   }
 
   test("PoolQ should report unexpected sequences found in its sample only") {
@@ -87,7 +87,7 @@ class UnexpectedSequencesTest extends FunSuite with TestResources {
         List.fill(missedUnexpectedReadCount)(missedUnexpectedReads).flatten
       )
 
-    testIt(underlyingBarcodes, 0.02, unexpectedReadCount)
+    testIt(underlyingBarcodes, unexpectedReadCount, 2)
 
   }
 
@@ -98,15 +98,7 @@ class UnexpectedSequencesTest extends FunSuite with TestResources {
       val unexpectedReadCount = 9
 
       UnexpectedSequenceWriter
-        .write(
-          outputFile,
-          cachePath,
-          Map("AAAA" -> unexpectedReadCount, "CCCG" -> unexpectedReadCount, "AAAT" -> 0, "CCCC" -> 0),
-          100,
-          colReference,
-          Some(globalReference),
-          0.02
-        )
+        .write(outputFile, cachePath, 100, colReference, Some(globalReference), 2)
         .get
 
       val expected =
@@ -125,7 +117,46 @@ class UnexpectedSequencesTest extends FunSuite with TestResources {
     }
   }
 
-  private def testIt(underlyingBarcodes: List[(String, String)], samplePct: Double, unexpectedReadCount: Int)(implicit
+  test("breadth-first iterator") {
+    import scala.collection.mutable
+
+    class TestCachedBarcodes(val colBc: String, iter: Iterator[String])
+        extends UnexpectedSequenceWriter.CachedBarcodes {
+      var closed = false
+      override def hasNext: Boolean = iter.hasNext
+      override def next(): String = iter.next()
+      override def close(): Unit = closed = true
+    }
+
+    val i1 = new TestCachedBarcodes("AAA", Iterator("AAAAAA"))
+    val i2 = new TestCachedBarcodes("CCC", Iterator("AAAAAA", "AAAAAT", "AAAAAA"))
+    val i3 = new TestCachedBarcodes("GGG", Iterator("AAAAAA"))
+    val i4 = new TestCachedBarcodes("TTT", Iterator("AAAAAA"))
+
+    val circularBuffer: UnexpectedSequenceWriter.BreadthFirstIterator = {
+      val readers = mutable.Queue[UnexpectedSequenceWriter.CachedBarcodes](i1, i2, i3, i4)
+      new UnexpectedSequenceWriter.BreadthFirstIterator(readers)
+    }
+
+    val barcodes = circularBuffer.toList
+    assertEquals(
+      barcodes,
+      List(
+        ("AAAAAA", "AAA"),
+        ("AAAAAA", "CCC"),
+        ("AAAAAA", "GGG"),
+        ("AAAAAA", "TTT"),
+        ("AAAAAT", "CCC"),
+        ("AAAAAA", "CCC")
+      )
+    )
+    assert(i1.closed)
+    assert(i2.closed)
+    assert(i3.closed)
+    assert(i4.closed)
+  }
+
+  private def testIt(underlyingBarcodes: List[(String, String)], unexpectedReadCount: Int, maxMapSize: Int)(implicit
     loc: Location
   ): Unit = {
     val barcodes = CloseableIterable.ofList(underlyingBarcodes.map { case (row, col) =>
@@ -143,7 +174,7 @@ class UnexpectedSequencesTest extends FunSuite with TestResources {
       val _ = PoolQ.runProcess(barcodes, consumer).get
 
       UnexpectedSequenceWriter
-        .write(outputFile, cachePath, ust.unexpectedBarcodeCounts, 100, colReference, Some(globalReference), samplePct)
+        .write(outputFile, cachePath, 100, colReference, Some(globalReference), maxMapSize)
         .get
 
       val expected =

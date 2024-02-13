@@ -1,4 +1,4 @@
-fullversion := $(shell grep -m 1 'ThisBuild / version :=' ./version.sbt | perl -pe 's/^ThisBuild \/ version := "([0-9]+\.[0-9+]\.[0-9]+).*$$/$$1/g')
+fullversion := $(shell grep -m 1 'ThisBuild / version :=' ./version.sbt | perl -pe 's/^ThisBuild \/ version := "([0-9]+\.[0-9]+\.[0-9]+).*$$/$$1/g')
 
 version := $(shell grep -m 1 'ThisBuild / version :=' ./version.sbt | perl -pe 's/^ThisBuild \/ version := "([0-9]+\.[0-9+]).*$$/$$1/g')
 

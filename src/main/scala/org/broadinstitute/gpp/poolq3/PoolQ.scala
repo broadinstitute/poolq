@@ -199,11 +199,10 @@ object PoolQ {
             .write(
               config.output.unexpectedSequencesFile,
               dir,
-              unexpectedSequenceTrackerOpt.map(_.unexpectedBarcodeCounts).getOrElse(Map.empty),
               config.unexpectedSequencesToReport,
               colReference,
               globalReference,
-              config.unexpectedSequenceSamplePct
+              config.unexpectedSequenceMaxSampleSize
             )
             .as(UnexpectedSequencesFileType.some)
         if (config.removeUnexpectedSequenceCache) {
