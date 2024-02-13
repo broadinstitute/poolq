@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.11.0
+* Machine-parseable condition barcode summary file
+
 ## 3.10.0
 * More efficient and memory-safe sampling technique for unexpected sequence reporting
 

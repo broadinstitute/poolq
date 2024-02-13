@@ -23,6 +23,7 @@ class UnlabeledConditionsTest extends CatsEffectSuite with TestResources {
       barcodeCountsFile <- tempFile[IO]("barcode-counts", ".txt")
       normalizedCountsFile <- tempFile[IO]("normcounts", ".txt")
       qualityFile <- tempFile[IO]("quality", ".txt")
+      conditionBarcodeCountsSummaryFile <- tempFile[IO]("condition-barcode-counts-summary", ".txt")
       correlationFile <- tempFile[IO]("correlation", ".txt")
       unexpectedSequencesFile <- tempFile[IO]("unexpected", ".txt")
       runInfoFile <- tempFile[IO]("runinfo", ".txt")
@@ -32,6 +33,7 @@ class UnlabeledConditionsTest extends CatsEffectSuite with TestResources {
         normalizedCountsFile = normalizedCountsFile,
         barcodeCountsFile = barcodeCountsFile,
         qualityFile = qualityFile,
+        conditionBarcodeCountsSummaryFile = conditionBarcodeCountsSummaryFile,
         correlationFile = correlationFile,
         unexpectedSequencesFile = unexpectedSequencesFile,
         runInfoFile = runInfoFile

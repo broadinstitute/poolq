@@ -16,17 +16,39 @@ import org.broadinstitute.gpp.poolq3.reference.Reference
 
 object QualityWriter {
 
+  class TeeWriter(w1: PrintWriter, w2: PrintWriter) {
+
+    def print(s: String): Unit = {
+      w1.print(s)
+      w2.print(s)
+    }
+
+    def println(s: String): Unit = {
+      w1.println(s)
+      w2.println(s)
+    }
+
+    def println(): Unit = {
+      w1.println()
+      w2.println()
+    }
+
+  }
+
   def write(
-    file: Path,
+    qualityFile: Path,
+    conditionBarcodeCountsSummaryFile: Path,
     state: State,
     rowReference: Reference,
     colReference: Reference,
     isPairedEnd: Boolean
   ): Try[Unit] =
-    Using(new PrintWriter(file.toFile)) { writer =>
-      val barcodeLocationStats =
-        if (isPairedEnd) {
-          s"""Reads with no construct barcode: ${state.rowBarcodeNotFound + state.revRowBarcodeNotFound - state.neitherRowBarcodeFound}
+    Try {
+      Using.resources(new PrintWriter(qualityFile.toFile), new PrintWriter(conditionBarcodeCountsSummaryFile.toFile)) {
+        case (qualityWriter, cbcsWriter) =>
+          val barcodeLocationStats =
+            if (isPairedEnd) {
+              s"""Reads with no construct barcode: ${state.rowBarcodeNotFound + state.revRowBarcodeNotFound - state.neitherRowBarcodeFound}
              |
              |Reads with no forward construct barcode: ${state.rowBarcodeNotFound}
              |Max forward construct barcode index: ${state.rowBarcodeStats.maxPosStr}
@@ -38,15 +60,15 @@ object QualityWriter {
              |Min reverse construct barcode index: ${state.revRowBarcodeStats.minPosStr}
              |Avg reverse construct barcode index: ${decOptFmt(state.revRowBarcodeStats.avg)}""".stripMargin
 
-        } else {
-          s"""Reads with no construct barcode: ${state.rowBarcodeNotFound}
+            } else {
+              s"""Reads with no construct barcode: ${state.rowBarcodeNotFound}
              |Max construct barcode index: ${state.rowBarcodeStats.maxPosStr}
              |Min construct barcode index: ${state.rowBarcodeStats.minPosStr}
              |Avg construct barcode index: ${decOptFmt(state.rowBarcodeStats.avg)}""".stripMargin
-        }
+            }
 
-      val header =
-        s"""Total reads: ${state.reads}
+          val header =
+            s"""Total reads: ${state.reads}
            |Matching reads: ${state.matches}
            |1-base mismatch reads: ${state.matches - state.exactMatches}
            |
@@ -55,25 +77,29 @@ object QualityWriter {
            |$barcodeLocationStats
            |""".stripMargin
 
-      writer.println(header)
+          qualityWriter.println(header)
 
-      writer.println(s"Read counts for sample barcodes with associated conditions:")
-      writer.println(
-        s"Barcode\tCondition\tMatched (Construct+Sample Barcode)\tMatched Sample Barcode\t% Match\tNormalized Match"
-      )
-      colReference.allBarcodes.foreach { colBarcode =>
-        val data = perBarcodeQualityData(state, rowReference, colReference, colBarcode)
-        writer.println(data.mkString("\t"))
-      }
+          qualityWriter.println(s"Read counts for sample barcodes with associated conditions:")
 
-      writer.println()
-      writer.println("Read counts for most common sample barcodes without associated conditions:")
-      val unepectedBarcodeFrequencies =
-        state.unknownCol.keys.map(barcode => BarcodeFrequency(barcode, state.unknownCol.count(barcode))).toSeq
-      topN(unepectedBarcodeFrequencies, 100).foreach { case BarcodeFrequency(barcode, count) =>
-        writer.println(barcode + "\t" + count.toString)
+          // use a TeeWriter for the next section of the report
+          val tw = new TeeWriter(qualityWriter, cbcsWriter)
+          tw.println(
+            s"Barcode\tCondition\tMatched (Construct+Sample Barcode)\tMatched Sample Barcode\t% Match\tNormalized Match"
+          )
+          colReference.allBarcodes.foreach { colBarcode =>
+            val data = perBarcodeQualityData(state, rowReference, colReference, colBarcode)
+            tw.println(data.mkString("\t"))
+          }
+
+          qualityWriter.println()
+          qualityWriter.println("Read counts for most common sample barcodes without associated conditions:")
+          val unepectedBarcodeFrequencies =
+            state.unknownCol.keys.map(barcode => BarcodeFrequency(barcode, state.unknownCol.count(barcode))).toSeq
+          topN(unepectedBarcodeFrequencies, 100).foreach { case BarcodeFrequency(barcode, count) =>
+            qualityWriter.println(barcode + "\t" + count.toString)
+          }
+          qualityWriter.println()
       }
-      writer.println()
     }
 
   private[this] def decOptFmt(d: Option[Double]): String = d.map(Decimal00Format.format).getOrElse("N/A")
