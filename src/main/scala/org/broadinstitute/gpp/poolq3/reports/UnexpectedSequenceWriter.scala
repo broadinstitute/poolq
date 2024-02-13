@@ -62,32 +62,18 @@ object UnexpectedSequenceWriter {
     def next(): String = iter.next()
   }
 
-  final private[reports] class BreadthFirstIterator(readers: mutable.ArrayBuffer[CachedBarcodes])
+  final private[reports] class BreadthFirstIterator(readers: mutable.Queue[CachedBarcodes])
       extends Iterator[(String, String)] {
-    private var i = 0
-
-    // this only works if all the readers were non-empty at the start
-    def hasNext: Boolean = readers.nonEmpty && readers(i).hasNext
+    def hasNext: Boolean = readers.nonEmpty
 
     def next(): (String, String) = {
-      val reader = readers(i)
+      val reader = readers.dequeue()
       val ret = (reader.next(), reader.colBc)
-
-      // if this reader won't produce another barcode after this, remove it
-      if (!reader.hasNext) {
-        val removed = readers.remove(i)
-        removed.close()
-        // in this case, we don't advance `i` because we've removed the current `i`, so `i`
-        // points to the next reader by virtue of the changed dat astructure
-        if (readers.nonEmpty) {
-          i = i % readers.length
-        }
-      } else if (readers.nonEmpty) {
-        // if readers is empty, `readers.length` will be 0 and % divides by zero; advancing `i` is only
-        // necessary if we can read more from the buffer anyway
-        i = (i + 1) % readers.length
+      if (reader.hasNext) {
+        readers.enqueue(reader)
+      } else {
+        reader.close()
       }
-
       ret
     }
 
@@ -103,14 +89,14 @@ object UnexpectedSequenceWriter {
     val allRowBarcodeCounts = new mutable.HashMap[String, Int]()
 
     // create & populate the list of readers
-    val readers = mutable.ArrayBuffer[CachedBarcodes]()
+    val readers = mutable.Queue[CachedBarcodes]()
     try {
       colReference.allBarcodes.foreach { colBc =>
         val file = cacheDir.resolve(nameFor(colBc))
         if (Files.exists(file)) {
           val cbc = new SourceCachedBarcodes(colBc, Source.fromFile(file.toFile))
           if (cbc.hasNext) {
-            readers.addOne(cbc)
+            readers.enqueue(cbc)
           }
         }
       }

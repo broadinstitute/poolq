@@ -117,7 +117,7 @@ class UnexpectedSequencesTest extends FunSuite with TestResources {
     }
   }
 
-  test("circular buffer") {
+  test("breadth-first iterator") {
     import scala.collection.mutable
 
     class TestCachedBarcodes(val colBc: String, iter: Iterator[String])
@@ -134,7 +134,7 @@ class UnexpectedSequencesTest extends FunSuite with TestResources {
     val i4 = new TestCachedBarcodes("TTT", Iterator("AAAAAA"))
 
     val circularBuffer: UnexpectedSequenceWriter.BreadthFirstIterator = {
-      val readers = mutable.ArrayBuffer[UnexpectedSequenceWriter.CachedBarcodes](i1, i2, i3, i4)
+      val readers = mutable.Queue[UnexpectedSequenceWriter.CachedBarcodes](i1, i2, i3, i4)
       new UnexpectedSequenceWriter.BreadthFirstIterator(readers)
     }
 
