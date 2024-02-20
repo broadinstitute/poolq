@@ -13,22 +13,20 @@ import scala.collection.mutable
 import org.broadinstitute.gpp.poolq3.hist.ReadOnlyHistogram
 import org.broadinstitute.gpp.poolq3.reference.Reference
 
-def writeRowIdentifiers(rowReference: Reference, rowBc: String, pw: PrintWriter): Unit = {
+def writeRowIdentifiers(rowReference: Reference, rowBc: String, pw: PrintWriter): Unit =
   // write row identifiers
   val rowBarcodeIds = rowReference.idsForBarcode(rowBc).mkString(",")
   val rowInputBarcode = rowReference.referenceBarcodeForDnaBarcode(rowBc)
   pw.print(s"$rowInputBarcode\t$rowBarcodeIds\t")
-}
 
 def countsHeaderText(dialect: ReportsDialect, colHeadings: String, nRows: Int, nCols: Int): String =
-  dialect match {
+  dialect match
     case PoolQ3Dialect => s"Row Barcode\tRow Barcode IDs\t$colHeadings"
     case PoolQ2Dialect => s"Construct Barcode\tConstruct IDs\t$colHeadings"
     case GctDialect =>
       s"""#1.2
            |$nRows\t$nCols
            |NAME\tDescription\t$colHeadings""".stripMargin
-  }
 
 /** Returns a map from column ID to the total read count for that column */
 def getColumnReadCounts(
@@ -38,25 +36,25 @@ def getColumnReadCounts(
 ): Map[String, Int] =
   colReference.allIds.map { colId =>
     val readCount =
-      (for {
+      (for
         colBarcodeLong <- colReference.barcodesForId(colId)
         rowBarcodeLong <- rowReference.allBarcodes
-      } yield hist.count((rowBarcodeLong, colBarcodeLong))).sum
+      yield hist.count((rowBarcodeLong, colBarcodeLong))).sum
 
     colId -> readCount
   }.toMap
 
-def parseFilename(p: Path): ParsedFilename = {
+def parseFilename(p: Path): ParsedFilename =
   val nameStr = p.getFileName.toString
   val lastDotIdx = nameStr.lastIndexOf('.')
   val (base, ext) =
-    if (lastDotIdx == -1) (nameStr, None)
-    else {
+    if lastDotIdx == -1 then (nameStr, None)
+    else
       val (b, e) = nameStr.splitAt(lastDotIdx)
       (b, Some(e))
-    }
   ParsedFilename(Option(p.getParent).getOrElse(Paths.get(".")), base, ext)
-}
+
+end parseFilename
 
 /** Returns the maximum `n` `A`s in `xs`, in descending order
   * @param xs
@@ -69,13 +67,13 @@ def parseFilename(p: Path): ParsedFilename = {
   *   the type of elements
   * @return
   */
-def topN[A](xs: Seq[A], n: Int)(implicit ord: Ordering[A]): List[A] = {
+def topN[A](xs: Seq[A], n: Int)(implicit ord: Ordering[A]): List[A] =
   // split xs to take the first `n` elements blindly
   val (firstN, rest) = xs.splitAt(n)
 
   // mutable.PriorityQueue is a max heap; we want a min heap of the largest `n` `A`'s seen so far, initialized with
   // the first `n` elements of `xs`
-  val minHeap = mutable.PriorityQueue[A](firstN: _*)(ord.reverse)
+  val minHeap = mutable.PriorityQueue[A](firstN*)(ord.reverse)
 
   // for the rest, find the smallest element, call it `y`, and put the larger of `x` and `y` back in the min heap
   rest.foreach { x =>
@@ -83,4 +81,5 @@ def topN[A](xs: Seq[A], n: Int)(implicit ord: Ordering[A]): List[A] = {
     minHeap.enqueue(ord.max(x, y))
   }
   minHeap.dequeueAll.reverse.toList
-}
+
+end topN

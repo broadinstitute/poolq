@@ -13,7 +13,7 @@ abstract class BaseReference(
   final val allBarcodes: Seq[String],
   barcodeToInputBarcode: Object2ObjectMap[String, String],
   barcodeEntries: Object2ObjectMap[String, mutable.LinkedHashSet[String]]
-) extends Reference {
+) extends Reference:
 
   require(allBarcodes.nonEmpty, "Reference may not be empty")
 
@@ -22,11 +22,10 @@ abstract class BaseReference(
 
   final def isDefined(barcode: String): Boolean = find(barcode).nonEmpty
 
-  final def idsForBarcode(barcode: String): Seq[String] = {
+  final def idsForBarcode(barcode: String): Seq[String] =
     val ids = barcodeEntries.get(barcode)
-    if (ids == null) Vector.empty
+    if ids == null then Vector.empty
     else ids.toVector
-  }
 
   final def barcodesForId(id: String): Seq[String] =
     barcodesForIdMap.getOrElse(id, Nil)
@@ -36,24 +35,21 @@ abstract class BaseReference(
     * common for a single ID to be represented by several barcodes (indicating replicates). Thus, the value lists may
     * contain several distinct barcodes.
     */
-  final lazy val barcodesForIdMap: Map[String, List[String]] = {
+  final lazy val barcodesForIdMap: Map[String, List[String]] =
     val m = mutable.HashMap[String, List[String]]()
     barcodeEntries.forEach((barcode, ids) => ids.foreach(id => m.put(id, barcode :: m.getOrElse(id, Nil))))
     m.toMap
-  }
 
-  def referenceBarcodeForDnaBarcode(matchingBarcode: String): String = {
+  def referenceBarcodeForDnaBarcode(matchingBarcode: String): String =
     val inputBarcode = barcodeToInputBarcode.get(matchingBarcode)
-    if (inputBarcode == null) throw new IllegalArgumentException(s"Unknown matching barcode $matchingBarcode")
+    if inputBarcode == null then throw new IllegalArgumentException(s"Unknown matching barcode $matchingBarcode")
     else inputBarcode
-  }
 
-  final lazy val allIds: Seq[String] = {
+  final lazy val allIds: Seq[String] =
     val ids = mutable.LinkedHashSet[String]()
     allBarcodes.foreach(barcode => ids ++= barcodeEntries.get(barcode))
     ids.toVector
-  }
 
   final val barcodeLength: Int = allBarcodes.head.length
 
-}
+end BaseReference

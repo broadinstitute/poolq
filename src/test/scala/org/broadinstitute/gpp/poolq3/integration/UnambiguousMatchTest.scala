@@ -11,9 +11,9 @@ import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, ReferenceEntry}
 import org.broadinstitute.gpp.poolq3.process.ScoringConsumer
 import org.broadinstitute.gpp.poolq3.reference.{ExactReference, VariantReference}
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers.*
 
-class UnambiguousMatchTest extends AnyFlatSpec {
+class UnambiguousMatchTest extends AnyFlatSpec:
 
   private val rowReferenceBarcodes = List(
     "AAAAAAAAAAAAAAAAAAAA",
@@ -102,4 +102,4 @@ class UnambiguousMatchTest extends AnyFlatSpec {
     hist.count(("AATGTGAAAATGTGATGAAT", "CCCC")) should be(0)
   }
 
-}
+end UnambiguousMatchTest

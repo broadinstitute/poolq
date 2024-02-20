@@ -7,7 +7,7 @@ package org.broadinstitute.gpp.poolq3.barcode
 
 import munit.FunSuite
 
-class DmuxedTest extends FunSuite {
+class DmuxedTest extends FunSuite:
 
   test("extracting a barcode with Ns from an illumina read") {
     assertEquals(
@@ -31,4 +31,4 @@ class DmuxedTest extends FunSuite {
     assertEquals(Dmuxed.barcodeFromId(8)("@A01379:680:HC37HDRX3:1:2101:3224:1000 1:N:0:TGCGAGG"), None)
   }
 
-}
+end DmuxedTest

@@ -13,7 +13,7 @@ import org.broadinstitute.gpp.poolq3.parser.ReferenceEntry
 import org.broadinstitute.gpp.poolq3.process.State
 import org.broadinstitute.gpp.poolq3.reference.ExactReference
 
-class ConditionBarcodeCountsSummaryTest extends CatsEffectSuite {
+class ConditionBarcodeCountsSummaryTest extends CatsEffectSuite:
 
   private val Condition1 = "DMSO"
   private val Condition2 = "ITMFA"
@@ -101,4 +101,4 @@ class ConditionBarcodeCountsSummaryTest extends CatsEffectSuite {
 
   }
 
-}
+end ConditionBarcodeCountsSummaryTest

@@ -6,12 +6,12 @@
 package org.broadinstitute.gpp.poolq3.barcode
 
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers.*
 
 /** @author
   *   Broad Institute Genetic Perturbation Platform
   */
-class KeyRangeTest extends AnyFlatSpec {
+class KeyRangeTest extends AnyFlatSpec:
 
   "KeyRange" should "enforce well-formedness" in {
     val _ = noException should be thrownBy KeyRange(3, 4)
@@ -43,4 +43,4 @@ class KeyRangeTest extends AnyFlatSpec {
     an[IllegalArgumentException] should be thrownBy KeyRange("6-5")
   }
 
-}
+end KeyRangeTest

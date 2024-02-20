@@ -7,18 +7,16 @@ package org.broadinstitute.gpp.poolq3
 
 import java.nio.file.{Path, Paths}
 
-trait TestResources {
+trait TestResources:
 
-  def resourcePath(clazz: Class[_], name: String): Path = {
+  def resourcePath(clazz: Class[?], name: String): Path =
     val r = clazz.getResource(name)
     require(r != null, s"Can't find resource at path $name for ${getClass.getName}")
     Paths.get(r.getPath)
-  }
 
-  def resourcePath(name: String): Path = {
+  def resourcePath(name: String): Path =
     val r = this.getClass.getResource(name)
     require(r != null, s"Can't find resource at path $name for ${getClass.getName}")
     Paths.get(r.getPath)
-  }
 
-}
+end TestResources

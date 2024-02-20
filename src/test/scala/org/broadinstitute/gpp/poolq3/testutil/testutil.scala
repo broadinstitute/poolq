@@ -5,7 +5,7 @@
  */
 package org.broadinstitute.gpp.poolq3.testutil
 
-import java.nio.file.{Path => JPath}
+import java.nio.file.Path as JPath
 
 import scala.io.Source
 import scala.util.Using

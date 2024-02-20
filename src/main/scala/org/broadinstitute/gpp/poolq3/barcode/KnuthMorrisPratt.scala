@@ -5,7 +5,7 @@
  */
 package org.broadinstitute.gpp.poolq3.barcode
 
-final class KnuthMorrisPratt(word: String) {
+final class KnuthMorrisPratt(word: String):
   private[this] val f: Array[Int] = KnuthMorrisPratt.failure(word)
 
   final def search(text: String): Option[Int] = search(text, 0, text.length)
@@ -13,36 +13,35 @@ final class KnuthMorrisPratt(word: String) {
   /** Returns `Some(idx)` where `idx` is the index of the first occurrence of `word` within the provided `text` between
     * `fromIndex` and `toIndex`, or `None` if `word` is not found within the range of `text`.
     */
-  final def search(text: String, fromIndex: Int, toIndex: Int): Option[Int] = {
+  final def search(text: String, fromIndex: Int, toIndex: Int): Option[Int] =
     val wordLength = word.length
     var m = fromIndex
     var i = 0
-    while ((m + i) < toIndex) {
-      if (word.charAt(i) == text.charAt(m + i)) {
-        if (i == (wordLength - 1)) return Some(m)
+    while (m + i) < toIndex do
+      if word.charAt(i) == text.charAt(m + i) then
+        if i == (wordLength - 1) then return Some(m)
         i += 1
-      } else {
+      else
         val fi = f(i)
-        if (fi > -1) {
+        if fi > -1 then
           m = m + i - fi
           i = fi
-        } else {
+        else
           m = m + i + 1
           i = 0
-        }
-      }
-    }
+    end while
     None
-  }
 
-}
+  end search
 
-object KnuthMorrisPratt {
+end KnuthMorrisPratt
+
+object KnuthMorrisPratt:
 
   /** Computes the KMP failure function, which maps integers: {1,2,...,m} -> {0,1,...,m-1} such that f(q) = max { k : k
     * < q and Pk is a suffix of Pq } CLR calls this the prefix function. See CLR 1ed p. 871 for details.
     */
-  def failure(word: String): Array[Int] = {
+  def failure(word: String): Array[Int] =
     // initialize the KMP failure array
     val f = Array.fill(word.length)(0)
     f(0) = -1
@@ -51,21 +50,19 @@ object KnuthMorrisPratt {
     var wi = 2 // the word index
     var si = 0 // the substring index
 
-    while (wi < word.length) {
-      if (word(wi - 1) == word(si)) {
+    while wi < word.length do
+      if word(wi - 1) == word(si) then
         f(wi) = si + 1
         si = si + 1
         wi = wi + 1
-      } else if (si > 0) {
-        si = f(si)
-      } else {
+      else if si > 0 then si = f(si)
+      else
         f(wi) = 0
         wi = wi + 1
-      }
-    }
-
+    end while
     // return f
     f
-  }
 
-}
+  end failure
+
+end KnuthMorrisPratt

@@ -14,7 +14,7 @@ import org.broadinstitute.gpp.poolq3.hist.ReadOnlyHistogram
 import org.broadinstitute.gpp.poolq3.numeric.logNormalize
 import org.broadinstitute.gpp.poolq3.reference.Reference
 
-object LogNormalizedCountsWriter {
+object LogNormalizedCountsWriter:
 
   type ColId = String
 
@@ -44,7 +44,7 @@ object LogNormalizedCountsWriter {
     hist: ReadOnlyHistogram[(String, String)],
     rowReference: Reference,
     colReference: Reference
-  ): Map[String, Map[ColId, Double]] = {
+  ): Map[String, Map[ColId, Double]] =
     val columnReadCounts: Map[String, Int] = getColumnReadCounts(rowReference, colReference, hist)
 
     rowReference.allBarcodes.map { row =>
@@ -60,6 +60,7 @@ object LogNormalizedCountsWriter {
 
       row -> columns
     }.toMap
-  }
 
-}
+  end logNormalizedCounts
+
+end LogNormalizedCountsWriter

@@ -9,7 +9,7 @@ import java.nio.file.{Files, Path}
 
 import scala.util.{Failure, Success, Try, Using}
 
-import cats.syntax.all._
+import cats.syntax.all.*
 import org.broadinstitute.gpp.poolq3.PoolQConfig.synthesizeArgs
 import org.broadinstitute.gpp.poolq3.barcode.{BarcodePolicy, Barcodes, barcodeSource}
 import org.broadinstitute.gpp.poolq3.parser.{BarcodeSet, CloseableIterable, ReferenceData}
@@ -45,7 +45,7 @@ import org.broadinstitute.gpp.poolq3.types.{
 }
 import org.log4s.{Logger, getLogger}
 
-object PoolQ {
+object PoolQ:
 
   private[this] val log: Logger = getLogger
 
@@ -60,19 +60,17 @@ object PoolQ {
     )
 
   final def main(args: Array[String]): Unit =
-    PoolQConfig.parse(args) match {
+    PoolQConfig.parse(args) match
       case None => System.exit(-1)
       case Some(config) =>
-        run(config) match {
+        run(config) match
           case Success(_) => // do nothing
           case Failure(t) =>
             log.error(t)("PoolQ failed")
             System.exit(-1)
-        }
-    }
 
   /** The main entry point for PoolQ3 as an API */
-  final def run(config: PoolQConfig): Try[PoolQSummary] = {
+  final def run(config: PoolQConfig): Try[PoolQSummary] =
     log.info(s"PoolQ version: ${BuildInfo.version}")
     logCli(config)
 
@@ -136,21 +134,20 @@ object PoolQ {
       barcodeSource(config.input, rowBarcodePolicy, revRowBarcodePolicyOpt, colBarcodePolicyOrLength, umiInfo.map(_._2))
 
     lazy val unexpectedSequenceCacheDirOpt: Option[Path] =
-      if (config.skipUnexpectedSequenceReport) None
-      else {
+      if config.skipUnexpectedSequenceReport then None
+      else
         val ret = config.unexpectedSequenceCacheDir.map(Files.createDirectories(_)).orElse {
           val ret: Path = Files.createTempDirectory("unexpected-sequence-cache")
           Some(ret)
         }
         ret.foreach(path => log.info(s"Writing unexpected sequence cache files to $path"))
         ret
-      }
 
     lazy val unexpectedSequenceTrackerOpt: Option[UnexpectedSequenceTracker] =
       unexpectedSequenceCacheDirOpt.map(new UnexpectedSequenceTracker(_, colReference))
 
     val consumer =
-      if (config.noopConsumer) new NoOpConsumer
+      if config.noopConsumer then new NoOpConsumer
       else
         new ScoringConsumer(
           rowReference,
@@ -162,7 +159,7 @@ object PoolQ {
           config.isPairedEnd
         )
 
-    for {
+    for
       runSummary <- runProcess(barcodes, consumer)
       state = runSummary.state
       counts = state.known
@@ -220,17 +217,19 @@ object PoolQ {
               config.unexpectedSequenceMaxSampleSize
             )
             .as(UnexpectedSequencesFileType.some)
-        if (config.removeUnexpectedSequenceCache) {
+        if config.removeUnexpectedSequenceCache then
           log.info(s"Removing unexpected sequence cache ${config.unexpectedSequenceCacheDir}")
           UnexpectedSequenceWriter.removeCache(dir)
-        }
         ret
       }
       _ = log.info(s"Writing run info ${config.output.unexpectedSequencesFile}")
       _ <- RunInfoWriter.write(config.output.runInfoFile, config)
       _ = log.info("PoolQ complete")
-    } yield PoolQSummary(runSummary, AlwaysWrittenFiles ++ Set(cfto, usfto).flatten)
-  }
+    yield PoolQSummary(runSummary, AlwaysWrittenFiles ++ Set(cfto, usfto).flatten)
+
+    end for
+
+  end run
 
   def runProcess(barcodes: CloseableIterable[Barcodes], consumer: Consumer): Try[PoolQRunSummary] =
     Using(barcodes.iterator) { iterator =>
@@ -257,7 +256,7 @@ object PoolQ {
         (rowBarcodePolicy, None, rowBarcodePolicy.length)
       }
 
-  private[this] def logCli(config: PoolQConfig): Unit = {
+  private[this] def logCli(config: PoolQConfig): Unit =
     val logStr =
       synthesizeArgs(config)
         .map {
@@ -266,6 +265,7 @@ object PoolQ {
         }
         .mkString(" \\\n")
     log.info(s"PoolQ command-line settings:\n$logStr")
-  }
 
-}
+  end logCli
+
+end PoolQ

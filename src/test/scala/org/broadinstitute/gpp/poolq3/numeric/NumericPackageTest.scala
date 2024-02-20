@@ -7,10 +7,10 @@ package org.broadinstitute.gpp.poolq3.numeric
 
 import org.scalacheck.Gen
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers._
-import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks._
+import org.scalatest.matchers.should.Matchers.*
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks.*
 
-class NumericPackageTest extends AnyFlatSpec {
+class NumericPackageTest extends AnyFlatSpec:
 
   "log2" should "take the log base 2" in {
     val smallNonNeg = Gen.chooseNum(0.0, 48.0)
@@ -30,4 +30,4 @@ class NumericPackageTest extends AnyFlatSpec {
     }
   }
 
-}
+end NumericPackageTest

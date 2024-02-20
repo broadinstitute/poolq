@@ -8,10 +8,10 @@ package org.broadinstitute.gpp.poolq3.seq
 import org.broadinstitute.gpp.poolq3.gen.{acgtn, barcode, dnaSeq, nonEmptyDnaSeq}
 import org.scalacheck.Gen
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers._
-import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks._
+import org.scalatest.matchers.should.Matchers.*
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks.*
 
-class SeqPackageTest extends AnyFlatSpec {
+class SeqPackageTest extends AnyFlatSpec:
 
   "complement" should "complement a string of DNA" in {
     val _ = complement("") should be("")
@@ -40,11 +40,11 @@ class SeqPackageTest extends AnyFlatSpec {
   it should "be 0 iff and only iff x = y" in {
     forAll(barcode, barcode) { (x, y) =>
       val xydist = countMismatches(x, y)
-      if (x != y) {
+      if x != y then
         val _ = xydist should be > 0
         val _ = countMismatches(x, x) should be(0)
         countMismatches(y, y) should be(0)
-      } else xydist should be(0)
+      else xydist should be(0)
     }
   }
 
@@ -90,4 +90,4 @@ class SeqPackageTest extends AnyFlatSpec {
     }
   }
 
-}
+end SeqPackageTest

@@ -15,10 +15,10 @@ val Log2: Double = math.log(2)
 
 val OneMillion: Double = 1000000.0
 
-def percent(num: Int, denom: Int): Double = if (denom == 0) 0.0 else num * 100.0 / denom
+def percent(num: Int, denom: Int): Double = if denom == 0 then 0.0 else num * 100.0 / denom
 
 def log2(x: Double): Double = math.log(x) / Log2
 
 def logNormalize(num: Int, denom: Int): Double =
-  if (denom == 0) 0
+  if denom == 0 then 0
   else math.log1p(num * OneMillion / denom) / Log2

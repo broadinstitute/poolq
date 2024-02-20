@@ -9,7 +9,7 @@ import java.io.{BufferedReader, StringReader}
 
 import munit.FunSuite
 
-class ParserPackageTest extends FunSuite {
+class ParserPackageTest extends FunSuite:
 
   test("skipHeader should skip a header") {
     val source =
@@ -61,4 +61,4 @@ class ParserPackageTest extends FunSuite {
     assertEquals(r.readLine(), "\"TTTTTTTT;TTTTTTTTT\"\t\"\"")
   }
 
-}
+end ParserPackageTest

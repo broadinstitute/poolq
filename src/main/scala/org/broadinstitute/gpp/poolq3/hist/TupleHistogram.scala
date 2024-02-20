@@ -9,33 +9,32 @@ import scala.collection.mutable
 
 import it.unimi.dsi.fastutil.objects.{Object2IntOpenHashMap, Object2ObjectOpenHashMap}
 
-class TupleHistogram[A] extends Histogram[(A, A)] {
+class TupleHistogram[A] extends Histogram[(A, A)]:
 
   private[this] val hist: Object2ObjectOpenHashMap[A, Object2IntOpenHashMap[A]] = new Object2ObjectOpenHashMap()
 
   /** Increment the occurrences of key `k` */
-  override def increment(k: (A, A)): Int = {
+  override def increment(k: (A, A)): Int =
     val (fst, snd) = k
     val sndMap = hist.get(fst)
-    if (sndMap != null) sndMap.addTo(snd, 1)
-    else {
+    if sndMap != null then sndMap.addTo(snd, 1)
+    else
       val newSndMap = new Object2IntOpenHashMap[A]()
       newSndMap.put(snd, 1)
       hist.put(fst, newSndMap)
       1
-    }
-  }
+
+  end increment
 
   /** Returns the number of occurrences of key `k` */
-  override def count(k: (A, A)): Int = {
+  override def count(k: (A, A)): Int =
     val (fst, snd) = k
     val sndMap = hist.get(fst)
-    if (sndMap == null) 0
+    if sndMap == null then 0
     else sndMap.getOrDefault(snd, 0)
-  }
 
   /** Returns the keys tracked in this histogram */
-  override def keys: Set[(A, A)] = {
+  override def keys: Set[(A, A)] =
 
     val s: mutable.Set[(A, A)] = new mutable.HashSet()
     hist.forEach { (fst, snds) =>
@@ -44,6 +43,7 @@ class TupleHistogram[A] extends Histogram[(A, A)] {
       }
     }
     s.toSet
-  }
 
-}
+  end keys
+
+end TupleHistogram

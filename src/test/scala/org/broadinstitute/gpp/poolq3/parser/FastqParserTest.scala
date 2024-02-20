@@ -5,11 +5,11 @@
  */
 package org.broadinstitute.gpp.poolq3.parser
 
-import better.files._
+import better.files.*
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers.*
 
-class FastqParserTest extends AnyFlatSpec {
+class FastqParserTest extends AnyFlatSpec:
 
   "FastqParser" should "reject a malformed FASTQ file" in {
     val data =
@@ -22,15 +22,13 @@ class FastqParserTest extends AnyFlatSpec {
         |+""".stripMargin
 
     val file: File = File.newTemporaryFile("FastqParserTest", ".fastq")
-    try {
+    try
       file.overwrite(data)
       val fqp = new FastqParser(file.path)
       intercept[InvalidFileException] {
         fqp.toList
       }
-    } finally {
-      file.delete()
-    }
+    finally file.delete()
   }
 
   "FastqParser" should "reject a misaligned FASTQ file" in {
@@ -42,15 +40,13 @@ class FastqParserTest extends AnyFlatSpec {
         |+""".stripMargin
 
     val file: File = File.newTemporaryFile("FastqParserTest", ".fastq")
-    try {
+    try
       file.overwrite(data)
       val fqp = new FastqParser(file.path)
       intercept[InvalidFileException] {
         fqp.toList
       }
-    } finally {
-      file.delete()
-    }
+    finally file.delete()
   }
 
   it should "parse complete records" in {
@@ -64,15 +60,13 @@ class FastqParserTest extends AnyFlatSpec {
         |+
         |=@975@<7""".stripMargin
     val file: File = File.newTemporaryFile("FastqParserTest", ".fastq")
-    try {
+    try
       file.overwrite(data)
       val fqp = new FastqParser(file.path)
       val fqi = fqp.iterator
       val _ = (fqi.toList should have).length(2)
       fqi.close()
-    } finally {
-      file.delete()
-    }
+    finally file.delete()
   }
 
-}
+end FastqParserTest

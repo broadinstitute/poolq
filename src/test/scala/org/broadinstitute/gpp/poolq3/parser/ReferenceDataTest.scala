@@ -10,9 +10,9 @@ import java.io.{BufferedReader, StringReader}
 import org.broadinstitute.gpp.poolq3.TestResources
 import org.broadinstitute.gpp.poolq3.reports.PoolQ2Dialect
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers.*
 
-class ReferenceDataTest extends AnyFlatSpec with TestResources {
+class ReferenceDataTest extends AnyFlatSpec with TestResources:
 
   "truncateMapping" should "truncate the barcode in a mapping" in {
     val actual = ReferenceData.truncator(15)("AAAAACCCCCGGGGGTTTTT")
@@ -102,4 +102,4 @@ class ReferenceDataTest extends AnyFlatSpec with TestResources {
     e.msg.exists(_.contains("Here's an ID with no barcode!")) should be(true)
   }
 
-}
+end ReferenceDataTest

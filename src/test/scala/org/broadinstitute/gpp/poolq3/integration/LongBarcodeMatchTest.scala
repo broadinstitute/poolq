@@ -11,9 +11,9 @@ import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, ReferenceEntry}
 import org.broadinstitute.gpp.poolq3.process.ScoringConsumer
 import org.broadinstitute.gpp.poolq3.reference.{ExactReference, VariantReference}
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers.*
 
-class LongBarcodeMatchTest extends AnyFlatSpec {
+class LongBarcodeMatchTest extends AnyFlatSpec:
 
   private val rowReferenceBarcodes = List(
     ReferenceEntry(
@@ -127,4 +127,4 @@ class LongBarcodeMatchTest extends AnyFlatSpec {
     ) should be(1)
   }
 
-}
+end LongBarcodeMatchTest

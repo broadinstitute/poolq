@@ -8,7 +8,7 @@ package org.broadinstitute.gpp.poolq3.hist
 import munit.{FunSuite, ScalaCheckSuite}
 import org.scalacheck.Prop.forAll
 
-class OpenHashMapHistogramTest extends FunSuite with ScalaCheckSuite {
+class OpenHashMapHistogramTest extends FunSuite with ScalaCheckSuite:
 
   test("OpenHashMapHistogram should track frequencies") {
     val h = new OpenHashMapHistogram[String]
@@ -33,4 +33,4 @@ class OpenHashMapHistogramTest extends FunSuite with ScalaCheckSuite {
     }
   }
 
-}
+end OpenHashMapHistogramTest

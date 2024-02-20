@@ -14,26 +14,23 @@ import org.broadinstitute.gpp.poolq3.numeric.{Decimal000Format, Decimal00Format,
 import org.broadinstitute.gpp.poolq3.process.State
 import org.broadinstitute.gpp.poolq3.reference.Reference
 
-object QualityWriter {
+object QualityWriter:
 
-  class TeeWriter(w1: PrintWriter, w2: PrintWriter) {
+  class TeeWriter(w1: PrintWriter, w2: PrintWriter):
 
-    def print(s: String): Unit = {
+    def print(s: String): Unit =
       w1.print(s)
       w2.print(s)
-    }
 
-    def println(s: String): Unit = {
+    def println(s: String): Unit =
       w1.println(s)
       w2.println(s)
-    }
 
-    def println(): Unit = {
+    def println(): Unit =
       w1.println()
       w2.println()
-    }
 
-  }
+  end TeeWriter
 
   def write(
     qualityFile: Path,
@@ -47,7 +44,7 @@ object QualityWriter {
       Using.resources(new PrintWriter(qualityFile.toFile), new PrintWriter(conditionBarcodeCountsSummaryFile.toFile)) {
         case (qualityWriter, cbcsWriter) =>
           val barcodeLocationStats =
-            if (isPairedEnd) {
+            if isPairedEnd then
               s"""Reads with no construct barcode: ${state.rowBarcodeNotFound + state.revRowBarcodeNotFound - state.neitherRowBarcodeFound}
              |
              |Reads with no forward construct barcode: ${state.rowBarcodeNotFound}
@@ -59,13 +56,10 @@ object QualityWriter {
              |Max reverse construct barcode index: ${state.revRowBarcodeStats.maxPosStr}
              |Min reverse construct barcode index: ${state.revRowBarcodeStats.minPosStr}
              |Avg reverse construct barcode index: ${decOptFmt(state.revRowBarcodeStats.avg)}""".stripMargin
-
-            } else {
-              s"""Reads with no construct barcode: ${state.rowBarcodeNotFound}
+            else s"""Reads with no construct barcode: ${state.rowBarcodeNotFound}
              |Max construct barcode index: ${state.rowBarcodeStats.maxPosStr}
              |Min construct barcode index: ${state.rowBarcodeStats.minPosStr}
              |Avg construct barcode index: ${decOptFmt(state.rowBarcodeStats.avg)}""".stripMargin
-            }
 
           val header =
             s"""Total reads: ${state.reads}
@@ -109,7 +103,7 @@ object QualityWriter {
     rowReference: Reference,
     colReference: Reference,
     colBarcode: String
-  ): Seq[String] = {
+  ): Seq[String] =
     val conditions = colReference.idsForBarcode(colBarcode).mkString(",")
     val matchedRowAndCol: Int =
       rowReference.allBarcodes.map(rowBarcode => state.known.count((rowBarcode, colBarcode))).sum
@@ -125,6 +119,7 @@ object QualityWriter {
       Decimal00Format.format(pct),
       Decimal000Format.format(logNormalize(matchedRowAndCol, state.reads))
     )
-  }
 
-}
+  end perBarcodeQualityData
+
+end QualityWriter

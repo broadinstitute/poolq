@@ -10,7 +10,7 @@ import org.broadinstitute.gpp.poolq3.barcode.{Barcodes, FoundBarcode}
 import org.broadinstitute.gpp.poolq3.parser.{BarcodeSet, ReferenceEntry}
 import org.broadinstitute.gpp.poolq3.reference.{ExactReference, Reference}
 
-class ScoringConsumerTest extends FunSuite {
+class ScoringConsumerTest extends FunSuite:
 
   val rowReference: Reference =
     ExactReference(Seq(ReferenceEntry("AAAAAAAAAA", "Barcode1")), identity, includeAmbiguous = false)
@@ -65,10 +65,10 @@ class ScoringConsumerTest extends FunSuite {
     consumer.consume(barcodes)
     val state = consumer.state
 
-    for {
+    for
       r <- rowReference.allBarcodes
       c <- colReference.allBarcodes
-    } assertEquals(state.known.count((r, c)), 0)
+    do assertEquals(state.known.count((r, c)), 0)
 
     assertEquals(state.knownCol.count("AAA"), 1)
     assertEquals(state.reads, 1)
@@ -107,10 +107,10 @@ class ScoringConsumerTest extends FunSuite {
     consumer.consume(barcodes)
     val state = consumer.state
 
-    for {
+    for
       r <- rowReference.allBarcodes
       c <- colReference.allBarcodes
-    } assertEquals(state.known.count((r, c)), 0)
+    do assertEquals(state.known.count((r, c)), 0)
 
     assertEquals(state.knownCol.count("AAA"), 0)
     assertEquals(state.reads, 1)
@@ -128,10 +128,10 @@ class ScoringConsumerTest extends FunSuite {
     consumer.consume(barcodes)
     val state = consumer.state
 
-    for {
+    for
       r <- rowReference.allBarcodes
       c <- colReference.allBarcodes
-    } assertEquals(state.known.count((r, c)), 0)
+    do assertEquals(state.known.count((r, c)), 0)
 
     assertEquals(state.knownCol.count("AAA"), 0)
     assertEquals(state.reads, 1)
@@ -149,10 +149,10 @@ class ScoringConsumerTest extends FunSuite {
     consumer.consume(barcodes)
     val state = consumer.state
 
-    for {
+    for
       r <- rowReference.allBarcodes
       c <- colReference.allBarcodes
-    } assertEquals(state.known.count((r, c)), 0)
+    do assertEquals(state.known.count((r, c)), 0)
 
     assertEquals(state.knownCol.count("AAA"), 1)
     assertEquals(state.reads, 1)
@@ -170,10 +170,10 @@ class ScoringConsumerTest extends FunSuite {
     consumer.consume(barcodes)
     val state = consumer.state
 
-    for {
+    for
       r <- rowReference.allBarcodes
       c <- colReference.allBarcodes
-    } assertEquals(state.known.count((r, c)), 0)
+    do assertEquals(state.known.count((r, c)), 0)
 
     assertEquals(state.knownCol.count("AAA"), 0)
     assertEquals(state.reads, 1)
@@ -191,10 +191,10 @@ class ScoringConsumerTest extends FunSuite {
     consumer.consume(barcodes)
     val state = consumer.state
 
-    for {
+    for
       r <- rowReference.allBarcodes
       c <- colReference.allBarcodes
-    } assertEquals(state.known.count((r, c)), 0)
+    do assertEquals(state.known.count((r, c)), 0)
 
     assertEquals(state.knownCol.count("AAA"), 0)
     assertEquals(state.reads, 1)
@@ -332,4 +332,4 @@ class ScoringConsumerTest extends FunSuite {
     assertEquals(state.revRowBarcodeStats.max, -1)
   }
 
-}
+end ScoringConsumerTest

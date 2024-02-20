@@ -13,7 +13,7 @@ import scala.util.Using
 import munit.FunSuite
 import org.broadinstitute.gpp.poolq3.types.Read
 
-class TextParserTest extends FunSuite {
+class TextParserTest extends FunSuite:
 
   test("it should parse a few sequences from a file") {
     val data =
@@ -22,13 +22,12 @@ class TextParserTest extends FunSuite {
         |TTTTTTTT""".stripMargin
 
     val file: Path = Files.createTempFile("TextParserTest", ".txt")
-    try {
+    try
       Using.resource(new BufferedWriter(new FileWriter(file.toFile)))(bw => bw.write(data))
       val fqp = new TextParser(file)
       assertEquals(fqp.toList, List(Read("Line 1", "AACTCACG"), Read("Line 2", "TTGAGTGC"), Read("Line 3", "TTTTTTTT")))
-    } finally {
+    finally
       val _ = Files.deleteIfExists(file)
-    }
   }
 
-}
+end TextParserTest

@@ -12,7 +12,7 @@ import org.broadinstitute.gpp.poolq3.parser.{ConflictingBarcodeException, Refere
 
 /** Represents one dimension of reference data, which is a mapping between DNA barcodes and associated identifiers.
   */
-trait Reference {
+trait Reference:
 
   /** Finds the best matching barcode in the reference data for the barcode provided */
   def find(barcode: String): Seq[MatchedBarcode]
@@ -41,9 +41,9 @@ trait Reference {
   /** Returns the length of the barcodes represented by this reference */
   def barcodeLength: Int
 
-}
+end Reference
 
-object Reference {
+object Reference:
 
   type Mappings =
     (Seq[String], Object2ObjectMap[String, String], Object2ObjectMap[String, mutable.LinkedHashSet[String]])
@@ -54,16 +54,15 @@ object Reference {
     includeAmbiguous: Boolean,
     bs: Seq[ReferenceEntry]
   ): Reference =
-    matcher.toLowerCase match {
+    matcher.toLowerCase match
       case "exact"    => ExactReference(bs, barcodeProcessor, includeAmbiguous)
       case "mismatch" => VariantReference(bs, barcodeProcessor, includeAmbiguous)
       case _ =>
         throw new IllegalArgumentException(
           s"Unknown matching function `$matcher`. Please choose either exact or mismatch."
         )
-    }
 
-  def build(mappings: Seq[ReferenceEntry]): Mappings = {
+  def build(mappings: Seq[ReferenceEntry]): Mappings =
     // these make up the return type
     val barcodes = new mutable.LinkedHashSet[String]
     val barcodeIds = new Object2ObjectOpenHashMap[String, mutable.LinkedHashSet[String]]()
@@ -74,36 +73,33 @@ object Reference {
     mappings.foreach { referenceEntry =>
       barcodes += referenceEntry.dnaBarcode
       // check that for any barcode used in matching, only one _input_ barcode reduces to it
-      if (barcodeToInputBarcode.containsKey(referenceEntry.dnaBarcode)) {
+      if barcodeToInputBarcode.containsKey(referenceEntry.dnaBarcode) then
         val witness = barcodeToInputBarcode.get(referenceEntry.dnaBarcode)
-        if (witness != referenceEntry.referenceBarcode) {
+        if witness != referenceEntry.referenceBarcode then
           throw new ConflictingBarcodeException(referenceEntry.referenceBarcode, referenceEntry.referenceId, witness)
-        }
-      } else {
-        barcodeToInputBarcode.put(referenceEntry.dnaBarcode, referenceEntry.referenceBarcode)
-      }
+      else barcodeToInputBarcode.put(referenceEntry.dnaBarcode, referenceEntry.referenceBarcode)
 
       // this looks inefficient, but using `.putIfAbsent` appears to basically do the same thing,
       // with the exception that `.putIfAbsent` requires a new set to be constructed every time
       // regardless of whether it's used, since it's a Java API and Java doesn't support by-name
       // parameters
-      if (barcodeIds.containsKey(referenceEntry.dnaBarcode)) {
+      if barcodeIds.containsKey(referenceEntry.dnaBarcode) then
         barcodeIds.get(referenceEntry.dnaBarcode) += referenceEntry.referenceId
-      } else {
+      else
         val set = mutable.LinkedHashSet[String]()
         set += referenceEntry.referenceId
         barcodeIds.put(referenceEntry.dnaBarcode, set)
-      }
     }
 
     (barcodes.toVector, barcodeToInputBarcode, barcodeIds)
-  }
+
+  end build
 
   def truncationVariants(
     barcodes: Seq[String],
     barcodeProcessor: String => String,
     includeAmbiguous: Boolean
-  ): Object2ObjectMap[String, List[String]] = {
+  ): Object2ObjectMap[String, List[String]] =
     val map = new Object2ObjectOpenHashMap[String, List[String]]
     map.defaultReturnValue(Nil)
     barcodes.foreach { barcode =>
@@ -113,23 +109,17 @@ object Reference {
     }
 
     // truncation is one of 2 ways we can end up with ambiguous matches
-    if (!includeAmbiguous) {
-      Reference.pruneAmbiguous(map)
-    }
+    if !includeAmbiguous then Reference.pruneAmbiguous(map)
 
     map
-  }
 
-  def pruneAmbiguous[S <: Seq[String]](barcodeVariants: Object2ObjectMap[String, S]): Unit = {
+  end truncationVariants
+
+  def pruneAmbiguous[S <: Seq[String]](barcodeVariants: Object2ObjectMap[String, S]): Unit =
     // list ambiguous variants
     var ambiguousVariants: List[String] = Nil
-    barcodeVariants.forEach { (variant, barcodes) =>
-      if (barcodes.size > 1) {
-        ambiguousVariants ::= variant
-      }
-    }
+    barcodeVariants.forEach((variant, barcodes) => if barcodes.size > 1 then ambiguousVariants ::= variant)
     // remove them from `barcodeVariants`
     ambiguousVariants.foreach(barcodeVariants.remove)
-  }
 
-}
+end Reference

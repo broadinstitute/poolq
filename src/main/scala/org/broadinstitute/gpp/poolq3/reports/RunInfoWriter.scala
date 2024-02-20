@@ -12,7 +12,7 @@ import scala.util.{Try, Using}
 
 import org.broadinstitute.gpp.poolq3.{BuildInfo, PoolQConfig}
 
-object RunInfoWriter {
+object RunInfoWriter:
 
   def write(file: Path, config: PoolQConfig): Try[Unit] =
     Using(new PrintWriter(file.toFile)) { writer =>
@@ -30,4 +30,4 @@ object RunInfoWriter {
       writer.println()
     }
 
-}
+end RunInfoWriter

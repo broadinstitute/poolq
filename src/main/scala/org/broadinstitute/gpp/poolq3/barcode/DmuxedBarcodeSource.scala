@@ -13,26 +13,26 @@ final class DmuxedBarcodeSource(
   rowPolicy: BarcodePolicy,
   umiPolicyOpt: Option[BarcodePolicy],
   colBarcodeLength: Int
-) extends CloseableIterable[Barcodes] {
+) extends CloseableIterable[Barcodes]:
 
   // used to attempt to parse barcodes out of ids if the file has no associated barcode
   private val colBarcodeParser = Dmuxed.barcodeFromId(colBarcodeLength)
 
   private def colBarcodeOpt = parser.indexBarcode
 
-  private[this] class BarcodeIterator(iterator: CloseableIterator[Read]) extends CloseableIterator[Barcodes] {
+  private[this] class BarcodeIterator(iterator: CloseableIterator[Read]) extends CloseableIterator[Barcodes]:
     override def hasNext: Boolean = iterator.hasNext
 
-    override def next(): Barcodes = {
+    override def next(): Barcodes =
       val nextRead = iterator.next()
       val rowBarcodeOpt = rowPolicy.find(nextRead)
       val umiBarcodeOpt = umiPolicyOpt.flatMap(_.find(nextRead))
       Barcodes(rowBarcodeOpt, None, colBarcodeOpt.orElse(colBarcodeParser(nextRead.id)), umiBarcodeOpt)
-    }
 
     override def close(): Unit = iterator.close()
-  }
+
+  end BarcodeIterator
 
   override def iterator: CloseableIterator[Barcodes] = new BarcodeIterator(parser.iterator)
 
-}
+end DmuxedBarcodeSource

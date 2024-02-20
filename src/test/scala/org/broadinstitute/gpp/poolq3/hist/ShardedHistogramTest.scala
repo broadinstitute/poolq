@@ -8,7 +8,7 @@ package org.broadinstitute.gpp.poolq3.hist
 import munit.{FunSuite, ScalaCheckSuite}
 import org.scalacheck.Prop.forAll
 
-class ShardedHistogramTest extends FunSuite with ScalaCheckSuite {
+class ShardedHistogramTest extends FunSuite with ScalaCheckSuite:
 
   test("basic operations") {
     val h = new BasicShardedHistogram[String, String](new OpenHashMapHistogram)
@@ -33,7 +33,7 @@ class ShardedHistogramTest extends FunSuite with ScalaCheckSuite {
   }
 
   property("track frequencies for arbitrary data") {
-    def key(x: Int): Option[Int] = if (x < 0) None else Some(x)
+    def key(x: Int): Option[Int] = if x < 0 then None else Some(x)
     forAll { (data: List[(Int, Int)]) =>
       val actualHistogram = new BasicShardedHistogram[Int, Int](new OpenHashMapHistogram)
       data.foreach { case (shard, value) =>
@@ -54,4 +54,4 @@ class ShardedHistogramTest extends FunSuite with ScalaCheckSuite {
     }
   }
 
-}
+end ShardedHistogramTest

@@ -5,12 +5,12 @@
  */
 package org.broadinstitute.gpp.poolq3.barcode
 
-import cats.syntax.all._
+import cats.syntax.all.*
 import munit.FunSuite
 import org.broadinstitute.gpp.poolq3.parser.DmuxedIterable
 import org.broadinstitute.gpp.poolq3.types.{Read, ReadIdCheckPolicy}
 
-class DmuxedPairedEndBarcodeSourceTest extends FunSuite {
+class DmuxedPairedEndBarcodeSourceTest extends FunSuite:
 
   private[this] val rowPolicy = BarcodePolicy("FIXED@0", 4, skipShortReads = true)
   private[this] val revRowPolicy = BarcodePolicy("FIXED@0", 3, skipShortReads = true)
@@ -74,4 +74,4 @@ class DmuxedPairedEndBarcodeSourceTest extends FunSuite {
     assertEquals(src.toList, Nil)
   }
 
-}
+end DmuxedPairedEndBarcodeSourceTest

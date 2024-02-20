@@ -7,7 +7,7 @@ package org.broadinstitute.gpp.poolq3.barcode
 
 import munit.FunSuite
 
-class BarcodePolicyTest extends FunSuite {
+class BarcodePolicyTest extends FunSuite:
 
   test("fixed barcode policy") {
     assertEquals(BarcodePolicy("FIXED@0", 8, false), FixedOffsetPolicy(0, 8, false))
@@ -56,4 +56,4 @@ class BarcodePolicyTest extends FunSuite {
     )
   }
 
-}
+end BarcodePolicyTest

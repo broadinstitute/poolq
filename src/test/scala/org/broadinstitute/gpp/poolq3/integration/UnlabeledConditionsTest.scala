@@ -5,7 +5,7 @@
  */
 package org.broadinstitute.gpp.poolq3.integration
 
-import java.nio.file.{Path => JPath}
+import java.nio.file.Path as JPath
 
 import cats.effect.{IO, Resource}
 import fs2.io.file.{Files, Path}
@@ -15,10 +15,10 @@ import org.broadinstitute.gpp.poolq3.reports.PoolQ2Dialect
 import org.broadinstitute.gpp.poolq3.testutil.tempFile
 import org.broadinstitute.gpp.poolq3.{PoolQ, PoolQConfig, PoolQInput, PoolQOutput, TestResources}
 
-class UnlabeledConditionsTest extends CatsEffectSuite with TestResources {
+class UnlabeledConditionsTest extends CatsEffectSuite with TestResources:
 
   val outputFilesResources: Resource[IO, PoolQOutput] =
-    for {
+    for
       countsFile <- tempFile[IO]("counts", ".txt")
       barcodeCountsFile <- tempFile[IO]("barcode-counts", ".txt")
       normalizedCountsFile <- tempFile[IO]("normcounts", ".txt")
@@ -27,18 +27,16 @@ class UnlabeledConditionsTest extends CatsEffectSuite with TestResources {
       correlationFile <- tempFile[IO]("correlation", ".txt")
       unexpectedSequencesFile <- tempFile[IO]("unexpected", ".txt")
       runInfoFile <- tempFile[IO]("runinfo", ".txt")
-    } yield {
-      PoolQOutput(
-        countsFile = countsFile,
-        normalizedCountsFile = normalizedCountsFile,
-        barcodeCountsFile = barcodeCountsFile,
-        qualityFile = qualityFile,
-        conditionBarcodeCountsSummaryFile = conditionBarcodeCountsSummaryFile,
-        correlationFile = correlationFile,
-        unexpectedSequencesFile = unexpectedSequencesFile,
-        runInfoFile = runInfoFile
-      )
-    }
+    yield PoolQOutput(
+      countsFile = countsFile,
+      normalizedCountsFile = normalizedCountsFile,
+      barcodeCountsFile = barcodeCountsFile,
+      qualityFile = qualityFile,
+      conditionBarcodeCountsSummaryFile = conditionBarcodeCountsSummaryFile,
+      correlationFile = correlationFile,
+      unexpectedSequencesFile = unexpectedSequencesFile,
+      runInfoFile = runInfoFile
+    )
 
   test("Unlabeled sample barcodes aggregate together") {
 
@@ -62,11 +60,10 @@ class UnlabeledConditionsTest extends CatsEffectSuite with TestResources {
 
   }
 
-  def filesSame(expected: JPath, actual: JPath)(implicit loc: munit.Location): IO[Unit] = {
+  def filesSame(expected: JPath, actual: JPath)(implicit loc: munit.Location): IO[Unit] =
     val ef: Stream[IO, String] = Files[IO].readAll(Path.fromNioPath(expected)).through(text.utf8.decode).foldMonoid
     val af: Stream[IO, String] = Files[IO].readAll(Path.fromNioPath(actual)).through(text.utf8.decode).foldMonoid
 
     ef.zip(af).map { case (e, a) => assertEquals(e, a) }.compile.drain
-  }
 
-}
+end UnlabeledConditionsTest

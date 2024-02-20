@@ -5,33 +5,28 @@
  */
 package org.broadinstitute.gpp.poolq3.types
 
-sealed trait ReadsFileType extends Product with Serializable {
+sealed trait ReadsFileType extends Product with Serializable:
   def displayName: String
-}
 
-case object FastqType extends ReadsFileType {
+case object FastqType extends ReadsFileType:
   override val displayName: String = "FASTQ"
-}
 
-case object SamType extends ReadsFileType {
+case object SamType extends ReadsFileType:
   override val displayName: String = "SAM"
-}
 
-case object BamType extends ReadsFileType {
+case object BamType extends ReadsFileType:
   override val displayName: String = "BAM"
-}
 
-case object TextType extends ReadsFileType {
+case object TextType extends ReadsFileType:
   override val displayName: String = "text"
-}
 
-object ReadsFileType {
+object ReadsFileType:
 
   def fromFilename(n: String): Option[ReadsFileType] =
-    if (n.endsWith(".fastq") || n.endsWith(".fastq.gz")) Some(FastqType)
-    else if (n.endsWith(".sam")) Some(SamType)
-    else if (n.endsWith(".bam")) Some(BamType)
-    else if (n.endsWith(".txt") || n.endsWith(".txt.gz")) Some(TextType)
+    if n.endsWith(".fastq") || n.endsWith(".fastq.gz") then Some(FastqType)
+    else if n.endsWith(".sam") then Some(SamType)
+    else if n.endsWith(".bam") then Some(BamType)
+    else if n.endsWith(".txt") || n.endsWith(".txt.gz") then Some(TextType)
     else None
 
-}
+end ReadsFileType

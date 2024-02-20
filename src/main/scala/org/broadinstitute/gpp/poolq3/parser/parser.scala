@@ -17,18 +17,15 @@ def isGzipped(file: Path): Boolean = file.toFile.getName.toLowerCase.endsWith(".
 /** Returns an appropriate `InputStream` for the file; if the file appears to be gzipped, it will return a
   * GZIPInputStream that decompresses the data on the fly.
   */
-def inputStream(file: Path): InputStream = {
+def inputStream(file: Path): InputStream =
   val rawStream = new FileInputStream(file.toFile)
   val bufferedStream = new BufferedInputStream(rawStream)
-  if (isGzipped(file)) new GZIPInputStream(bufferedStream, 8192)
+  if isGzipped(file) then new GZIPInputStream(bufferedStream, 8192)
   else bufferedStream
-}
 
-private[parser] def skipHeader(br: BufferedReader, re: Regex): Unit = {
+private[parser] def skipHeader(br: BufferedReader, re: Regex): Unit =
   br.mark(1024)
   val line = br.readLine()
-  line match {
+  line match
     case re(_) => br.reset()
     case _     => // do nothing
-  }
-}

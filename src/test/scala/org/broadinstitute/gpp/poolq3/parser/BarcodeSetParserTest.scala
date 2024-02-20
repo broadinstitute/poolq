@@ -12,7 +12,7 @@ import org.broadinstitute.gpp.poolq3.TestResources
 import org.broadinstitute.gpp.poolq3.gen.{acgt, nonEmptyDnaSeq}
 import org.scalacheck.Prop.forAll
 
-class BarcodeSetParserTest extends FunSuite with ScalaCheckSuite with TestResources {
+class BarcodeSetParserTest extends FunSuite with ScalaCheckSuite with TestResources:
 
   property("parseBarcode") {
     forAll(nonEmptyDnaSeq(acgt)) { bc =>
@@ -30,4 +30,4 @@ class BarcodeSetParserTest extends FunSuite with ScalaCheckSuite with TestResour
     intercept[InvalidFileException](BarcodeSet(resourcePath("bad-umi.txt")))
   }
 
-}
+end BarcodeSetParserTest

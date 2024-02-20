@@ -7,7 +7,7 @@ package org.broadinstitute.gpp.poolq3.parser
 
 import munit.FunSuite
 
-class ReferenceEntryTest extends FunSuite {
+class ReferenceEntryTest extends FunSuite:
 
   test("barcodeLengths detects splits") {
     val cs = "C" * 10
@@ -17,4 +17,4 @@ class ReferenceEntryTest extends FunSuite {
     assertEquals(re.barcodeLengths, (10, 8))
   }
 
-}
+end ReferenceEntryTest

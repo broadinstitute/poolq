@@ -10,8 +10,8 @@ import java.nio.file.{Files, Path, Paths}
 
 import scala.collection.mutable
 
-import cats.data.{NonEmptyList => Nel}
-import cats.syntax.all._
+import cats.data.NonEmptyList as Nel
+import cats.syntax.all.*
 import org.broadinstitute.gpp.poolq3.PoolQConfig.DefaultPath
 import org.broadinstitute.gpp.poolq3.reports.{GctDialect, PoolQ2Dialect, PoolQ3Dialect, ReportsDialect}
 import org.broadinstitute.gpp.poolq3.types.{PoolQException, ReadIdCheckPolicy}
@@ -34,15 +34,15 @@ final case class PoolQInput(
   addlColReads: List[Path] = Nil,
   addlReads: List[(Option[String], Path)] = Nil,
   demultiplexed: Boolean = false
-) {
+):
 
-  def readsSourceE: Either[Exception, ReadsSource] = (rowReads, reverseRowReads, colReads, reads, demultiplexed) match {
+  def readsSourceE: Either[Exception, ReadsSource] = (rowReads, reverseRowReads, colReads, reads, demultiplexed) match
     case (None, None, None, Some(r), false) =>
       Right(ReadsSource.SelfContained(Nel(r._2, addlReads.view.map(_._2).toList)))
 
     case (Some(rr), None, Some(cr), None, false) =>
       val rs = ReadsSource.Split(Nel(cr, addlColReads), Nel(rr._2, addlRowReads.view.map(_._2).toList))
-      if (rs.forward.length == rs.index.length) Right(rs)
+      if rs.forward.length == rs.index.length then Right(rs)
       else Left(PoolQException("Number of row, column, and reverse reads files must match"))
 
     case (Some(rr), Some(rrr), Some(cr), None, false) =>
@@ -51,7 +51,7 @@ final case class PoolQInput(
         Nel(rr._2, addlRowReads.view.map(_._2).toList),
         Nel(rrr._2, addlReverseRowReads.view.map(_._2).toList)
       )
-      if (rs.forward.length == rs.index.length && rs.forward.length == rs.reverse.length) Right(rs)
+      if rs.forward.length == rs.index.length && rs.forward.length == rs.reverse.length then Right(rs)
       else Left(PoolQException("Number of row and column reads files must match"))
 
     case (Some(rr), None, None, None, true) =>
@@ -59,15 +59,14 @@ final case class PoolQInput(
 
     case (Some(rr), Some(rrr), None, None, true) =>
       val rs = ReadsSource.DmuxedPairedEnd(Nel(rr, addlRowReads), Nel(rrr, addlReverseRowReads))
-      if (rs.read1.map(_._1) == rs.read2.map(_._1)) Right(rs)
+      if rs.read1.map(_._1) == rs.read2.map(_._1) then Right(rs)
       else Left(PoolQException("Row and column reads files must match"))
 
     case _ => Left(PoolQException("Conflicting input options"))
-  }
 
   def readsSource: ReadsSource = readsSourceE.fold(e => throw e, rs => rs)
 
-}
+end PoolQInput
 
 final case class PoolQOutput(
   countsFile: Path = Paths.get("counts.txt"),
@@ -102,22 +101,22 @@ final case class PoolQConfig(
   reportsDialect: ReportsDialect = PoolQ3Dialect,
   alwaysCountColumnBarcodes: Boolean = false,
   noopConsumer: Boolean = false
-) {
+):
 
   def isPairedEnd =
     reverseRowBarcodePolicyStr.isDefined &&
-      (input.readsSourceE match {
+      (input.readsSourceE match
         case Right(ReadsSource.PairedEnd(_, _, _))    => true
         case Right(ReadsSource.DmuxedPairedEnd(_, _)) => true
         case Right(ReadsSource.SelfContained(_))      => false
         case Right(ReadsSource.Split(_, _))           => false
         case Right(ReadsSource.Dmuxed(_))             => false
         case Left(_)                                  => false
-      })
+      )
 
-}
+end PoolQConfig
 
-object PoolQConfig {
+object PoolQConfig:
 
   private[poolq3] val BarcodePathRegex = "([ACGT]+):(.+)".r
 
@@ -126,31 +125,30 @@ object PoolQConfig {
   implicit private[this] val readPath: Read[Path] = implicitly[Read[File]].map(_.toPath)
 
   implicit private[this] val readPaths: Read[(Path, List[Path])] = implicitly[Read[Seq[File]]].map { files =>
-    files.toList.map(_.toPath) match {
+    files.toList.map(_.toPath) match
       case Nil       => throw new IllegalArgumentException(s"No argument provided")
       case (x :: xs) => (x, xs)
-    }
   }
 
   implicit private[this] val readBarcodePaths: Read[List[(Option[String], Path)]] = implicitly[Read[Seq[String]]].map {
     args =>
       args.view.map { arg =>
-        arg match {
+        arg match
           case BarcodePathRegex(bc, pathStr) => (Option(bc), Paths.get(pathStr))
           case _                             => (None, Paths.get(arg))
-        }
       }.toList
   }
 
   implicit private[this] val readReadIdCheckPolicy: Read[ReadIdCheckPolicy] =
     implicitly[Read[String]].map(ReadIdCheckPolicy.forName)
 
-  def parse(args: Array[String]): Option[PoolQConfig] = {
+  def parse(args: Array[String]): Option[PoolQConfig] =
 
-    val parser: OptionParser[PoolQConfig] = new OptionParser[PoolQConfig]("poolq") {
+    val parser: OptionParser[PoolQConfig] = new OptionParser[PoolQConfig]("poolq"):
+
       private[this] def existsAndIsReadable(f: Path): Either[String, Unit] =
-        if (!Files.exists(f)) failure(s"Could not find ${f.toAbsolutePath}")
-        else if (!Files.isReadable(f)) failure(s"Could not read ${f.toAbsolutePath}")
+        if !Files.exists(f) then failure(s"Could not find ${f.toAbsolutePath}")
+        else if !Files.isReadable(f) then failure(s"Could not read ${f.toAbsolutePath}")
         else success
 
       locally {
@@ -290,7 +288,7 @@ object PoolQConfig {
           .valueName("<number>")
           .action((n, c) => c.copy(unexpectedSequencesToReport = n))
           .validate { n =>
-            if (n > 0) success
+            if n > 0 then success
             else failure(s"Unexpected sequence threshold must be greater than 0, got: $n")
           }
 
@@ -334,7 +332,7 @@ object PoolQConfig {
         val _ = opt[Unit]("noop").hidden().action((_, c) => c.copy(noopConsumer = true))
 
         val _ = checkConfig { c =>
-          val readsCheck = (c.input.reads, c.input.rowReads, c.input.colReads, c.input.demultiplexed) match {
+          val readsCheck = (c.input.reads, c.input.rowReads, c.input.colReads, c.input.demultiplexed) match
             case (None, None, None, _) => failure("No reads files specified.")
             case (None, None, Some(_), false) =>
               failure("Column barcode file specified but no row barcodes file specified.")
@@ -343,24 +341,21 @@ object PoolQConfig {
             case (None, Some(_), None, false) =>
               failure("Row barcode file specified but no column barcodes file specified.")
             case _ => success
-          }
 
-          val pairedEndConsistencyCheck = (c.input.reverseRowReads, c.reverseRowBarcodePolicyStr) match {
+          val pairedEndConsistencyCheck = (c.input.reverseRowReads, c.reverseRowBarcodePolicyStr) match
             case (Some(_), None) => failure("Reverse row reads file specified but no reverse barcode policy specified")
             case (None, Some(_)) => failure("Reverse barcode policy specified but now reverse row reads file specified")
             case _               => success
-          }
 
           readsCheck >> pairedEndConsistencyCheck
         }
       }
-    }
 
     parser.parse(args, PoolQConfig())
 
-  }
+  end parse
 
-  def synthesizeArgs(config: PoolQConfig): List[(String, String)] = {
+  def synthesizeArgs(config: PoolQConfig): List[(String, String)] =
     val args = new mutable.ArrayBuffer[(String, String)]
 
     // umi
@@ -399,29 +394,21 @@ object PoolQConfig {
     // run control
     args += (("row-matcher", config.rowMatchFn))
     args += (("col-matcher", config.colMatchFn))
-    if (config.countAmbiguous) {
-      args += (("count-ambiguous", ""))
-    }
+    if config.countAmbiguous then args += (("count-ambiguous", ""))
     args += (("row-barcode-policy", config.rowBarcodePolicyStr))
     config.reverseRowBarcodePolicyStr.foreach(p => args += (("rev-row-barcode-policy", p)))
     config.colBarcodePolicyStr.foreach(pol => args += (("col-barcode-policy", pol)))
     umiInfo.map(_._2).foreach(str => args += (("umi-barcode-policy", str)))
 
     // deal with the unexpected sequence options
-    if (config.skipUnexpectedSequenceReport) {
-      args += (("skip-unexpected-sequence-report", ""))
-    } else {
+    if config.skipUnexpectedSequenceReport then args += (("skip-unexpected-sequence-report", ""))
+    else
       // give whatever path we were given here - this _may_ not need to be included at all, honestly
       config.unexpectedSequenceCacheDir.foreach(file => args += (("unexpected-sequence-cache", file.toString)))
       args += (("unexpected-sequence-threshold", config.unexpectedSequencesToReport.toString))
-    }
 
-    if (config.skipShortReads) {
-      args += (("skip-short-reads", ""))
-    }
-    if (config.reportsDialect == PoolQ2Dialect) {
-      args += (("compat", ""))
-    }
+    if config.skipShortReads then args += (("skip-short-reads", ""))
+    if config.reportsDialect == PoolQ2Dialect then args += (("compat", ""))
 
     // output files
     val output = config.output
@@ -435,15 +422,13 @@ object PoolQConfig {
       output.umiCountsFilesDir.foreach(d => args += (("umi-counts-dir", d.toString)))
       output.umiBarcodeCountsFilesDir.foreach(d => args += (("umi-barcode-counts-dir", d.toString)))
     }
-    if (!config.skipUnexpectedSequenceReport) {
+    if !config.skipUnexpectedSequenceReport then
       args += (("unexpected-sequences", output.unexpectedSequencesFile.getFileName.toString))
-    }
-    if (config.alwaysCountColumnBarcodes) {
-      args += (("always-count-col-barcodes", ""))
-    }
+    if config.alwaysCountColumnBarcodes then args += (("always-count-col-barcodes", ""))
     args += (("run-info", output.runInfoFile.getFileName.toString))
 
     args.toList
-  }
 
-}
+  end synthesizeArgs
+
+end PoolQConfig

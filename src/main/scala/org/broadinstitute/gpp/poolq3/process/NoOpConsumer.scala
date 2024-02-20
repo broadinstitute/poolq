@@ -8,15 +8,14 @@ package org.broadinstitute.gpp.poolq3.process
 import org.broadinstitute.gpp.poolq3.barcode.Barcodes
 import org.broadinstitute.gpp.poolq3.hist.{BasicShardedHistogram, OpenHashMapHistogram, TupleHistogram}
 
-class NoOpConsumer extends Consumer {
+class NoOpConsumer extends Consumer:
 
   var reads = 0
 
   final override def start(): Unit = {}
 
-  final override def consume(parsedBarcode: Barcodes): Unit = {
+  final override def consume(parsedBarcode: Barcodes): Unit =
     reads += 1
-  }
 
   override def readsProcessed: Int = reads
 
@@ -34,4 +33,4 @@ class NoOpConsumer extends Consumer {
       new OpenHashMapHistogram()
     )
 
-}
+end NoOpConsumer
