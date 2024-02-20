@@ -9,7 +9,6 @@ import java.nio.file.Path
 
 import scala.collection.mutable
 
-import org.broadinstitute.gpp.poolq3.ReadsSource
 import org.broadinstitute.gpp.poolq3.parser.{
   CloseableIterable,
   CloseableIterator,
