@@ -20,7 +20,7 @@ import org.broadinstitute.gpp.poolq3.process.{
   ScoringConsumer,
   UnexpectedSequenceTracker
 }
-import org.broadinstitute.gpp.poolq3.reference.{ExactReference, Reference, referenceFor}
+import org.broadinstitute.gpp.poolq3.reference.{ExactReference, Reference}
 import org.broadinstitute.gpp.poolq3.reports.{
   BarcodeCountsWriter,
   CorrelationFileWriter,
@@ -108,7 +108,7 @@ object PoolQ {
 
     log.info("Building row reference")
     val rowReference: Reference =
-      referenceFor(
+      Reference(
         config.rowMatchFn,
         ReferenceData.truncator(rowBarcodeLength),
         config.countAmbiguous,
@@ -118,7 +118,7 @@ object PoolQ {
     log.info("Building column reference")
     val colBarcodeLength = colBarcodePolicyOpt.map(_.length).getOrElse(colReferenceData.barcodeLength)
     val colReference: Reference =
-      referenceFor(
+      Reference(
         config.colMatchFn,
         ReferenceData.truncator(colBarcodeLength),
         config.countAmbiguous,

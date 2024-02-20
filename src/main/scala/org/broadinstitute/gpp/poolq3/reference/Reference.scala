@@ -48,6 +48,21 @@ object Reference {
   type Mappings =
     (Seq[String], Object2ObjectMap[String, String], Object2ObjectMap[String, mutable.LinkedHashSet[String]])
 
+  def apply(
+    matcher: String,
+    barcodeProcessor: String => String,
+    includeAmbiguous: Boolean,
+    bs: Seq[ReferenceEntry]
+  ): Reference =
+    matcher.toLowerCase match {
+      case "exact"    => ExactReference(bs, barcodeProcessor, includeAmbiguous)
+      case "mismatch" => VariantReference(bs, barcodeProcessor, includeAmbiguous)
+      case _ =>
+        throw new IllegalArgumentException(
+          s"Unknown matching function `$matcher`. Please choose either exact or mismatch."
+        )
+    }
+
   def build(mappings: Seq[ReferenceEntry]): Mappings = {
     // these make up the return type
     val barcodes = new mutable.LinkedHashSet[String]
