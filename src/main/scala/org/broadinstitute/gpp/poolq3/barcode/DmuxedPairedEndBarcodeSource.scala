@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -16,21 +16,21 @@ class DmuxedPairedEndBarcodeSource(
   umiPolicyOpt: Option[BarcodePolicy],
   readIdCheckPolicy: ReadIdCheckPolicy,
   colBarcodeLength: Int
-) extends CloseableIterable[Barcodes] {
+) extends CloseableIterable[Barcodes]:
 
   // the index barcode _is_ the column barcode; we get it from the row parser
   // because the demultiplexed file is associated with the index barcode
   private def colBarcodeOpt = rowParser.indexBarcode
 
   private[this] class BarcodeIterator(rowIterator: CloseableIterator[Read], revRowIterator: CloseableIterator[Read])
-      extends CloseableIterator[Barcodes] {
+      extends CloseableIterator[Barcodes]:
 
     // used to attempt to parse barcodes out of ids if the file has no associated barcode
     private val colBarcodeParser = Dmuxed.barcodeFromId(colBarcodeLength)
 
     final override def hasNext: Boolean = rowIterator.hasNext && revRowIterator.hasNext
 
-    final override def next(): Barcodes = {
+    final override def next(): Barcodes =
       val nextRow = rowIterator.next()
       val nextRevRow = revRowIterator.next()
       readIdCheckPolicy.check(nextRow, nextRevRow)
@@ -38,15 +38,16 @@ class DmuxedPairedEndBarcodeSource(
       val revRowBarcodeOpt = revRowPolicy.find(nextRevRow)
       val umiBarcodeOpt = umiPolicyOpt.flatMap(_.find(nextRow))
       Barcodes(rowBarcodeOpt, revRowBarcodeOpt, colBarcodeOpt.orElse(colBarcodeParser(nextRow.id)), umiBarcodeOpt)
-    }
+
+    end next
 
     final override def close(): Unit =
       try rowIterator.close()
       finally revRowIterator.close()
 
-  }
+  end BarcodeIterator
 
   override def iterator: CloseableIterator[Barcodes] =
     new BarcodeIterator(rowParser.iterator, revRowParser.iterator)
 
-}
+end DmuxedPairedEndBarcodeSource

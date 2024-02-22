@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -7,7 +7,7 @@ package org.broadinstitute.gpp.poolq3.types
 
 import munit.FunSuite
 
-class ReadIdCheckPolicyTest extends FunSuite {
+class ReadIdCheckPolicyTest extends FunSuite:
 
   val pe1 = Read("@SL-HDG:HL3FLBCX3210428:HL3FLBCX3:1:1101:10000:10930 1:N:0:", "")
   val pe2 = Read("@SL-HDG:HL3FLBCX3210428:HL3FLBCX3:1:1101:10000:10930 2:N:0:", "")
@@ -17,10 +17,10 @@ class ReadIdCheckPolicyTest extends FunSuite {
   val pes = List(pe1, pe2, pe3)
 
   val pairedEndTuples =
-    for {
+    for
       a <- pes
       b <- pes if a != b
-    } yield (a, b)
+    yield (a, b)
 
   test("Illumina policy checks up to the first space") {
     pairedEndTuples.foreach { case (a, b) => ReadIdCheckPolicy.Illumina.check(a, b) }
@@ -40,4 +40,4 @@ class ReadIdCheckPolicyTest extends FunSuite {
     }
   }
 
-}
+end ReadIdCheckPolicyTest

@@ -1,14 +1,14 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 package org.broadinstitute.gpp.poolq3.barcode
 
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers.*
 
-class KeyMaskTest extends AnyFlatSpec {
+class KeyMaskTest extends AnyFlatSpec:
 
   "KeyMask.apply" should "construct the correct key mask from a pattern" in {
     val km0 = KeyMask("NNNNNNNNNNNNNNNNN")
@@ -77,4 +77,4 @@ class KeyMaskTest extends AnyFlatSpec {
     KeyMask.parsePatternRanges("nNNnNNn") should be(List(KeyRange(1, 2), KeyRange(4, 5)))
   }
 
-}
+end KeyMaskTest

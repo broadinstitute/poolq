@@ -1,15 +1,15 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 package org.broadinstitute.gpp.poolq3.hist
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 
-class OpenHashMapHistogram[A] extends Histogram[A] {
+class OpenHashMapHistogram[A] extends Histogram[A]:
 
   private[this] val hist: Object2IntOpenHashMap[A] = new Object2IntOpenHashMap[A]()
   hist.defaultReturnValue(0)
@@ -23,4 +23,4 @@ class OpenHashMapHistogram[A] extends Histogram[A] {
   /** Returns the keys tracked in this histogram */
   override def keys: Set[A] = hist.keySet().asScala.toSet
 
-}
+end OpenHashMapHistogram

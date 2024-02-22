@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -9,7 +9,7 @@ import java.io.Closeable
 
 import org.broadinstitute.gpp.poolq3.barcode.Barcodes
 
-trait Consumer extends Closeable {
+trait Consumer extends Closeable:
 
   def start(): Unit
 
@@ -25,4 +25,4 @@ trait Consumer extends Closeable {
 
   def state: State
 
-}
+end Consumer

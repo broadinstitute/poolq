@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -16,9 +16,9 @@ import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, ReferenceEntry}
 import org.broadinstitute.gpp.poolq3.process.ScoringConsumer
 import org.broadinstitute.gpp.poolq3.reference.ExactReference
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers.*
 
-class CorrelationFileTest extends AnyFlatSpec {
+class CorrelationFileTest extends AnyFlatSpec:
 
   private[this] val Condition1 = "DMSO"
   private[this] val Condition2 = "ITMFA"
@@ -73,7 +73,7 @@ class CorrelationFileTest extends AnyFlatSpec {
 
   "CorrelationFileWriter" should "write a correct correlation file" in {
     val outputFile = Files.createTempFile("correlation-file-test", ".txt")
-    try {
+    try
       val consumer = new ScoringConsumer(rowReference, colReference, countAmbiguous = true, false, None, None, false)
 
       val ret = PoolQ.runProcess(barcodes, consumer)
@@ -93,9 +93,9 @@ class CorrelationFileTest extends AnyFlatSpec {
         // now check the contents
         contents.mkString should be(expected)
       }
-    } finally {
+    finally
       val _ = Files.deleteIfExists(outputFile)
-    }
+    end try
   }
 
   it should "not write a correlation file for a run with a single condition" in {
@@ -106,7 +106,7 @@ class CorrelationFileTest extends AnyFlatSpec {
         includeAmbiguous = false
       )
     val outputFile = Files.createTempFile("correlation-file-test", "txt")
-    try {
+    try
       val consumer = new ScoringConsumer(rowReference, singleCondRef, countAmbiguous = true, false, None, None, false)
 
       val ret = PoolQ.runProcess(barcodes, consumer)
@@ -122,9 +122,9 @@ class CorrelationFileTest extends AnyFlatSpec {
       // be sure also that we didn't actually write anything to the file
       Using(Source.fromFile(outputFile.toFile))(src => src.getLines().mkString("\n") should be(""))
 
-    } finally {
+    finally
       val _ = Files.deleteIfExists(outputFile)
-    }
+    end try
   }
 
   it should "not write a correlation file for a run with a single row barcode" in {
@@ -137,7 +137,7 @@ class CorrelationFileTest extends AnyFlatSpec {
         includeAmbiguous = false
       )
     val outputFile = Files.createTempFile("correlation-file-test", "txt")
-    try {
+    try
       val consumer = new ScoringConsumer(rowReference, singleCondRef, countAmbiguous = true, false, None, None, false)
 
       val ret = PoolQ.runProcess(barcodes, consumer)
@@ -153,9 +153,9 @@ class CorrelationFileTest extends AnyFlatSpec {
       // be sure also that we didn't actually write anything to the file
       Using(Source.fromFile(outputFile.toFile))(src => src.getLines().mkString("\n") should be(""))
 
-    } finally {
+    finally
       val _ = Files.deleteIfExists(outputFile)
-    }
+    end try
   }
 
-}
+end CorrelationFileTest

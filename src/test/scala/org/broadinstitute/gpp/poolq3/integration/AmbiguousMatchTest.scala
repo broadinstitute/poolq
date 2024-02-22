@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -11,9 +11,9 @@ import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, ReferenceEntry}
 import org.broadinstitute.gpp.poolq3.process.ScoringConsumer
 import org.broadinstitute.gpp.poolq3.reference.{ExactReference, VariantReference}
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers.*
 
-class AmbiguousMatchTest extends AnyFlatSpec {
+class AmbiguousMatchTest extends AnyFlatSpec:
 
   private val rowReferenceBarcodes = List(
     "AAAAAAAAAAAAAAAAAAAA",
@@ -102,4 +102,4 @@ class AmbiguousMatchTest extends AnyFlatSpec {
     hist.count(("AATGTGAAAATGTGATGAAT", "CCCC")) should be(0)
   }
 
-}
+end AmbiguousMatchTest

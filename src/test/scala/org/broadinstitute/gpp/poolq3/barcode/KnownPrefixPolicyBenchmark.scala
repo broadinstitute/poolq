@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -8,7 +8,7 @@ package org.broadinstitute.gpp.poolq3.barcode
 import org.broadinstitute.gpp.poolq3.types.Read
 import org.scalatest.flatspec.AnyFlatSpec
 
-class KnownPrefixPolicyBenchmark extends AnyFlatSpec {
+class KnownPrefixPolicyBenchmark extends AnyFlatSpec:
 
   ignore should "compare times" in {
     val seqs = Seq(
@@ -45,4 +45,4 @@ class KnownPrefixPolicyBenchmark extends AnyFlatSpec {
 
   }
 
-}
+end KnownPrefixPolicyBenchmark

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -10,12 +10,12 @@ import java.nio.file.{Files, Path}
 
 import scala.util.{Try, Using}
 
-import cats.syntax.all._
+import cats.syntax.all.*
 import org.broadinstitute.gpp.poolq3.hist.{ReadOnlyHistogram, ShardedHistogram}
 import org.broadinstitute.gpp.poolq3.parser.BarcodeSet
 import org.broadinstitute.gpp.poolq3.reference.Reference
 
-object CountsWriter {
+object CountsWriter:
 
   def write(
     countsFile: Path,
@@ -26,10 +26,9 @@ object CountsWriter {
     umiBarcodes: Option[BarcodeSet],
     dialect: ReportsDialect
   ): Try[Unit] =
-    umiBarcodes match {
+    umiBarcodes match
       case None     => write(countsFile, hist, rowReference, colReference, dialect)
       case Some(ub) => writeUmi(countsFile, umiFileDir, hist, rowReference, colReference, ub, dialect)
-    }
 
   private[reports] def write(
     countsFile: Path,
@@ -64,7 +63,7 @@ object CountsWriter {
     colReference: Reference,
     umiBarcodes: BarcodeSet,
     dialect: ReportsDialect
-  ): Try[Unit] = {
+  ): Try[Unit] =
     val parsedFilename = parseFilename(countsFile)
     val umiFileDir = umiFileDirOpt.getOrElse(countsFile.resolveSibling("umi-counts"))
     val basename = parsedFilename.basename
@@ -87,6 +86,7 @@ object CountsWriter {
           dialect
         )
       }
-  }
 
-}
+  end writeUmi
+
+end CountsWriter

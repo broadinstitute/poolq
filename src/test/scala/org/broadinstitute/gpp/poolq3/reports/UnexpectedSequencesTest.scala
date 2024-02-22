@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -10,7 +10,7 @@ import java.nio.file.Files
 import scala.io.Source
 import scala.util.{Random, Using}
 
-import better.files._
+import better.files.*
 import munit.{FunSuite, Location}
 import org.broadinstitute.gpp.poolq3.barcode.{Barcodes, FoundBarcode}
 import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, ReferenceEntry}
@@ -18,7 +18,7 @@ import org.broadinstitute.gpp.poolq3.process.{ScoringConsumer, UnexpectedSequenc
 import org.broadinstitute.gpp.poolq3.reference.{ExactReference, VariantReference}
 import org.broadinstitute.gpp.poolq3.{PoolQ, TestResources}
 
-class UnexpectedSequencesTest extends FunSuite with TestResources {
+class UnexpectedSequencesTest extends FunSuite with TestResources:
 
   private[this] val rowReferenceBarcodes =
     List("AAAAAAAAAAAAAAAAAAAA", "AAAAAAAAAAAAAAAAAAAC", "AAAAAAAAAAAAAAAAAAAG", "AAAAAAAAAAAAAAAAAAAT").map(b =>
@@ -94,7 +94,7 @@ class UnexpectedSequencesTest extends FunSuite with TestResources {
   test("read unexpected sequence cache") {
     val cachePath = resourcePath("unexpected-sequences")
     val outputFile = Files.createTempFile("unexpected", ".txt")
-    try {
+    try
       val unexpectedReadCount = 9
 
       UnexpectedSequenceWriter
@@ -112,31 +112,28 @@ class UnexpectedSequencesTest extends FunSuite with TestResources {
         val actual = contents.mkString
         assertEquals(actual, expected)
       }
-    } finally {
+    finally
       val _ = Files.deleteIfExists(outputFile)
-    }
+    end try
   }
 
   test("breadth-first iterator") {
     import scala.collection.mutable
 
-    class TestCachedBarcodes(val colBc: String, iter: Iterator[String])
-        extends UnexpectedSequenceWriter.CachedBarcodes {
+    class TestCachedBarcodes(val colBc: String, iter: Iterator[String]) extends UnexpectedSequenceWriter.CachedBarcodes:
       var closed = false
       override def hasNext: Boolean = iter.hasNext
       override def next(): String = iter.next()
       override def close(): Unit = closed = true
-    }
 
     val i1 = new TestCachedBarcodes("AAA", Iterator("AAAAAA"))
     val i2 = new TestCachedBarcodes("CCC", Iterator("AAAAAA", "AAAAAT", "AAAAAA"))
     val i3 = new TestCachedBarcodes("GGG", Iterator("AAAAAA"))
     val i4 = new TestCachedBarcodes("TTT", Iterator("AAAAAA"))
 
-    val circularBuffer: UnexpectedSequenceWriter.BreadthFirstIterator = {
+    val circularBuffer: UnexpectedSequenceWriter.BreadthFirstIterator =
       val readers = mutable.Queue[UnexpectedSequenceWriter.CachedBarcodes](i1, i2, i3, i4)
       new UnexpectedSequenceWriter.BreadthFirstIterator(readers)
-    }
 
     val barcodes = circularBuffer.toList
     assertEquals(
@@ -158,12 +155,12 @@ class UnexpectedSequencesTest extends FunSuite with TestResources {
 
   private def testIt(underlyingBarcodes: List[(String, String)], unexpectedReadCount: Int, maxMapSize: Int)(implicit
     loc: Location
-  ): Unit = {
+  ): Unit =
     val barcodes = CloseableIterable.ofList(underlyingBarcodes.map { case (row, col) =>
       Barcodes(Some(FoundBarcode(row.toCharArray, 0)), None, Some(FoundBarcode(col.toCharArray, 0)), None)
     })
     val tmpPath = Files.createTempDirectory("unexpected-sequences-test")
-    try {
+    try
       val outputFile = tmpPath.resolve("unexpected-sequences.txt")
       val cachePath = tmpPath.resolve("cache")
       val ust = new UnexpectedSequenceTracker(cachePath, colReference)
@@ -188,9 +185,11 @@ class UnexpectedSequencesTest extends FunSuite with TestResources {
         val actual = contents.mkString
         assertEquals(actual, expected)
       }
-    } finally {
+    finally
       val _ = tmpPath.toFile.toScala.delete()
-    }
-  }
 
-}
+    end try
+
+  end testIt
+
+end UnexpectedSequencesTest

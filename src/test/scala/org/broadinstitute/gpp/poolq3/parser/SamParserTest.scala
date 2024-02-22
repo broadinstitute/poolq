@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -10,7 +10,7 @@ import scala.util.Using
 import munit.FunSuite
 import org.broadinstitute.gpp.poolq3.TestResources
 
-class SamParserTest extends FunSuite with TestResources {
+class SamParserTest extends FunSuite with TestResources:
 
   test("SamParser") {
     val file = resourcePath("sample.bam")
@@ -21,4 +21,4 @@ class SamParserTest extends FunSuite with TestResources {
     }
   }
 
-}
+end SamParserTest

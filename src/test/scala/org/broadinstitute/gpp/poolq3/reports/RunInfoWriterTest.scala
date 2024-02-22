@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -13,11 +13,11 @@ import scala.util.Using
 import munit.FunSuite
 import org.broadinstitute.gpp.poolq3.{BuildInfo, PoolQConfig, PoolQInput, PoolQOutput}
 
-class RunInfoWriterTest extends FunSuite {
+class RunInfoWriterTest extends FunSuite:
 
   test("runinfo") {
     val outputFile = Files.createTempFile("runinfo", ".txt")
-    try {
+    try
       val config = PoolQConfig(
         input = PoolQInput(
           rowReference = Paths.get("/gpp/reference/reference_20191115.csv"),
@@ -71,10 +71,9 @@ class RunInfoWriterTest extends FunSuite {
 
       val actual = Using.resource(Source.fromFile(outputFile.toFile))(_.getLines().mkString("\n"))
       assertEquals(actual, expected)
-    } finally {
-      Files.delete(outputFile)
-    }
+    finally Files.delete(outputFile)
+    end try
 
   }
 
-}
+end RunInfoWriterTest

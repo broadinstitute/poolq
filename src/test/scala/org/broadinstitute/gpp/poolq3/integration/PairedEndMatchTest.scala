@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -14,7 +14,7 @@ import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, ReferenceEntry}
 import org.broadinstitute.gpp.poolq3.process.ScoringConsumer
 import org.broadinstitute.gpp.poolq3.reference.ExactReference
 
-class PairedEndMatchTest extends FunSuite {
+class PairedEndMatchTest extends FunSuite:
 
   // row barcodes
   private val r1 = "TTTCCC"
@@ -84,15 +84,13 @@ class PairedEndMatchTest extends FunSuite {
     assertEquals(state.exactMatches, 102)
 
     val hist = state.known
-    for {
+    for
       row <- rowReference.allBarcodes
       col <- colReference.allBarcodes
       tuple = (Some(row), Some(col))
       expectedTupleCount = expectedCounts.getOrElse(tuple, 0)
-    } {
-      assertEquals(hist.forShard(None).count((row, col)), expectedTupleCount)
-    }
+    do assertEquals(hist.forShard(None).count((row, col)), expectedTupleCount)
 
   }
 
-}
+end PairedEndMatchTest

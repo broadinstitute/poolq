@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 package org.broadinstitute.gpp.poolq3.barcode
 
-import cats.syntax.all._
+import cats.syntax.all.*
 import munit.FunSuite
 import org.broadinstitute.gpp.poolq3.parser.DmuxedIterable
 import org.broadinstitute.gpp.poolq3.types.Read
 
-class DmuxedBarcodeSourceTest extends FunSuite {
+class DmuxedBarcodeSourceTest extends FunSuite:
 
   private[this] val rowPolicy = BarcodePolicy("FIXED@0", 10, skipShortReads = true)
 
@@ -64,4 +64,4 @@ class DmuxedBarcodeSourceTest extends FunSuite {
     assertEquals(src.toList, Nil)
   }
 
-}
+end DmuxedBarcodeSourceTest

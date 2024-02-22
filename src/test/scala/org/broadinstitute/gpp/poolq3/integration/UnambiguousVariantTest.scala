@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -11,9 +11,9 @@ import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, ReferenceEntry}
 import org.broadinstitute.gpp.poolq3.process.ScoringConsumer
 import org.broadinstitute.gpp.poolq3.reference.{ExactReference, VariantReference}
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should.Matchers.*
 
-class UnambiguousVariantTest extends AnyFlatSpec {
+class UnambiguousVariantTest extends AnyFlatSpec:
 
   private val rowReferenceBarcodes = List("AAAAAAAAAAAAAAAAAAAA", "AAAAAAAAAAAAAAAAAAAC").map(b => ReferenceEntry(b, b))
 
@@ -46,13 +46,12 @@ class UnambiguousVariantTest extends AnyFlatSpec {
 
     val hist = state.known
     val _ = hist.count(("AAAAAAAAAAAAAAAAAAAA", "AAAA")) should be(1)
-    for {
+    for
       row <- rowReferenceBarcodes.map(_.dnaBarcode)
       col <- colReferenceBarcodes.map(_.dnaBarcode)
-    } {
-      val expected = if (row.forall(_ == 'A') && col.forall(_ == 'A')) 1 else 0
+    do
+      val expected = if row.forall(_ == 'A') && col.forall(_ == 'A') then 1 else 0
       hist.count((row, col)) should be(expected)
-    }
   }
 
-}
+end UnambiguousVariantTest

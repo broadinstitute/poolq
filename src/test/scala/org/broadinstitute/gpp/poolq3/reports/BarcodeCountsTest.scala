@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -9,7 +9,7 @@ import java.nio.file.{Files, Path}
 import java.util.function.Predicate
 import java.util.stream.Collectors
 
-import cats.syntax.all._
+import cats.syntax.all.*
 import munit.FunSuite
 import org.broadinstitute.gpp.poolq3.PoolQ
 import org.broadinstitute.gpp.poolq3.barcode.{Barcodes, FoundBarcode}
@@ -19,7 +19,7 @@ import org.broadinstitute.gpp.poolq3.process.{ScoringConsumer, State}
 import org.broadinstitute.gpp.poolq3.reference.ExactReference
 import org.broadinstitute.gpp.poolq3.testutil.contents
 
-class BarcodeCountsTest extends FunSuite {
+class BarcodeCountsTest extends FunSuite:
 
   private[this] val Condition1 = "DMSO"
   private[this] val Condition2 = "ITMFA"
@@ -88,7 +88,7 @@ class BarcodeCountsTest extends FunSuite {
 
   test("BarcodeCountsWriter should write a correct counts file") {
     val outputFile = Files.createTempFile("barcode-counts-file-test", ".txt")
-    try {
+    try
       val consumer = new ScoringConsumer(rowReference, colReference, countAmbiguous = true, false, None, None, false)
 
       val ret = PoolQ.runProcess(barcodes, consumer)
@@ -105,14 +105,14 @@ class BarcodeCountsTest extends FunSuite {
            |""".stripMargin
 
       assertEquals(contents(outputFile), expected)
-    } finally {
+    finally
       val _ = Files.deleteIfExists(outputFile)
-    }
+    end try
   }
 
   test("BarcodeCountsWriter should write a GCT file") {
     val outputFile = Files.createTempFile("barcode-counts-file-test", ".gct")
-    try {
+    try
       val consumer = new ScoringConsumer(rowReference, colReference, countAmbiguous = true, false, None, None, false)
 
       val ret = PoolQ.runProcess(barcodes, consumer)
@@ -131,9 +131,9 @@ class BarcodeCountsTest extends FunSuite {
            |""".stripMargin
 
       assertEquals(contents(outputFile), expected)
-    } finally {
+    finally
       val _ = Files.deleteIfExists(outputFile)
-    }
+    end try
   }
 
   test("CountsWriter should write UMI files") {
@@ -194,12 +194,11 @@ class BarcodeCountsTest extends FunSuite {
         f.getFileName != aggregateOutputFile.getFileName
 
     val bcre = "barcode-counts-file-test-umi-.+-([ACGT]{5}|UNMATCHED-UMI).txt".r
-    def umiBarcodeFor(f: Path): Option[String] = f.getFileName.toString match {
+    def umiBarcodeFor(f: Path): Option[String] = f.getFileName.toString match
       case bcre(umi) => umi.some
       case _         => None
-    }
 
-    try {
+    try
       val _ = BarcodeCountsWriter.write(
         aggregateOutputFile,
         aggregateOutputFile.getParent.some,
@@ -225,7 +224,7 @@ class BarcodeCountsTest extends FunSuite {
       umiFiles.forEach { umiFile =>
         val qualifier = umiBarcodeFor(umiFile)
         qualifier.foreach(q => umiFileQualifiers ::= q)
-        qualifier match {
+        qualifier match
           case None => fail(s"no UMI barcode found for $umiFile")
           case Some("UNMATCHED-UMI") =>
             val expected =
@@ -269,11 +268,11 @@ class BarcodeCountsTest extends FunSuite {
             assertEquals(contents(umiFile), expected)
           case Some(bc) =>
             fail(s"Unexpected UMI barcode $bc")
-        }
+        end match
       }
       // make sure we got everything
       assertEquals(umiFileQualifiers.toSet, umiBarcodes.barcodes + "UNMATCHED-UMI")
-    } finally {
+    finally
       // delete the named output file
       val _ = Files.deleteIfExists(aggregateOutputFile)
 
@@ -281,7 +280,7 @@ class BarcodeCountsTest extends FunSuite {
       Files.list(aggregateOutputFile.getParent).filter(outputFileFilter).forEach { f =>
         val _ = Files.deleteIfExists(f)
       }
-    }
+    end try
   }
 
-}
+end BarcodeCountsTest

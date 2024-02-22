@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 package org.broadinstitute.gpp.poolq3.process
 
-class BarcodeStats {
+class BarcodeStats:
 
   private var minPos: Int = Int.MaxValue
   private var maxPos: Int = -1
@@ -18,17 +18,16 @@ class BarcodeStats {
   def notFound(totalReads: Int): Int = totalReads - found
 
   def avg: Option[Double] =
-    if (found < 1) None
+    if found < 1 then None
     else Some(sum / found.toDouble)
 
-  def update(pos: Int): Unit = {
+  def update(pos: Int): Unit =
     found += 1
     minPos = math.min(minPos, pos)
     maxPos = math.max(maxPos, pos)
     sum += pos
-  }
 
-  def minPosStr = if (min == Int.MaxValue) "N/A" else min.toString
-  def maxPosStr = if (min < 0) "N/A" else max.toString
+  def minPosStr = if min == Int.MaxValue then "N/A" else min.toString
+  def maxPosStr = if min < 0 then "N/A" else max.toString
 
-}
+end BarcodeStats

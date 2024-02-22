@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -11,7 +11,7 @@ import munit.FunSuite
   * its primary test class were lifted. We will try not to modify the copied test classes to make subsequent updates
   * from FISHR easier. Instead, new PoolQ-specific tests will live here.
   */
-class KeyMaskTest2 extends FunSuite {
+class KeyMaskTest2 extends FunSuite:
 
   test("construct the correct key mask from a pattern") {
     //                 0        1         2
@@ -23,4 +23,4 @@ class KeyMaskTest2 extends FunSuite {
     assertEquals(km0.keyLengthInBases, 10)
   }
 
-}
+end KeyMaskTest2

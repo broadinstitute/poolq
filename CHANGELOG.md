@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.12.0
+* Update to Scala 3.3.1
+
 ## 3.11.0
 * Machine-parseable condition barcode summary file
 

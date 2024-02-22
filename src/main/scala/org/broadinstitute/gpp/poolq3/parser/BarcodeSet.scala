@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -9,30 +9,27 @@ import java.io.{BufferedReader, FileInputStream, InputStreamReader}
 import java.nio.file.Path
 import java.util.stream.Collectors
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 import scala.util.{Failure, Success, Try, Using}
 
-import cats.syntax.all._
+import cats.syntax.all.*
 import org.apache.commons.io.ByteOrderMark
 import org.apache.commons.io.input.BOMInputStream
 
-class BarcodeSet(val barcodes: Set[String]) {
+class BarcodeSet(val barcodes: Set[String]):
 
   def barcodeLength: Int = barcodes.head.length
 
   def isDefined(s: String): Boolean = barcodes.contains(s)
 
-}
-
-object BarcodeSet {
+object BarcodeSet:
 
   private[this] val BarcodeRe = s"""([ACGT]+)""".r
 
   def parseBarcode(makeException: String => Exception)(line: String): Try[String] =
-    line match {
+    line match
       case BarcodeRe(bc) => Success(bc)
       case _             => Failure(makeException(line))
-    }
 
   def apply(file: Path): BarcodeSet =
     Using.resource(new FileInputStream(file.toFile)) { fin =>
@@ -56,14 +53,12 @@ object BarcodeSet {
     }
 
   def checkSet(file: Path, barcodeSet: BarcodeSet): Try[Unit] =
-    if (barcodeSet.barcodes.isEmpty) Failure(InvalidFileException(file, s"Empty barcode file"))
-    else {
+    if barcodeSet.barcodes.isEmpty then Failure(InvalidFileException(file, s"Empty barcode file"))
+    else
       val expectedLength = barcodeSet.barcodeLength
-      barcodeSet.barcodes.find(_.length != expectedLength) match {
+      barcodeSet.barcodes.find(_.length != expectedLength) match
         case None => Success(())
         case Some(b) =>
           Failure(InvalidFileException(file, s"Barcode '$b' did not match expected length $expectedLength"))
-      }
-    }
 
-}
+end BarcodeSet

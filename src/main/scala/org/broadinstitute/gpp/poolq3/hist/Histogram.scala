@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 package org.broadinstitute.gpp.poolq3.hist
 
-trait ReadOnlyHistogram[A] {
+trait ReadOnlyHistogram[A]:
 
   /** Returns the number of occurrences of key `k` */
   def count(k: A): Int
@@ -15,12 +15,10 @@ trait ReadOnlyHistogram[A] {
 
   def toMap: scala.collection.immutable.Map[A, Int] = keys.map(k => k -> count(k)).toMap
 
-}
+end ReadOnlyHistogram
 
 /** Simple representation of a mutable histogram */
-trait Histogram[A] extends ReadOnlyHistogram[A] {
+trait Histogram[A] extends ReadOnlyHistogram[A]:
 
   /** Increment the occurrences of key `k` */
   def increment(k: A): Int
-
-}

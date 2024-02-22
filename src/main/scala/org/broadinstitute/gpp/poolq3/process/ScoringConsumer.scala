@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -11,7 +11,7 @@ import org.broadinstitute.gpp.poolq3.barcode.{Barcodes, FoundBarcode}
 import org.broadinstitute.gpp.poolq3.hist.{BasicShardedHistogram, OpenHashMapHistogram, TupleHistogram}
 import org.broadinstitute.gpp.poolq3.parser.BarcodeSet
 import org.broadinstitute.gpp.poolq3.reference.{MatchedBarcode, Reference}
-import org.broadinstitute.gpp.poolq3.seq._
+import org.broadinstitute.gpp.poolq3.seq.*
 import org.log4s.{Logger, getLogger}
 
 final class ScoringConsumer(
@@ -22,7 +22,7 @@ final class ScoringConsumer(
   umiReference: Option[BarcodeSet],
   unexpectedSequenceTrackerOpt: Option[UnexpectedSequenceTracker],
   pairedEndMode: Boolean
-) extends Consumer {
+) extends Consumer:
 
   private[this] val log: Logger = getLogger
 
@@ -42,27 +42,23 @@ final class ScoringConsumer(
     )
 
   // this thread is used to write unexpected sequences to the file cache
-  private[this] val unexpectedSequenceTrackerThread: Thread = new Thread {
+  private[this] val unexpectedSequenceTrackerThread: Thread = new Thread:
 
-    final override def run(): Unit = {
+    final override def run(): Unit =
       assert(unexpectedSequenceTrackerOpt.isDefined)
       val unexpectedSequenceTracker = unexpectedSequenceTrackerOpt.get
-      while (!done || !unexpectedSequenceQueue.isEmpty) {
-        try {
+      while !done || !unexpectedSequenceQueue.isEmpty do
+        try
           Option(unexpectedSequenceQueue.poll(100, TimeUnit.MILLISECONDS))
             .foreach(unexpectedSequenceTracker.reportUnexpected)
-        } catch {
+        catch
           case _: InterruptedException =>
             log.debug(s"Interrupted. Done = $done; queue length = ${unexpectedSequenceQueue.size()}")
-        }
-      }
-    }
 
-  }
+    end run
 
-  override def start(): Unit = {
+  override def start(): Unit =
     unexpectedSequenceTrackerOpt.foreach(_ => unexpectedSequenceTrackerThread.start())
-  }
 
   override def close(): Unit =
     unexpectedSequenceTrackerOpt.foreach { _ =>
@@ -71,18 +67,18 @@ final class ScoringConsumer(
       unexpectedSequenceTrackerOpt.foreach(_.close())
     }
 
-  override def consume(parsedBarcode: Barcodes): Unit = {
+  override def consume(parsedBarcode: Barcodes): Unit =
     // increment the read counter regardless
     state.reads += 1
 
-    (parsedBarcode.row, parsedBarcode.revRow, parsedBarcode.col) match {
+    (parsedBarcode.row, parsedBarcode.revRow, parsedBarcode.col) match
       case (f @ Some(_), revRowOpt, None) =>
         // a forward row barcode region was found; extract the sequence and update stats
-        updateRowBarcodePositionStats(f, if (pairedEndMode) revRowOpt else None)
+        updateRowBarcodePositionStats(f, if pairedEndMode then revRowOpt else None)
 
       case (f @ Some(parsedRow), None, Some(parsedCol)) =>
         updateRowBarcodePositionStats(f, None)
-        if (pairedEndMode == false) {
+        if pairedEndMode == false then
           // a row barcode region was found; extract the sequence and update stats
 
           // match the sequence against the row reference to determine if this was a known barcode
@@ -99,12 +95,9 @@ final class ScoringConsumer(
           // if we are tracking unexpected sequences and we matched the column barcode to the reference data but didn't
           // match the row barcode to the reference data, and the row barcode doesn't have an N in it, then queue the
           // row barcode for inclusion in the unexpected sequence report
-          if (
-            unexpectedSequenceTrackerOpt.isDefined && colBc.nonEmpty && rowBc.isEmpty && !containsN(parsedRow.barcode)
-          ) {
-            unexpectedSequenceQueue.put((parsedRow.barcode, parsedCol.barcode))
-          }
-        }
+          if unexpectedSequenceTrackerOpt.isDefined && colBc.nonEmpty && rowBc.isEmpty && !containsN(parsedRow.barcode)
+          then unexpectedSequenceQueue.put((parsedRow.barcode, parsedCol.barcode))
+        end if
 
       case (f @ Some(parsedRow), r @ Some(parsedRevRow), Some(parsedCol)) =>
         // a row barcode region was found; extract the sequence and update stats
@@ -126,11 +119,8 @@ final class ScoringConsumer(
         // if we are tracking unexpected sequences and we matched the column barcode to the reference data but didn't
         // match the row barcode to the reference data, and the row barcode doesn't have an N in it, then queue the
         // row barcode for inclusion in the unexpected sequence report
-        if (
-          unexpectedSequenceTrackerOpt.isDefined && colBc.nonEmpty && rowBc.isEmpty && !containsN(parsedRow.barcode)
-        ) {
-          unexpectedSequenceQueue.put((parsedRow.barcode, parsedCol.barcode))
-        }
+        if unexpectedSequenceTrackerOpt.isDefined && colBc.nonEmpty && rowBc.isEmpty && !containsN(parsedRow.barcode)
+        then unexpectedSequenceQueue.put((parsedRow.barcode, parsedCol.barcode))
 
       case (None, r, None) =>
         updateRowBarcodePositionStats(None, r)
@@ -144,67 +134,59 @@ final class ScoringConsumer(
         // in that portion of the read, the read quality is suspect (e.g., a potential primer-dimer) and should not be
         // counted; instead, we're counting sample barcode matches only when the rest of the read matches to the
         // expected structure
-        if (alwaysCountColumnBarcodes) {
+        if alwaysCountColumnBarcodes then
           val colBc: Seq[MatchedBarcode] = colReference.find(col.barcode)
           updateColumnBarcodeStats(colBc, col)
-        }
-    }
 
-  }
+    end match
+
+  end consume
 
   // Process the row and column barcodes when both are found and match to reference data
-  private[this] def matchedRowAndCol(row: MatchedBarcode, col: MatchedBarcode, umi: Option[FoundBarcode]): Unit = {
+  private[this] def matchedRowAndCol(row: MatchedBarcode, col: MatchedBarcode, umi: Option[FoundBarcode]): Unit =
     val r = row.barcode
     val c = col.barcode
     log.debug(s"Incrementing state for ($r, $c}).")
-    umiReference match {
+    umiReference match
       case None =>
         // we're not in UMI mode, so just increment the state
         val _ = state.known.increment(None, (r, c))
       case Some(ref) =>
         // we're in UMI mode
         handleUmi(umi, ref, r, c)
-    }
     state.matches += 1
-    if (row.distance == 0) {
-      state.exactMatches += 1
-    }
-  }
+    if row.distance == 0 then state.exactMatches += 1
+
+  end matchedRowAndCol
 
   // Process a UMI barcode if we're doing that
-  private[this] def handleUmi(umi: Option[FoundBarcode], ref: BarcodeSet, r: String, c: String): Unit = {
-    umi match {
+  private[this] def handleUmi(umi: Option[FoundBarcode], ref: BarcodeSet, r: String, c: String): Unit =
+    umi match
       case Some(s) =>
         val u = new String(s.barcode)
-        if (ref.isDefined(u)) {
+        if ref.isDefined(u) then
           // we found a known UMI barcode, so increment
           val _ = state.known.increment(Some(u), (r, c))
-        } else {
+        else
           // we found an unknown UMI barcode, so track it somehow
           val _ = state.known.increment(None, (r, c))
           val _ = state.unknownUmi.increment(u)
-        }
+        end if
       case None =>
         // this means we were configured for UMI but we didn't extract a UMI barcode at all
         state.umiBarcodeNotFound += 1
-    }
-  }
 
-  private[this] def updateColumnBarcodeStats(colBc: Seq[MatchedBarcode], col: FoundBarcode): Unit = {
+  private[this] def updateColumnBarcodeStats(colBc: Seq[MatchedBarcode], col: FoundBarcode): Unit =
     // the if and else if branches aren't really related but they are also mutually exclusive, so if one matches
     // there is no reason to test the other
-    if (countAmbiguous || colBc.lengthCompare(1) == 0) {
-      colBc.foreach(mb => state.knownCol.increment(mb.barcode))
-    } else if (colBc.isEmpty && !containsN(col.barcode)) {
+    if countAmbiguous || colBc.lengthCompare(1) == 0 then colBc.foreach(mb => state.knownCol.increment(mb.barcode))
+    else if colBc.isEmpty && !containsN(col.barcode) then
       val _ = state.unknownCol.increment(new String(col.barcode))
-    }
-  }
 
-  private[this] def updateRowBarcodePositionStats(row: Option[FoundBarcode], revRow: Option[FoundBarcode]): Unit = {
+  private[this] def updateRowBarcodePositionStats(row: Option[FoundBarcode], revRow: Option[FoundBarcode]): Unit =
     row.foreach(r => state.rowBarcodeStats.update(r.offset0))
     revRow.foreach(r => state.revRowBarcodeStats.update(r.offset0))
-    if (row.isEmpty && revRow.isEmpty) { state.neitherRowBarcodeFound += 1 }
-  }
+    if row.isEmpty && revRow.isEmpty then state.neitherRowBarcodeFound += 1
 
   override def readsProcessed: Int = state.reads
 
@@ -212,4 +194,4 @@ final class ScoringConsumer(
 
   override def matchPercent: Float = state.matchPercent.toFloat
 
-}
+end ScoringConsumer

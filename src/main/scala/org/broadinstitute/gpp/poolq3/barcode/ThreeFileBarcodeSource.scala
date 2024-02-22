@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -17,17 +17,17 @@ final class ThreeFileBarcodeSource(
   columnPolicy: BarcodePolicy,
   umiPolicyOpt: Option[BarcodePolicy],
   readIdCheckPolicy: ReadIdCheckPolicy
-) extends CloseableIterable[Barcodes] {
+) extends CloseableIterable[Barcodes]:
 
   private[this] class BarcodeIterator(
     rowIterator: CloseableIterator[Read],
     revRowIterator: CloseableIterator[Read],
     colIterator: CloseableIterator[Read]
-  ) extends CloseableIterator[Barcodes] {
+  ) extends CloseableIterator[Barcodes]:
 
     final override def hasNext: Boolean = rowIterator.hasNext && revRowIterator.hasNext && colIterator.hasNext
 
-    final override def next(): Barcodes = {
+    final override def next(): Barcodes =
       val nextRow = rowIterator.next()
       val nextRevRow = revRowIterator.next()
       val nextCol = colIterator.next()
@@ -38,7 +38,8 @@ final class ThreeFileBarcodeSource(
       val colBarcodeOpt = columnPolicy.find(nextCol)
       val umiBarcodeOpt = umiPolicyOpt.flatMap(_.find(nextRow))
       Barcodes(rowBarcodeOpt, revRowBarcodeOpt, colBarcodeOpt, umiBarcodeOpt)
-    }
+
+    end next
 
     final override def close(): Unit =
       try rowIterator.close()
@@ -46,9 +47,9 @@ final class ThreeFileBarcodeSource(
         try revRowIterator.close()
         finally colIterator.close()
 
-  }
+  end BarcodeIterator
 
   override def iterator: CloseableIterator[Barcodes] =
     new BarcodeIterator(rowParser.iterator, revRowParser.iterator, colParser.iterator)
 
-}
+end ThreeFileBarcodeSource

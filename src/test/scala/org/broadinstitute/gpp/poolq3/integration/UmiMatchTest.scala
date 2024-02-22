@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -7,7 +7,7 @@ package org.broadinstitute.gpp.poolq3.integration
 
 import scala.util.Random
 
-import cats.syntax.all._
+import cats.syntax.all.*
 import munit.FunSuite
 import org.broadinstitute.gpp.poolq3.PoolQ
 import org.broadinstitute.gpp.poolq3.barcode.{Barcodes, FoundBarcode}
@@ -15,7 +15,7 @@ import org.broadinstitute.gpp.poolq3.parser.{BarcodeSet, CloseableIterable, Refe
 import org.broadinstitute.gpp.poolq3.process.ScoringConsumer
 import org.broadinstitute.gpp.poolq3.reference.ExactReference
 
-class UmiMatchTest extends FunSuite {
+class UmiMatchTest extends FunSuite:
 
   // row barcodes
   private[this] val brdn01 = "AAAAAAAAAAAAAAAAAAAA"
@@ -86,16 +86,14 @@ class UmiMatchTest extends FunSuite {
     assertEquals(state.exactMatches, 56)
 
     val hist = state.known
-    for {
+    for
       row <- rowReference.allBarcodes
       col <- colReference.allBarcodes
       umi <- umiBarcodes.barcodes
       tuple = (row.some, col.some, umi.some)
       expectedTupleCount = expectedCounts.getOrElse(tuple, 0)
-    } {
-      assertEquals(hist.forShard(umi.some).count((row, col)), expectedTupleCount)
-    }
+    do assertEquals(hist.forShard(umi.some).count((row, col)), expectedTupleCount)
 
   }
 
-}
+end UmiMatchTest

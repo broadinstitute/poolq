@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -14,7 +14,7 @@ import org.broadinstitute.gpp.poolq3.reference.{ExactReference, Reference}
 import org.scalacheck.Gen
 import org.scalacheck.Prop.forAll
 
-class ReportsTest extends FunSuite with ScalaCheckSuite {
+class ReportsTest extends FunSuite with ScalaCheckSuite:
 
   test("writeRowIdentifiers maps barcodes back to their original form") {
     val reference: Reference =
@@ -42,4 +42,4 @@ class ReportsTest extends FunSuite with ScalaCheckSuite {
     }
   }
 
-}
+end ReportsTest

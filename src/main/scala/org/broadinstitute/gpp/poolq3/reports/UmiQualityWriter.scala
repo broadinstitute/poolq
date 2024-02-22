@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -12,9 +12,9 @@ import scala.util.{Try, Using}
 
 import org.broadinstitute.gpp.poolq3.process.State
 
-object UmiQualityWriter {
+object UmiQualityWriter:
 
-  def write(file: Path, state: State): Try[Unit] = {
+  def write(file: Path, state: State): Try[Unit] =
     // aggregate report data
     val umiBarcodeFrequencies = state.known.shards.toList.sorted.map { shard =>
       val hist = state.known.forShard(Some(shard))
@@ -34,6 +34,7 @@ object UmiQualityWriter {
       topNUnexpectedBarcodeFrequencies.foreach { case BarcodeFrequency(bc, count) => pw.println(s"$bc\t$count") }
       pw.println()
     }
-  }
 
-}
+  end write
+
+end UmiQualityWriter

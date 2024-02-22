@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -23,7 +23,7 @@ final class PoolQProcess(
   consumer: Consumer,
   queueSize: Int = 100,
   reportFrequency: Int = 5000000
-) {
+):
 
   private[this] val log: Logger = getLogger
 
@@ -31,42 +31,38 @@ final class PoolQProcess(
 
   @volatile private[this] var done = false
 
-  final private[this] class ConsumerThread extends Thread {
+  final private[this] class ConsumerThread extends Thread:
 
-    override def run(): Unit = {
+    override def run(): Unit =
       val t0 = System.currentTimeMillis()
 
-      def logProgress(n: Int): Unit = {
+      def logProgress(n: Int): Unit =
         val nd = consumer.readsProcessed.toFloat
         val dt = System.currentTimeMillis() - t0
         val avg = nd / dt
         val pct = consumer.matchPercent
         log.info(s"Processed $n reads in $dt ms ($avg reads/ms). Match percent: $pct; queue size: ${queue.size()}")
-      }
 
-      while (!done || !queue.isEmpty) { // as long as we're not done OR there is still work in the queue
-        try {
-          Option(queue.poll(100, TimeUnit.MILLISECONDS)).foreach(next => consumer.consume(next))
-        } catch {
+      while !done || !queue.isEmpty do // as long as we're not done OR there is still work in the queue
+        try Option(queue.poll(100, TimeUnit.MILLISECONDS)).foreach(next => consumer.consume(next))
+        catch
           case _: InterruptedException =>
             log.warn(
               s"Interrupted. Done = $done Processed ${consumer.readsProcessed} reads; queue has ${queue.size()} remaining"
             )
           case NonFatal(e) => log.error(e)(s"Error processing read ${consumer.readsProcessed}")
-        }
         // update the log periodically
         val n = consumer.readsProcessed
-        if (n % reportFrequency == 0) {
-          logProgress(n)
-        }
-      }
+        if n % reportFrequency == 0 then logProgress(n)
+      end while
       logProgress(consumer.readsProcessed)
-    }
 
-  }
+    end run
+
+  end ConsumerThread
 
   /** Runs the process in the calling thread and returns the final state */
-  def run(): PoolQRunSummary = {
+  def run(): PoolQRunSummary =
     val consumerThread = new ConsumerThread
     consumerThread.setName("Consumer")
 
@@ -87,6 +83,7 @@ final class PoolQProcess(
     consumer.close()
 
     PoolQRunSummary(consumer.readsProcessed, consumer.matchingReads, consumer.matchPercent, consumer.state)
-  }
 
-}
+  end run
+
+end PoolQProcess

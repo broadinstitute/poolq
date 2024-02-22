@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -8,9 +8,9 @@ package org.broadinstitute.gpp.poolq3.barcode
 import munit.FunSuite
 import org.broadinstitute.gpp.poolq3.parser.CloseableIterator
 
-class BarcodePackageTest extends FunSuite {
+class BarcodePackageTest extends FunSuite:
 
-  private class TestIterator(n: Int) extends CloseableIterator[Int] {
+  private class TestIterator(n: Int) extends CloseableIterator[Int]:
     private var closed = false
 
     private val internal = Range(0, n).iterator
@@ -22,18 +22,18 @@ class BarcodePackageTest extends FunSuite {
     override def hasNext: Boolean = internal.hasNext
 
     override def next(): Int = internal.next()
-  }
+
+  end TestIterator
 
   test("parserFor") {
     // we need to keep references to the iterators we make
     var iters: List[TestIterator] = Nil
     val iterable = parserFor[Int, Int](
       List(2, 2, 3),
-      x => {
+      x =>
         val ret = new TestIterator(x)
         iters ::= ret
         ret
-      }
     )
 
     // get the whole iterator, convert it to a list, and close it (closes the last iterator)
@@ -51,11 +51,10 @@ class BarcodePackageTest extends FunSuite {
     var iters: List[TestIterator] = Nil
     val iterable = parserFor[Int, Int](
       List(2, 2, 3),
-      x => {
+      x =>
         val ret = new TestIterator(x)
         iters ::= ret
         ret
-      }
     )
 
     // get the whole iterator, convert it to a list, and close it (closes the last iterator)
@@ -73,11 +72,10 @@ class BarcodePackageTest extends FunSuite {
     var iters: List[TestIterator] = Nil
     val iterable = parserFor[Int, Int](
       Nil,
-      x => {
+      x =>
         val ret = new TestIterator(x)
         iters ::= ret
         ret
-      }
     )
 
     // get the whole iterator, convert it to a list, and close it (closes the last iterator)
@@ -90,4 +88,4 @@ class BarcodePackageTest extends FunSuite {
     assert(iters.forall(_.isClosed))
   }
 
-}
+end BarcodePackageTest

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -10,7 +10,7 @@ import java.nio.file.Paths
 import munit.FunSuite
 import org.broadinstitute.gpp.poolq3.parser.{ReferenceData, ReferenceEntry}
 
-class PoolQTest extends FunSuite {
+class PoolQTest extends FunSuite:
 
   test("makeRowBarcodePolicy works for paired end cases") {
     val rd = new ReferenceData(List(ReferenceEntry("AAAA;CCCC", "a sea")))
@@ -34,4 +34,4 @@ class PoolQTest extends FunSuite {
     assert(revPolOpt.isEmpty)
   }
 
-}
+end PoolQTest

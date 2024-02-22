@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -12,7 +12,7 @@ import scala.util.{Try, Using}
 
 import org.broadinstitute.gpp.poolq3.{BuildInfo, PoolQConfig}
 
-object RunInfoWriter {
+object RunInfoWriter:
 
   def write(file: Path, config: PoolQConfig): Try[Unit] =
     Using(new PrintWriter(file.toFile)) { writer =>
@@ -30,4 +30,4 @@ object RunInfoWriter {
       writer.println()
     }
 
-}
+end RunInfoWriter

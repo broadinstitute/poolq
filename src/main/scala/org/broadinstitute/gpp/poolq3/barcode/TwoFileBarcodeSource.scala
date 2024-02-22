@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -15,14 +15,14 @@ final class TwoFileBarcodeSource(
   columnPolicy: BarcodePolicy,
   umiPolicyOpt: Option[BarcodePolicy],
   readIdCheckPolicy: ReadIdCheckPolicy
-) extends CloseableIterable[Barcodes] {
+) extends CloseableIterable[Barcodes]:
 
   private[this] class BarcodeIterator(rowIterator: CloseableIterator[Read], colIterator: CloseableIterator[Read])
-      extends CloseableIterator[Barcodes] {
+      extends CloseableIterator[Barcodes]:
 
     final override def hasNext: Boolean = rowIterator.hasNext && colIterator.hasNext
 
-    final override def next(): Barcodes = {
+    final override def next(): Barcodes =
       val nextRow = rowIterator.next()
       val nextCol = colIterator.next()
       readIdCheckPolicy.check(nextRow, nextCol)
@@ -30,15 +30,16 @@ final class TwoFileBarcodeSource(
       val colBarcodeOpt = columnPolicy.find(nextCol)
       val umiBarcodeOpt = umiPolicyOpt.flatMap(_.find(nextRow))
       Barcodes(rowBarcodeOpt, None, colBarcodeOpt, umiBarcodeOpt)
-    }
+
+    end next
 
     final override def close(): Unit =
       try rowIterator.close()
       finally colIterator.close()
 
-  }
+  end BarcodeIterator
 
   override def iterator: CloseableIterator[Barcodes] =
     new BarcodeIterator(rowParser.iterator, colParser.iterator)
 
-}
+end TwoFileBarcodeSource

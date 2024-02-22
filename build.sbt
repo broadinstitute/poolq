@@ -2,7 +2,7 @@ val artifactId = "poolq"
 
 inThisBuild(
   List(
-    scalaVersion := "2.13.11",
+    scalaVersion := "3.3.1",
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision,
     versionScheme := Some("early-semver")
@@ -10,16 +10,14 @@ inThisBuild(
 )
 
 lazy val versions = new {
-  val acyclic = "0.2.1"
   val betterFiles = "3.9.2"
-  val betterMonadicFor = "0.3.1"
-  val catsEffect3 = "3.5.2"
+  val catsEffect3 = "3.5.3"
   val cats = "2.10.0"
   val commonsIo = "2.15.1"
   val commonsText = "1.11.0"
   val commonsMath3 = "3.6.1"
-  val fastutil = "8.5.12"
-  val fs2 = "3.9.3"
+  val fastutil = "8.5.13"
+  val fs2 = "3.9.4"
   val log4s = "1.10.0"
   val logback = "1.2.13"
   val munit = "0.7.29"
@@ -27,16 +25,14 @@ lazy val versions = new {
   val samTools = "3.0.5"
   val scalaCheck = "1.17.0"
   val scalaCsv = "1.3.10"
-  val scalaTest = "3.2.17"
-  val scalaTestPlusScalaCheck = "3.2.2.0"
+  val scalaTest = "3.2.18"
+  val scalaTestPlusScalaCheck = "3.2.18.0"
   val scopt = "4.1.0"
   val slf4j = "1.7.36"
 }
 
 lazy val libraries = new {
-  val acyclic = "com.lihaoyi" %% "acyclic" % versions.acyclic
   val betterFiles = "com.github.pathikrit" %% "better-files" % versions.betterFiles
-  val betterMonadicFor = "com.olegpy" %% "better-monadic-for" % versions.betterMonadicFor
   val cats = "org.typelevel" %% "cats-core" % versions.cats
   val catsEffect3 = "org.typelevel" %% "cats-effect" % versions.catsEffect3
   val commonsIo = "commons-io" % "commons-io" % versions.commonsIo
@@ -59,12 +55,11 @@ lazy val libraries = new {
   val munitCatsEffect3 = "org.typelevel" %% "munit-cats-effect-3" % versions.munitCatsEffect3
   val scalaTest = "org.scalatest" %% "scalatest" % versions.scalaTest
   val scalaCheck = "org.scalacheck" %% "scalacheck" % versions.scalaCheck
-  val scalaTestPlusScalaCheck = "org.scalatestplus" %% "scalacheck-1-14" % versions.scalaTestPlusScalaCheck
+  val scalaTestPlusScalaCheck = "org.scalatestplus" %% "scalacheck-1-17" % versions.scalaTestPlusScalaCheck
 }
 
 lazy val dependencies =
   List(
-    libraries.acyclic % "provided",
     libraries.cats,
     libraries.commonsIo,
     libraries.commonsMath3,
@@ -90,7 +85,7 @@ lazy val dependencies =
   )
 
 lazy val headerLicenseText =
-  """|Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+  """|Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
      |
      |SPDX-License-Identifier: BSD-3-Clause
      |""".stripMargin
@@ -130,13 +125,9 @@ lazy val poolq = project
     name := "poolq3",
     organization := "org.broadinstitute.gpp",
     libraryDependencies := dependencies,
-    scalacOptions ++= List("-P:acyclic:force", "-Xsource:3"),
     buildInfoKeys := Seq[BuildInfoKey](name, version),
     buildInfoPackage := "org.broadinstitute.gpp.poolq3",
-    addCompilerPlugin(libraries.acyclic),
-    addCompilerPlugin(libraries.betterMonadicFor),
     testFrameworks += new TestFramework("munit.Framework"),
-    scalacOptions += "-Yrangepos", // ensure munit clues work
     // Tests pass in parallel, but SLF4J logging behaves weirdly. Disable this flag to examine test
     // log output; leave this enabled for very fast test execution.
     Test / parallelExecution := true

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -9,14 +9,13 @@ import java.io.Closeable
 
 abstract class CloseableIterator[A] extends Iterator[A] with Closeable
 
-object CloseableIterator {
+object CloseableIterator:
 
   /** A convenience implementation used for testing */
-  def ofList[A](xs: List[A]): CloseableIterator[A] = new CloseableIterator[A] {
+  def ofList[A](xs: List[A]): CloseableIterator[A] = new CloseableIterator[A]:
     val iter = xs.iterator
     override def close(): Unit = ()
     override def hasNext: Boolean = iter.hasNext
     override def next(): A = iter.next()
-  }
 
-}
+end CloseableIterator

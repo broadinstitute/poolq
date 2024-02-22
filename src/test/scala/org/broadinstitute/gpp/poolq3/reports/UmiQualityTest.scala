@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -13,7 +13,7 @@ import org.broadinstitute.gpp.poolq3.hist.{BasicShardedHistogram, OpenHashMapHis
 import org.broadinstitute.gpp.poolq3.process.State
 import org.broadinstitute.gpp.poolq3.testutil.contents
 
-class UmiQualityTest extends FunSuite with TestResources {
+class UmiQualityTest extends FunSuite with TestResources:
 
   test("umi quality report") {
     val state = new State(
@@ -24,14 +24,14 @@ class UmiQualityTest extends FunSuite with TestResources {
     )
 
     val umi: LazyList[String] =
-      for {
+      for
         b1 <- LazyList('A', 'C', 'G', 'T')
         b2 <- LazyList('A', 'C', 'G', 'T')
         b3 <- LazyList('A', 'C', 'G', 'T')
         b4 <- LazyList('A', 'C', 'G', 'T')
         b5 <- LazyList('A', 'C', 'G', 'T')
         b6 <- LazyList('A', 'C', 'G', 'T')
-      } yield s"$b1$b2$b3$b4$b5$b6"
+      yield s"$b1$b2$b3$b4$b5$b6"
 
     val (expectedUmiLL, rest) = umi.splitAt(96)
     val expectedUmi = expectedUmiLL.toList.zipWithIndex.map { case (x, i) => (x, i + 1) }
@@ -48,7 +48,7 @@ class UmiQualityTest extends FunSuite with TestResources {
     }
 
     val file = Files.createTempFile("umi-quality-", ".txt")
-    try {
+    try
       val _ = UmiQualityWriter.write(file, state)
 
       // read the file, split into lines, drop the 1st header
@@ -62,10 +62,10 @@ class UmiQualityTest extends FunSuite with TestResources {
       rest.slice(2, 102).zip(unexpectedUmi.reverse.take(100)).foreach { case (a, e) =>
         assertEquals(a, s"${e._1}\t${e._2}")
       }
-    } finally {
+    finally
       val _ = Files.deleteIfExists(file)
-    }
+    end try
 
   }
 
-}
+end UmiQualityTest

@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2022 The Broad Institute, Inc. All rights reserved.
+ * Copyright (c) 2024 The Broad Institute, Inc. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 package org.broadinstitute.gpp.poolq3.barcode
 
-import cats.syntax.all._
+import cats.syntax.all.*
 import munit.FunSuite
 import org.broadinstitute.gpp.poolq3.parser.CloseableIterable
 import org.broadinstitute.gpp.poolq3.types.{Read, ReadIdCheckPolicy}
 
-class TwoFileBarcodeSourceTest extends FunSuite {
+class TwoFileBarcodeSourceTest extends FunSuite:
 
   private[this] val rowPolicy = BarcodePolicy("FIXED@0", 10, skipShortReads = true)
   private[this] val colPolicy = BarcodePolicy("FIXED@0", 4, skipShortReads = true)
@@ -25,13 +25,12 @@ class TwoFileBarcodeSourceTest extends FunSuite {
 
     val src = new TwoFileBarcodeSource(rowReads, colReads, rowPolicy, colPolicy, umiPolicy, ReadIdCheckPolicy.Strict)
 
-    src.iterator.toList match {
+    src.iterator.toList match
       case r :: Nil =>
         assertEquals(r.col.map(b => new String(b.barcode)), Some("GGGG"))
         assertEquals(r.row.map(b => new String(b.barcode)), Some("AAAAAAAAAA"))
         assertEquals(r.umi.map(b => new String(b.barcode)), Some("TTT"))
       case _ => fail("This should not happen")
-    }
   }
 
-}
+end TwoFileBarcodeSourceTest
