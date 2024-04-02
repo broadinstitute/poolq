@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.12.1
+No user-facing changes
+
 ## 3.12.0
 * Update to Scala 3.3.1
 
