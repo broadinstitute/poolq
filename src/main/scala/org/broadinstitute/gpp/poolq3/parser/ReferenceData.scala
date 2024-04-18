@@ -93,11 +93,11 @@ object ReferenceData:
             // and reject cases where the barcode is empty but the ID is non-empty
             if barcode.isEmpty && id.isEmpty then None
             else if isReferenceBarcode(barcode) then Some(ReferenceEntry(barcode, id))
-            else throw InvalidFileException(file, s"Invalid DNA barcode '$barcode' for ID '$id'")
+            else throw InvalidFileException(file, s"Invalid DNA barcode '$barcode' for ID `$id`")
           case _ =>
             throw InvalidFileException(
               file,
-              s"Incorrect number of columns. At least 2 required, got: ${xs.length}: $xs"
+              s"Incorrect number of columns. At least 2 required, got: ${xs.length}: ${xs.mkString("`", "`, `", "`")}"
             )
       }
 
