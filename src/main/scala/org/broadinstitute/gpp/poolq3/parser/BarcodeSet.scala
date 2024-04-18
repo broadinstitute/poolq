@@ -46,7 +46,7 @@ object BarcodeSet:
         .asScala
         .toList
         .map(_.trim)
-        .traverse(parseBarcode(s => InvalidFileException(file, s"Invalid DNA barcode '$s'")))
+        .traverse(parseBarcode(s => InvalidFileException(file, s"Invalid DNA barcode `$s`")))
         .map(bcs => new BarcodeSet(bcs.toSet))
         .flatTap(checkSet(file, _))
         .get // throws if an error was encountered
