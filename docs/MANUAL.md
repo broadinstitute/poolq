@@ -215,9 +215,9 @@ sgRNAs, ORFs, or other constructs utilized in a pooled experiment.
 - The columns can be separated by either commas or tabs
 - The file may not include any column headers or any extra columns
 - Barcode sequences must contain only A, T, C or G and semantic delimeters `;`, `-`, `:`
-  - Semantic delimiters are ignored during data processing; they exist for human readability only
-  - For paired-end sequencing PoolQ can optionally infer the length of the forward and reverse
-    barcodes by splitting them on the first occurrence of any semantic delimiter
+    - Semantic delimiters are ignored during data processing; they exist for human readability only
+    - For paired-end sequencing PoolQ can optionally infer the length of the forward and reverse
+      barcodes by splitting them on the first occurrence of any semantic delimiter
 - A barcode ID cannot occur more than once in the file
 - Every barcode in the reference file must have the same length
 - You can have multiple IDs mapping to the same barcode sequence; the counts file will report the
@@ -286,12 +286,13 @@ within the read; as with the fixed location policy, you may also give a barcode 
 To use the prefix policy for a DNA prefix `s`, specify `PREFIX:s`. For example, a common DNA prefix
 is `CACCG`, which is specified `PREFIX:CACCG`. To indicate that the prefix should only be located
 beginning at the 12th base of the read, specify `PREFIX:CACCG@11`. To indicate that the prefix must
-occur before the 20th base of the read, specify `PREFIX:CACCG@-19`. These two parameters may be
-specified in conjunction: `PREFIX:CACCG@11-19`. You can optionally specify how many bases to read as
-the barcode (sometimes reads are too short to contain a full barcode). The length `n` is specified
-by adding `:n` to the end of the policy; so the policy for finding a 6-base barcode twelve bases
-into the read is specified as `PREFIX@11-19:6`. If you do not specify a length, PoolQ will choose
-the length based on the length of barcodes found in the corresponding reference file.
+start before the 20th base of the read, specify `PREFIX:CACCG@-19` (this means that the prefix
+sequence may begin at position 19 but not 20). These two parameters may be specified in conjunction:
+`PREFIX:CACCG@11-19`. You can optionally specify how many bases to read as the barcode (sometimes
+reads are too short to contain a full barcode). The length `n` is specified by adding `:n` to the
+end of the policy; so the policy for finding a 6-base barcode twelve bases into the read is
+specified as `PREFIX@11-19:6`. If you do not specify a length, PoolQ will choose the length based on
+the length of barcodes found in the corresponding reference file.
 
 ##### Template
 
@@ -324,7 +325,7 @@ To indicate that PoolQ should search for barcodes using a template `t`, specify 
 example, to use the template `caccgNNNNctcnnnNNNNa`, give `TEMPLATE:caccgNNNNctcnnnNNNNa`. As with
 the search prefix policy, it is possible to limit where PoolQ searches within each read for template
 matches. To indicate that the template should only be located beginning at the 12th base of the
-read, specify `TEMPLATE:caccgNNNNctcnnnNNNNa@11`. To indicate that the prefix must occur before the
+read, specify `TEMPLATE:caccgNNNNctcnnnNNNNa@11`. To indicate that the prefix must start before the
 20th base of the read, specify `TEMPLATE:caccgNNNNctcnnnNNNNa@-19`. These two parameters may also be
 specified in conjunction: `TEMPLATE:caccgNNNNctcnnnNNNNa@11-19`. Unlike with the fixed-location and
 prefix search policies, you cannot limit the length of the matched barcode.
@@ -464,16 +465,16 @@ We currently report:
   barcode
 - The average frequency of unknown column barcode sequences
 - For each column barcode mapped to a condition, we report:
-  - the barcode
-  - the condition
-  - the total number of reads matching the column barcode plus an expected row barcode
-  - the total number of reads matching the column barcode _and_ containing a valid row barcode
-    region (by either containing a search prefix, matching the search template, or the row
-    barcode start index); when run with `--always-count-col-barcodes`, this is simply the total
-    number of reads matching that column barcode
-  - the percent of reads for the column barcode with a valid row barcode region that successfully
-    matched a row barcode in the reference file
-  - the log normalized number of matches
+    - the barcode
+    - the condition
+    - the total number of reads matching the column barcode plus an expected row barcode
+    - the total number of reads matching the column barcode _and_ containing a valid row barcode
+      region (by either containing a search prefix, matching the search template, or the row
+      barcode start index); when run with `--always-count-col-barcodes`, this is simply the total
+      number of reads matching that column barcode
+    - the percent of reads for the column barcode with a valid row barcode region that successfully
+      matched a row barcode in the reference file
+    - the log normalized number of matches
 - For each column barcode not mapped to a condition, we report the barcode and the total number of
   reads
 
