@@ -550,8 +550,8 @@ it, you need to download the zip file and unzip it.
 
 ## Prerequisites
 
-PoolQ is built for Java 8. To run PoolQ, you will need a JRE for version 8 or later. To compile
-PoolQ you will need a Java 8 JDK. You can download an appropriate JRE or JDK from Oracle at:
+PoolQ is built for Java 11. To run PoolQ, you will need a JRE for version 11 or later. To compile
+PoolQ you will need a Java 11 JDK. You can download an appropriate JRE or JDK from Oracle at:
 
 > [http://www.oracle.com/technetwork/java/javase/downloads/index.html](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 
