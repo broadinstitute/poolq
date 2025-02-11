@@ -13,11 +13,11 @@ import org.broadinstitute.gpp.poolq3.types.Read
 
 final class SamParser(file: Path) extends CloseableIterable[Read]:
 
-  private[this] val readerFactory: SamReaderFactory = SamReaderFactory.makeDefault()
+  private val readerFactory: SamReaderFactory = SamReaderFactory.makeDefault()
 
-  private[this] class SamIterator extends CloseableIterator[Read]:
-    private[this] val samReader = readerFactory.open(file.toFile)
-    private[this] val samIterator = samReader.iterator()
+  private class SamIterator extends CloseableIterator[Read]:
+    private val samReader = readerFactory.open(file.toFile)
+    private val samIterator = samReader.iterator()
 
     final override def close(): Unit =
       samIterator.close()

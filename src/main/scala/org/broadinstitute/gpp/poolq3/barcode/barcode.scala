@@ -8,6 +8,7 @@ package org.broadinstitute.gpp.poolq3.barcode
 import java.nio.file.Path
 
 import scala.collection.mutable
+import scala.compiletime.uninitialized
 
 import org.broadinstitute.gpp.poolq3.parser.{
   CloseableIterable,
@@ -87,7 +88,7 @@ private[barcode] def parserFor[A, B](sources: List[A], mkIterator: A => Closeabl
 
       private val queue: mutable.Queue[A] = mutable.Queue.from(sources)
 
-      var current: CloseableIterator[B] = _
+      var current: CloseableIterator[B] = uninitialized
 
       override def hasNext: Boolean =
         var currentHasNext = if current == null then false else current.hasNext

@@ -17,7 +17,7 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks.*
 
 class VariantReferenceTest extends AnyFlatSpec:
 
-  private[this] val referenceGen: Gen[List[String]] = Gen.listOfN(1000, barcode)
+  private val referenceGen: Gen[List[String]] = Gen.listOfN(1000, barcode)
 
   "VariantReference" should "find matches for a given barcode" in {
     forAll(referenceGen) { (barcodes: List[String]) =>

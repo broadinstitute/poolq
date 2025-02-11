@@ -23,8 +23,8 @@ object BarcodePolicy:
     desc match
       case Regex(descriptor, rest) =>
         descriptor match
-          case "FIXED"                => FixedOffsetPolicy(rest, refBarcodeLength, skipShortReads)
-          case "PREFIX"               => KnownPrefixPolicy(rest, refBarcodeLength)
+          case "FIXED" => FixedOffsetPolicy(rest, refBarcodeLength, skipShortReads)
+          case "PREFIX" => KnownPrefixPolicy(rest, refBarcodeLength)
           case "KEYMASK" | "TEMPLATE" => TemplatePolicy(rest, refBarcodeLength)
           case _ =>
             throw new IllegalArgumentException(s"Unrecognized barcode policy: $desc")
@@ -33,8 +33,8 @@ object BarcodePolicy:
 end BarcodePolicy
 
 final case class FixedOffsetPolicy(startPos0: Int, length: Int, skipShortReads: Boolean) extends BarcodePolicy:
-  private[this] val minLength: Int = startPos0 + length
-  private[this] val endPos0: Int = startPos0 + length
+  private val minLength: Int = startPos0 + length
+  private val endPos0: Int = startPos0 + length
 
   override def find(read: Read): Option[FoundBarcode] =
     if read.seq.length < minLength then
@@ -45,8 +45,8 @@ final case class FixedOffsetPolicy(startPos0: Int, length: Int, skipShortReads: 
 end FixedOffsetPolicy
 
 object FixedOffsetPolicy:
-  private[this] val Regex1: Regex = """^[:@](\d+)$""".r
-  private[this] val Regex2: Regex = """^[:@](\d+):(\d+)$""".r
+  private val Regex1: Regex = """^[:@](\d+)$""".r
+  private val Regex2: Regex = """^[:@](\d+):(\d+)$""".r
 
   def apply(s: String, refBarcodeLength: Int, skipShortReads: Boolean): FixedOffsetPolicy =
     s match
@@ -65,15 +65,15 @@ sealed trait KnownPrefixPolicy extends BarcodePolicy:
   def prefix: String
 
 final case class IndexOfKnownPrefixPolicy(
-  prefix: String,
-  length: Int,
-  minPrefixStartPos: Option[Int] = None,
-  maxPrefixStartPos: Option[Int] = None
+    prefix: String,
+    length: Int,
+    minPrefixStartPos: Option[Int] = None,
+    maxPrefixStartPos: Option[Int] = None
 ) extends KnownPrefixPolicy:
 
-  private[this] val prefixLength: Int = prefix.length
-  private[this] val minPrefixStartPosInt: Int = minPrefixStartPos.getOrElse(0)
-  private[this] val maxPrefixStartPosInt: Int = maxPrefixStartPos.getOrElse(Int.MaxValue)
+  private val prefixLength: Int = prefix.length
+  private val minPrefixStartPosInt: Int = minPrefixStartPos.getOrElse(0)
+  private val maxPrefixStartPosInt: Int = maxPrefixStartPos.getOrElse(Int.MaxValue)
 
   override def find(read: Read): Option[FoundBarcode] =
     val index = read.seq.indexOf(prefix, minPrefixStartPosInt)
@@ -86,16 +86,16 @@ final case class IndexOfKnownPrefixPolicy(
 end IndexOfKnownPrefixPolicy
 
 final case class KmpKnownPrefixPolicy(
-  prefix: String,
-  length: Int,
-  minPrefixStartPos: Option[Int] = None,
-  maxPrefixStartPos: Option[Int] = None
+    prefix: String,
+    length: Int,
+    minPrefixStartPos: Option[Int] = None,
+    maxPrefixStartPos: Option[Int] = None
 ) extends KnownPrefixPolicy:
 
-  private[this] val kmp: KnuthMorrisPratt = new KnuthMorrisPratt(prefix)
-  private[this] val prefixLength: Int = prefix.length
-  private[this] val minPrefixStartPosInt: Int = minPrefixStartPos.getOrElse(0)
-  private[this] val maxPrefixStartPosInt: Int = maxPrefixStartPos.getOrElse(Int.MaxValue)
+  private val kmp: KnuthMorrisPratt = new KnuthMorrisPratt(prefix)
+  private val prefixLength: Int = prefix.length
+  private val minPrefixStartPosInt: Int = minPrefixStartPos.getOrElse(0)
+  private val maxPrefixStartPosInt: Int = maxPrefixStartPos.getOrElse(Int.MaxValue)
 
   override def find(read: Read): Option[FoundBarcode] =
     val searchEndPos = math.min(maxPrefixStartPosInt, read.seq.length - length)
@@ -183,7 +183,7 @@ object TemplatePolicy:
       case 'D' => b == 'A' || b == 'G' || b == 'T'
       case 'H' => b == 'A' || b == 'C' || b == 'T'
       case 'V' => b == 'A' || b == 'C' || b == 'G'
-      case _   => false
+      case _ => false
 
   final def satisfies(template: Array[Char], seq: String, seqOffset: Int): Boolean =
     var i = 0
@@ -197,14 +197,14 @@ end TemplatePolicy
 final case class GeneralTemplatePolicy(template: KeyMask, minStartPos: Option[Int], maxStartPos: Option[Int] = None)
     extends TemplatePolicy:
 
-  private[this] val minStartPosInt: Int = minStartPos.getOrElse(0)
-  private[this] val maxStartPosInt: Int = maxStartPos.getOrElse(Int.MaxValue)
-  private[this] val firstKeyBaseOffset: Int = template.keyRanges.head.start0
+  private val minStartPosInt: Int = minStartPos.getOrElse(0)
+  private val maxStartPosInt: Int = maxStartPos.getOrElse(Int.MaxValue)
+  private val firstKeyBaseOffset: Int = template.keyRanges.head.start0
 
   // commonly-accessed parts of the keymask
-  private[this] val templateChars: Array[Char] = template.pattern.toUpperCase.toCharArray
-  private[this] val contextLength: Int = template.contextLength
-  private[this] val keyLength: Int = template.keyLengthInBases
+  private val templateChars: Array[Char] = template.pattern.toUpperCase.toCharArray
+  private val contextLength: Int = template.contextLength
+  private val keyLength: Int = template.keyLengthInBases
 
   // the publicly exposed length is the keyLength
   override val length: Int = keyLength
@@ -237,22 +237,22 @@ final case class GeneralTemplatePolicy(template: KeyMask, minStartPos: Option[In
 end GeneralTemplatePolicy
 
 final case class SplitBarcodePolicy(
-  prefix1: String,
-  b1Length: Int,
-  gap: Int,
-  prefix2: String,
-  b2Length: Int,
-  minPrefix1StartPos: Option[Int],
-  maxPrefix1StartPos: Option[Int] = None
+    prefix1: String,
+    b1Length: Int,
+    gap: Int,
+    prefix2: String,
+    b2Length: Int,
+    minPrefix1StartPos: Option[Int],
+    maxPrefix1StartPos: Option[Int] = None
 ) extends TemplatePolicy:
   import SplitBarcodePolicy.{indexOf, matches}
 
-  private[this] val minPrefix1StartPosInt: Int = minPrefix1StartPos.getOrElse(0)
-  private[this] val maxPrefix1StartPosInt: Int = maxPrefix1StartPos.getOrElse(Int.MaxValue)
-  private[this] val p1Length = prefix1.length
-  private[this] val p2Length = prefix2.length
-  private[this] val expectedP2Offset = prefix1.length + b1Length + gap
-  private[this] val patternLength = expectedP2Offset + p2Length + b2Length
+  private val minPrefix1StartPosInt: Int = minPrefix1StartPos.getOrElse(0)
+  private val maxPrefix1StartPosInt: Int = maxPrefix1StartPos.getOrElse(Int.MaxValue)
+  private val p1Length = prefix1.length
+  private val p2Length = prefix2.length
+  private val expectedP2Offset = prefix1.length + b1Length + gap
+  private val patternLength = expectedP2Offset + p2Length + b2Length
 
   override def length: Int = b1Length + b2Length
 

@@ -8,6 +8,7 @@ package org.broadinstitute.gpp.poolq3.parser
 import java.nio.file.Path
 
 import scala.collection.mutable
+import scala.compiletime.uninitialized
 
 import org.broadinstitute.gpp.poolq3.barcode.FoundBarcode
 import org.broadinstitute.gpp.poolq3.types.Read
@@ -57,9 +58,9 @@ object DmuxedIterable:
 
     private val queue: mutable.Queue[(Option[String], A)] = mutable.Queue.from(src)
 
-    var current: CloseableIterator[Read] = _
+    var current: CloseableIterator[Read] = uninitialized
 
-    var indexBarcode: Option[FoundBarcode] = _
+    var indexBarcode: Option[FoundBarcode] = uninitialized
 
     override def iterator: CloseableIterator[Read] = new CloseableIterator[Read]:
 

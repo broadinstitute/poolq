@@ -13,9 +13,9 @@ import org.broadinstitute.gpp.poolq3.types.Read
 class TextParser(file: Path) extends CloseableIterable[Read]:
 
   private[parser] class TextIterator(is: InputStream) extends CloseableIterator[Read]:
-    private[this] val reader = new BufferedReader(new InputStreamReader(is))
-    private[this] var lineNo: Int = 1
-    private[this] var line = reader.readLine()
+    private val reader = new BufferedReader(new InputStreamReader(is))
+    private var lineNo: Int = 1
+    private var line = reader.readLine()
 
     final override def next(): Read =
       if line == null then throw new NoSuchElementException

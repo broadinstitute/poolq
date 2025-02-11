@@ -11,7 +11,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 
 class OpenHashMapHistogram[A] extends Histogram[A]:
 
-  private[this] val hist: Object2IntOpenHashMap[A] = new Object2IntOpenHashMap[A]()
+  private val hist: Object2IntOpenHashMap[A] = new Object2IntOpenHashMap[A]()
   hist.defaultReturnValue(0)
 
   /** Increment the occurrences of key `k` */

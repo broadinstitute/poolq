@@ -6,7 +6,7 @@
 package org.broadinstitute.gpp.poolq3.barcode
 
 final class KnuthMorrisPratt(word: String):
-  private[this] val f: Array[Int] = KnuthMorrisPratt.failure(word)
+  private val f: Array[Int] = KnuthMorrisPratt.failure(word)
 
   final def search(text: String): Option[Int] = search(text, 0, text.length)
 

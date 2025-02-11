@@ -35,21 +35,21 @@ end ReferenceData
 
 object ReferenceData:
 
-  private[this] val log: Logger = getLogger
+  private val log: Logger = getLogger
 
   val UnlabeledSampleBarcodes = "Unlabeled Sample Barcodes"
   val UnlabeledColumnBarcodes = "Unlabeled Column Barcodes"
 
   def unlabeled(dialect: ReportsDialect): String = dialect match
     case PoolQ2Dialect | GctDialect => UnlabeledSampleBarcodes
-    case _                          => UnlabeledColumnBarcodes
+    case _ => UnlabeledColumnBarcodes
 
   // this is complicated because it handles the case where the DNA barcode is quoted
   // matches `"[ACGTacgt:;-]+ *"` or `[ACGTacgt:;-]+ *`,
   // followed by either a tab or a comma
   private[parser] val LineRegex = """^(?:(?:"[ACGTacgt:;-]+ *")|(?:[ACGTacgt:;-]+ *))([\t,]).*$""".r
 
-  private[this] val DelimiterRegex = """^(?:[^,\t]+)([\t,]).+$""".r
+  private val DelimiterRegex = """^(?:[^,\t]+)([\t,]).+$""".r
 
   private[parser] def guessDelimiter(br: BufferedReader): Char =
     br.mark(1024)
@@ -58,7 +58,7 @@ object ReferenceData:
       if iter.hasNext then
         iter.next() match
           case DelimiterRegex(d) => d.head
-          case _                 => ','
+          case _ => ','
       else ','
     br.reset()
     ret

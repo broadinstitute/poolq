@@ -13,43 +13,17 @@ import cats.syntax.all.*
 import org.broadinstitute.gpp.poolq3.PoolQConfig.synthesizeArgs
 import org.broadinstitute.gpp.poolq3.barcode.{BarcodePolicy, Barcodes, barcodeSource}
 import org.broadinstitute.gpp.poolq3.parser.{BarcodeSet, CloseableIterable, ReferenceData}
-import org.broadinstitute.gpp.poolq3.process.{
-  Consumer,
-  NoOpConsumer,
-  PoolQProcess,
-  ScoringConsumer,
-  UnexpectedSequenceTracker
-}
+import org.broadinstitute.gpp.poolq3.process.{Consumer, NoOpConsumer, PoolQProcess, ScoringConsumer, UnexpectedSequenceTracker}
 import org.broadinstitute.gpp.poolq3.reference.{ExactReference, Reference}
-import org.broadinstitute.gpp.poolq3.reports.{
-  BarcodeCountsWriter,
-  CorrelationFileWriter,
-  CountsWriter,
-  LogNormalizedCountsWriter,
-  QualityWriter,
-  RunInfoWriter,
-  UmiQualityWriter,
-  UnexpectedSequenceWriter
-}
-import org.broadinstitute.gpp.poolq3.types.{
-  BarcodeCountsFileType,
-  ConditionBarcodeCountsSummaryFileType,
-  CountsFileType,
-  LogNormalizedCountsFileType,
-  OutputFileType,
-  PoolQRunSummary,
-  PoolQSummary,
-  QualityFileType,
-  RunInfoFileType,
-  UnexpectedSequencesFileType
-}
+import org.broadinstitute.gpp.poolq3.reports.{BarcodeCountsWriter, CorrelationFileWriter, CountsWriter, LogNormalizedCountsWriter, QualityWriter, RunInfoWriter, UmiQualityWriter, UnexpectedSequenceWriter}
+import org.broadinstitute.gpp.poolq3.types.{BarcodeCountsFileType, ConditionBarcodeCountsSummaryFileType, CountsFileType, LogNormalizedCountsFileType, OutputFileType, PoolQRunSummary, PoolQSummary, QualityFileType, RunInfoFileType, UnexpectedSequencesFileType}
 import org.log4s.{Logger, getLogger}
 
 object PoolQ:
 
-  private[this] val log: Logger = getLogger
+  private val log: Logger = getLogger
 
-  private[this] val AlwaysWrittenFiles: Set[OutputFileType] =
+  private val AlwaysWrittenFiles: Set[OutputFileType] =
     Set(
       CountsFileType,
       QualityFileType,
@@ -238,11 +212,11 @@ object PoolQ:
     }
 
   private[poolq3] def makeRowBarcodePolicy(
-    rowReferenceData: ReferenceData,
-    rowBarcodePolicyStr: String,
-    reverseRowBarcodePolicyStr: Option[String],
-    reverseRowReads: Option[(Option[String], Path)],
-    skipShortReads: Boolean
+      rowReferenceData: ReferenceData,
+      rowBarcodePolicyStr: String,
+      reverseRowBarcodePolicyStr: Option[String],
+      reverseRowReads: Option[(Option[String], Path)],
+      skipShortReads: Boolean
   ): (BarcodePolicy, Option[BarcodePolicy], Int) =
     (reverseRowBarcodePolicyStr, reverseRowReads)
       .mapN { (revPolicy, _) =>
@@ -256,11 +230,11 @@ object PoolQ:
         (rowBarcodePolicy, None, rowBarcodePolicy.length)
       }
 
-  private[this] def logCli(config: PoolQConfig): Unit =
+  private def logCli(config: PoolQConfig): Unit =
     val logStr =
       synthesizeArgs(config)
         .map {
-          case (param, "")  => s"--$param"
+          case (param, "") => s"--$param"
           case (param, arg) => s"--$param $arg"
         }
         .mkString(" \\\n")

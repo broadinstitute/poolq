@@ -12,11 +12,11 @@ import org.broadinstitute.gpp.poolq3.types.{Read, ReadIdCheckPolicy}
 
 class TwoFileBarcodeSourceTest extends FunSuite:
 
-  private[this] val rowPolicy = BarcodePolicy("FIXED@0", 10, skipShortReads = true)
-  private[this] val colPolicy = BarcodePolicy("FIXED@0", 4, skipShortReads = true)
-  private[this] val umiPolicy = BarcodePolicy("FIXED@10", 3, skipShortReads = true).some
+  private val rowPolicy = BarcodePolicy("FIXED@0", 10, skipShortReads = true)
+  private val colPolicy = BarcodePolicy("FIXED@0", 4, skipShortReads = true)
+  private val umiPolicy = BarcodePolicy("FIXED@10", 3, skipShortReads = true).some
 
-  private[this] def seqsToReads(xs: List[String]): List[Read] =
+  private def seqsToReads(xs: List[String]): List[Read] =
     xs.zipWithIndex.map { case (seq, i) => Read(i.toString, seq) }
 
   test("iterator draws col, umi, and row barcodes from the correct reads") {
