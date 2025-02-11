@@ -20,23 +20,23 @@ import org.scalatest.matchers.should.Matchers.*
 
 class CorrelationFileTest extends AnyFlatSpec:
 
-  private[this] val Condition1 = "DMSO"
-  private[this] val Condition2 = "ITMFA"
-  private[this] val Condition3 = "No Drug"
-  private[this] val SampleBarcode1 = "GTAT"
-  private[this] val SampleBarcode2 = "ACAT"
-  private[this] val SampleBarcode3 = "TCAG"
+  private val Condition1 = "DMSO"
+  private val Condition2 = "ITMFA"
+  private val Condition3 = "No Drug"
+  private val SampleBarcode1 = "GTAT"
+  private val SampleBarcode2 = "ACAT"
+  private val SampleBarcode3 = "TCAG"
 
-  private[this] val Construct1 = "AACCGGTTAACCGGTTTTAAG"
-  private[this] val Construct2 = "CGCTGATTCACGGGATCTAGT"
-  private[this] val Construct3 = "TAGTCTGTATCGCCAGCTTCC"
-  private[this] val Construct4 = "TGATAGACTAGTGTTGCTGCA"
-  private[this] val Constructs = List(Construct1, Construct2, Construct3, Construct4)
+  private val Construct1 = "AACCGGTTAACCGGTTTTAAG"
+  private val Construct2 = "CGCTGATTCACGGGATCTAGT"
+  private val Construct3 = "TAGTCTGTATCGCCAGCTTCC"
+  private val Construct4 = "TGATAGACTAGTGTTGCTGCA"
+  private val Constructs = List(Construct1, Construct2, Construct3, Construct4)
 
-  private[this] val rowReference =
+  private val rowReference =
     ExactReference(Constructs.map(b => ReferenceEntry(b, b)), identity, includeAmbiguous = false)
 
-  private[this] val colReference =
+  private val colReference =
     ExactReference(
       List(
         ReferenceEntry(SampleBarcode1, Condition1),
@@ -53,7 +53,7 @@ class CorrelationFileTest extends AnyFlatSpec:
   // b2   23     26     6
   // b3   66     73     32
   // b4   45     68     17
-  private[this] val reads =
+  private val reads =
     List.fill(13)((Construct1, SampleBarcode1)) ++
       List.fill(1)((Construct1, SampleBarcode2)) ++
       List.fill(97)((Construct1, SampleBarcode3)) ++
@@ -67,7 +67,7 @@ class CorrelationFileTest extends AnyFlatSpec:
       List.fill(68)((Construct4, SampleBarcode2)) ++
       List.fill(17)((Construct4, SampleBarcode3))
 
-  private[this] val barcodes = CloseableIterable.ofList(Random.shuffle(reads).map { case (row, col) =>
+  private val barcodes = CloseableIterable.ofList(Random.shuffle(reads).map { case (row, col) =>
     Barcodes(Some(FoundBarcode(row.toCharArray, 0)), None, Some(FoundBarcode(col.toCharArray, 0)), None)
   })
 

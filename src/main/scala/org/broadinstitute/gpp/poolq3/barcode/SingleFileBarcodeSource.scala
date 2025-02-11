@@ -9,13 +9,13 @@ import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, CloseableIterato
 import org.broadinstitute.gpp.poolq3.types.Read
 
 final class SingleFileBarcodeSource(
-  parser: CloseableIterable[Read],
-  rowPolicy: BarcodePolicy,
-  columnPolicy: BarcodePolicy,
-  umiPolicyOpt: Option[BarcodePolicy]
+    parser: CloseableIterable[Read],
+    rowPolicy: BarcodePolicy,
+    columnPolicy: BarcodePolicy,
+    umiPolicyOpt: Option[BarcodePolicy]
 ) extends CloseableIterable[Barcodes]:
 
-  private[this] class BarcodeIterator(iterator: CloseableIterator[Read]) extends CloseableIterator[Barcodes]:
+  private class BarcodeIterator(iterator: CloseableIterator[Read]) extends CloseableIterator[Barcodes]:
     override def hasNext: Boolean = iterator.hasNext
 
     override def next(): Barcodes =

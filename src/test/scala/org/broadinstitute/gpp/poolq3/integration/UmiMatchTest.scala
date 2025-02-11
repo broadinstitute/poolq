@@ -18,38 +18,38 @@ import org.broadinstitute.gpp.poolq3.reference.ExactReference
 class UmiMatchTest extends FunSuite:
 
   // row barcodes
-  private[this] val brdn01 = "AAAAAAAAAAAAAAAAAAAA"
-  private[this] val brdn02 = "AAAAAAAAAAAAAAAAAAAC"
-  private[this] val brdn03 = "AAAAAAAAAAAAAAAAAAAG"
-  private[this] val brdn04 = "AAAAAAAAAAAAAAAAAAAT"
-  private[this] val brdn05 = "GATGTGCAGTGAGTAGCGAG"
-  private[this] val brdn06 = "CCGGTTGATGCGTGGTGATG"
-  private[this] val brdn07 = "AATGTGAAAATGTGATGAAT"
+  private val brdn01 = "AAAAAAAAAAAAAAAAAAAA"
+  private val brdn02 = "AAAAAAAAAAAAAAAAAAAC"
+  private val brdn03 = "AAAAAAAAAAAAAAAAAAAG"
+  private val brdn04 = "AAAAAAAAAAAAAAAAAAAT"
+  private val brdn05 = "GATGTGCAGTGAGTAGCGAG"
+  private val brdn06 = "CCGGTTGATGCGTGGTGATG"
+  private val brdn07 = "AATGTGAAAATGTGATGAAT"
 
-  private[this] val rowReferenceBarcodes =
+  private val rowReferenceBarcodes =
     List(brdn01, brdn02, brdn03, brdn04, brdn05, brdn06, brdn07).map(b => ReferenceEntry(b, b))
 
   // column barcodes
-  private[this] val eh1 = "AAAA"
-  private[this] val eh2 = "AAAT"
-  private[this] val sea1 = "CCCC"
-  private[this] val sea2 = "CCCG"
+  private val eh1 = "AAAA"
+  private val eh2 = "AAAT"
+  private val sea1 = "CCCC"
+  private val sea2 = "CCCG"
 
-  private[this] val colReferenceBarcodes =
+  private val colReferenceBarcodes =
     List(ReferenceEntry(eh1, "Eh"), ReferenceEntry(eh2, "Eh"), ReferenceEntry(sea1, "Sea"), ReferenceEntry(sea2, "Sea"))
 
   // umi barcodes
-  private[this] val fake = "TTTTT"
-  private[this] val a01 = "GAAAA"
-  private[this] val a03 = "GCCCC"
-  private[this] val e09 = "GTTTT"
-  private[this] val f02 = "AGGGG"
-  private[this] val umiBarcodes = new BarcodeSet(Set(a01, a03, e09, f02))
+  private val fake = "TTTTT"
+  private val a01 = "GAAAA"
+  private val a03 = "GCCCC"
+  private val e09 = "GTTTT"
+  private val f02 = "AGGGG"
+  private val umiBarcodes = new BarcodeSet(Set(a01, a03, e09, f02))
 
-  private[this] val rowReference = ExactReference(rowReferenceBarcodes, identity, includeAmbiguous = true)
-  private[this] val colReference = ExactReference(colReferenceBarcodes, identity, includeAmbiguous = false)
+  private val rowReference = ExactReference(rowReferenceBarcodes, identity, includeAmbiguous = true)
+  private val colReference = ExactReference(colReferenceBarcodes, identity, includeAmbiguous = false)
 
-  private[this] val expectedCounts: Map[(Option[String], Option[String], Option[String]), Int] = Map(
+  private val expectedCounts: Map[(Option[String], Option[String], Option[String]), Int] = Map(
     (None, None, None) -> 2,
     (brdn01.some, sea1.some, None) -> 1,
     (brdn01.some, sea1.some, fake.some) -> 3,
@@ -61,7 +61,7 @@ class UmiMatchTest extends FunSuite:
     (brdn07.some, eh1.some, e09.some) -> 5
   )
 
-  private[this] val barcodes = CloseableIterable.ofList {
+  private val barcodes = CloseableIterable.ofList {
     val l = expectedCounts.flatMap { case ((ro, co, uo), counts) =>
       val bcs =
         Barcodes(

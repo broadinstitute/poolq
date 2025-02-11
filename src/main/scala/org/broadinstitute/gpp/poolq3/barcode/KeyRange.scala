@@ -24,13 +24,13 @@ object KeyRange:
 
   implicit val ord: Ordering[KeyRange] = Ordering.by(kr => (kr.start0, kr.end0))
 
-  private[this] val Range1Re = """^(\d+)$""".r
-  private[this] val Range2Re = """^(\d+)(?:-|\.\.)(\d+)$""".r
+  private val Range1Re = """^(\d+)$""".r
+  private val Range2Re = """^(\d+)(?:-|\.\.)(\d+)$""".r
 
   def apply(str: String): KeyRange =
     str match
       case Range2Re(s, e) => KeyRange(s.toInt - 1, e.toInt - 1)
-      case Range1Re(s)    => KeyRange(s.toInt - 1, s.toInt - 1)
-      case _              => throw new IllegalArgumentException(s"Unrecognized key range `$str`")
+      case Range1Re(s) => KeyRange(s.toInt - 1, s.toInt - 1)
+      case _ => throw new IllegalArgumentException(s"Unrecognized key range `$str`")
 
 end KeyRange

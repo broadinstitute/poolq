@@ -9,20 +9,20 @@ import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, CloseableIterato
 import org.broadinstitute.gpp.poolq3.types.{Read, ReadIdCheckPolicy}
 
 class DmuxedPairedEndBarcodeSource(
-  rowParser: DmuxedIterable,
-  revRowParser: DmuxedIterable,
-  rowPolicy: BarcodePolicy,
-  revRowPolicy: BarcodePolicy,
-  umiPolicyOpt: Option[BarcodePolicy],
-  readIdCheckPolicy: ReadIdCheckPolicy,
-  colBarcodeLength: Int
+    rowParser: DmuxedIterable,
+    revRowParser: DmuxedIterable,
+    rowPolicy: BarcodePolicy,
+    revRowPolicy: BarcodePolicy,
+    umiPolicyOpt: Option[BarcodePolicy],
+    readIdCheckPolicy: ReadIdCheckPolicy,
+    colBarcodeLength: Int
 ) extends CloseableIterable[Barcodes]:
 
   // the index barcode _is_ the column barcode; we get it from the row parser
   // because the demultiplexed file is associated with the index barcode
   private def colBarcodeOpt = rowParser.indexBarcode
 
-  private[this] class BarcodeIterator(rowIterator: CloseableIterator[Read], revRowIterator: CloseableIterator[Read])
+  private class BarcodeIterator(rowIterator: CloseableIterator[Read], revRowIterator: CloseableIterator[Read])
       extends CloseableIterator[Barcodes]:
 
     // used to attempt to parse barcodes out of ids if the file has no associated barcode

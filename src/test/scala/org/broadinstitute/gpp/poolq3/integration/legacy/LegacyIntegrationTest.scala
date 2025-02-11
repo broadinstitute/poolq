@@ -16,7 +16,7 @@ import org.scalatest.matchers.should.Matchers.*
 
 class LegacyIntegrationTest extends AnyFlatSpec with TestResources:
 
-  private[this] def filesSame(actual: Path, expected: Path): Unit =
+  private def filesSame(actual: Path, expected: Path): Unit =
     val _ = contents(actual) should be(contents(expected))
 
   /** Tests PoolQ end-to-end, using 10000 reads, 8 constructs, and 42 conditions. Compares the results to expected

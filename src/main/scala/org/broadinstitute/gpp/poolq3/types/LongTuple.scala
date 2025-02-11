@@ -12,7 +12,7 @@ final class LongTuple(val _1: Long, val _2: Long):
   override def equals(other: Any): Boolean =
     other match
       case that: LongTuple if this._1 == that._1 && this._2 == that._2 => true
-      case _                                                           => false
+      case _ => false
 
   override def hashCode(): Int =
     val h1 = HashCommon.murmurHash3(_1).toInt

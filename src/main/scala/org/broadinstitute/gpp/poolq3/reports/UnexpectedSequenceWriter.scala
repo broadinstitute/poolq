@@ -19,15 +19,15 @@ import org.log4s.{Logger, getLogger}
 
 object UnexpectedSequenceWriter:
 
-  private[this] val log: Logger = getLogger
+  private val log: Logger = getLogger
 
   def write(
-    outputFile: Path,
-    unexpectedSequenceCacheDir: Path,
-    nSequencesToReport: Int,
-    colReference: Reference,
-    globalReference: Option[Reference],
-    maxMapSize: Int = 10_000_000
+      outputFile: Path,
+      unexpectedSequenceCacheDir: Path,
+      nSequencesToReport: Int,
+      colReference: Reference,
+      globalReference: Option[Reference],
+      maxMapSize: Int = 10_000_000
   ): Try[Unit] =
     // build a "reference set" - a set of unexpected barcodes that we will track exact counts for (read `samplePct`% of each shard)
     // load the whole cache, tracking only sequences in the reference set
@@ -73,10 +73,10 @@ object UnexpectedSequenceWriter:
   end BreadthFirstIterator
 
   def loadCache(
-    cacheDir: Path,
-    colReference: Reference,
-    nSequencesToReport: Int,
-    maxMapSize: Int
+      cacheDir: Path,
+      colReference: Reference,
+      nSequencesToReport: Int,
+      maxMapSize: Int
   ): (Map[String, Map[String, Int]], Vector[String]) =
     val rowColBarcodeCounts = new mutable.HashMap[String, mutable.Map[String, Int]]()
     val allRowBarcodeCounts = new mutable.HashMap[String, Int]()
@@ -97,11 +97,11 @@ object UnexpectedSequenceWriter:
         val (rowBc, colBc) = iterator.next()
         val colBarcodeMap = rowColBarcodeCounts.getOrElseUpdate(rowBc, mutable.HashMap())
         val _ = colBarcodeMap.updateWith(colBc) {
-          case None    => Some(1)
+          case None => Some(1)
           case Some(c) => Some(c + 1)
         }
         val _ = allRowBarcodeCounts.updateWith(rowBc) {
-          case None    => Some(1)
+          case None => Some(1)
           case Some(c) => Some(c + 1)
         }
       end while
@@ -114,11 +114,11 @@ object UnexpectedSequenceWriter:
           // in the set of things we're keeping track of
           rowColBarcodeCounts.get(rowBc).foreach { colBarcodeMap =>
             val _ = colBarcodeMap.updateWith(colBc) {
-              case None    => Some(1)
+              case None => Some(1)
               case Some(c) => Some(c + 1)
             }
             val _ = allRowBarcodeCounts.updateWith(rowBc) {
-              case None    => Some(1)
+              case None => Some(1)
               case Some(c) => Some(c + 1)
             }
           }
@@ -146,11 +146,11 @@ object UnexpectedSequenceWriter:
   end loadCache
 
   private[reports] def printUnexpectedCounts(
-    colReference: Reference,
-    globalReferenceOpt: Option[Reference],
-    h: Map[String, Map[String, Int]],
-    rows: Vector[String],
-    pw: PrintWriter
+      colReference: Reference,
+      globalReferenceOpt: Option[Reference],
+      h: Map[String, Map[String, Int]],
+      rows: Vector[String],
+      pw: PrintWriter
   ): Unit =
     val colBarcodes = colReference.allBarcodes.map(colReference.referenceBarcodeForDnaBarcode)
 

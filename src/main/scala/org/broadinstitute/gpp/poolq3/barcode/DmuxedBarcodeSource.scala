@@ -9,10 +9,10 @@ import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, CloseableIterato
 import org.broadinstitute.gpp.poolq3.types.Read
 
 final class DmuxedBarcodeSource(
-  parser: DmuxedIterable,
-  rowPolicy: BarcodePolicy,
-  umiPolicyOpt: Option[BarcodePolicy],
-  colBarcodeLength: Int
+    parser: DmuxedIterable,
+    rowPolicy: BarcodePolicy,
+    umiPolicyOpt: Option[BarcodePolicy],
+    colBarcodeLength: Int
 ) extends CloseableIterable[Barcodes]:
 
   // used to attempt to parse barcodes out of ids if the file has no associated barcode
@@ -20,7 +20,7 @@ final class DmuxedBarcodeSource(
 
   private def colBarcodeOpt = parser.indexBarcode
 
-  private[this] class BarcodeIterator(iterator: CloseableIterator[Read]) extends CloseableIterator[Barcodes]:
+  private class BarcodeIterator(iterator: CloseableIterator[Read]) extends CloseableIterator[Barcodes]:
     override def hasNext: Boolean = iterator.hasNext
 
     override def next(): Barcodes =

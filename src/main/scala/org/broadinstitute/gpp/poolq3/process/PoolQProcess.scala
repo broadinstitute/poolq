@@ -19,19 +19,19 @@ import org.log4s.{Logger, getLogger}
   * periodically.
   */
 final class PoolQProcess(
-  source: Iterator[Barcodes],
-  consumer: Consumer,
-  queueSize: Int = 100,
-  reportFrequency: Int = 5000000
+    source: Iterator[Barcodes],
+    consumer: Consumer,
+    queueSize: Int = 100,
+    reportFrequency: Int = 5000000
 ):
 
-  private[this] val log: Logger = getLogger
+  private val log: Logger = getLogger
 
-  private[this] val queue: ArrayBlockingQueue[Barcodes] = new ArrayBlockingQueue(queueSize)
+  private val queue: ArrayBlockingQueue[Barcodes] = new ArrayBlockingQueue(queueSize)
 
-  @volatile private[this] var done = false
+  @volatile private var done = false
 
-  final private[this] class ConsumerThread extends Thread:
+  final private class ConsumerThread extends Thread:
 
     override def run(): Unit =
       val t0 = System.currentTimeMillis()

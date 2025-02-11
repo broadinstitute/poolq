@@ -13,7 +13,7 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks.*
 
 class KnuthMorrisPrattTest extends AnyFlatSpec:
 
-  private[this] val prefixGen: Gen[String] = dnaSeq(acgtn).suchThat(!_.contains("CACCG"))
+  private val prefixGen: Gen[String] = dnaSeq(acgtn).suchThat(!_.contains("CACCG"))
 
   "KnuthMorrisPratt" should "find CACCG" in {
     val kmp = new KnuthMorrisPratt("CACCG")

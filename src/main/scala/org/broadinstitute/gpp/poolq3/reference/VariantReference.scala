@@ -13,17 +13,17 @@ import org.broadinstitute.gpp.poolq3.parser.ReferenceEntry
 import org.broadinstitute.gpp.poolq3.seq.{NoN, PolyN, singleNIndex}
 
 final class VariantReference private[VariantReference] (
-  allBarcodes: Seq[String],
-  barcodeToInputBarcode: Object2ObjectMap[String, String],
-  barcodeIds: Object2ObjectMap[String, mutable.LinkedHashSet[String]],
-  barcodeProcessor: String => String,
-  includeAmbiguous: Boolean
+    allBarcodes: Seq[String],
+    barcodeToInputBarcode: Object2ObjectMap[String, String],
+    barcodeIds: Object2ObjectMap[String, mutable.LinkedHashSet[String]],
+    barcodeProcessor: String => String,
+    includeAmbiguous: Boolean
 ) extends BaseReference(allBarcodes, barcodeToInputBarcode, barcodeIds):
 
-  private[this] val truncationVariants =
+  private val truncationVariants =
     Reference.truncationVariants(allBarcodes, barcodeProcessor, includeAmbiguous)
 
-  private[this] val mismatchVariants: Object2ObjectMap[String, List[String]] = generateVariants
+  private val mismatchVariants: Object2ObjectMap[String, List[String]] = generateVariants
 
   override def find(barcode: String): Seq[MatchedBarcode] =
     val bases = barcode.toCharArray
@@ -51,7 +51,7 @@ final class VariantReference private[VariantReference] (
 
   end find
 
-  private[this] def posVariants(bases: Array[Char], nIdx: Int, orig: Char = 'N'): Seq[String] =
+  private def posVariants(bases: Array[Char], nIdx: Int, orig: Char = 'N'): Seq[String] =
     val ret = new Array[String](4)
     bases(nIdx) = 'A'
     ret(0) = new String(bases)
@@ -66,7 +66,7 @@ final class VariantReference private[VariantReference] (
 
   end posVariants
 
-  private[this] def generateVariants: Object2ObjectMap[String, List[String]] =
+  private def generateVariants: Object2ObjectMap[String, List[String]] =
     val initialVariants: Seq[(String, String)] =
       allBarcodes.map(bc => (barcodeProcessor(bc), bc))
 
@@ -99,9 +99,9 @@ end VariantReference
 object VariantReference:
 
   def apply(
-    mappings: Seq[ReferenceEntry],
-    barcodeProcessor: String => String,
-    includeAmbiguous: Boolean
+      mappings: Seq[ReferenceEntry],
+      barcodeProcessor: String => String,
+      includeAmbiguous: Boolean
   ): VariantReference =
     val (barcodes, barcodeToInputBarcodes, barcodeIds) = Reference.build(mappings)
     new VariantReference(barcodes.toVector, barcodeToInputBarcodes, barcodeIds, barcodeProcessor, includeAmbiguous)

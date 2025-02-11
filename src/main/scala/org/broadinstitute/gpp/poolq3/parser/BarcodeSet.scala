@@ -24,12 +24,12 @@ class BarcodeSet(val barcodes: Set[String]):
 
 object BarcodeSet:
 
-  private[this] val BarcodeRe = s"""([ACGT]+)""".r
+  private val BarcodeRe = s"""([ACGT]+)""".r
 
   def parseBarcode(makeException: String => Exception)(line: String): Try[String] =
     line match
       case BarcodeRe(bc) => Success(bc)
-      case _             => Failure(makeException(line))
+      case _ => Failure(makeException(line))
 
   def apply(file: Path): BarcodeSet =
     Using.resource(new FileInputStream(file.toFile)) { fin =>

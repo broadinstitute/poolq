@@ -33,12 +33,12 @@ object QualityWriter:
   end TeeWriter
 
   def write(
-    qualityFile: Path,
-    conditionBarcodeCountsSummaryFile: Path,
-    state: State,
-    rowReference: Reference,
-    colReference: Reference,
-    isPairedEnd: Boolean
+      qualityFile: Path,
+      conditionBarcodeCountsSummaryFile: Path,
+      state: State,
+      rowReference: Reference,
+      colReference: Reference,
+      isPairedEnd: Boolean
   ): Try[Unit] =
     Try {
       Using.resources(new PrintWriter(qualityFile.toFile), new PrintWriter(conditionBarcodeCountsSummaryFile.toFile)) {
@@ -96,13 +96,13 @@ object QualityWriter:
       }
     }
 
-  private[this] def decOptFmt(d: Option[Double]): String = d.map(Decimal00Format.format).getOrElse("N/A")
+  private def decOptFmt(d: Option[Double]): String = d.map(Decimal00Format.format).getOrElse("N/A")
 
-  private[this] def perBarcodeQualityData[A](
-    state: State,
-    rowReference: Reference,
-    colReference: Reference,
-    colBarcode: String
+  private def perBarcodeQualityData[A](
+      state: State,
+      rowReference: Reference,
+      colReference: Reference,
+      colBarcode: String
   ): Seq[String] =
     val conditions = colReference.idsForBarcode(colBarcode).mkString(",")
     val matchedRowAndCol: Int =

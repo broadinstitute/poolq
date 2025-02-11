@@ -2,7 +2,7 @@
 
 PoolQ is a counter for indexed samples from next-gen sequencing of pooled DNA.
 
-_This documentation covers PoolQ version 3.11.0 (last updated 02/13/2024)._
+_This documentation covers PoolQ version 3.13.0 (last updated 02/11/2025)._
 
 ## Background
 
@@ -550,8 +550,8 @@ it, you need to download the zip file and unzip it.
 
 ## Prerequisites
 
-PoolQ is built for Java 8. To run PoolQ, you will need a JRE for version 8 or later. To compile
-PoolQ you will need a Java 8 JDK. You can download an appropriate JRE or JDK from Oracle at:
+PoolQ is built for Java 11. To run PoolQ, you will need a JRE for version 11 or later. To compile
+PoolQ you will need a Java 11 JDK. You can download an appropriate JRE or JDK from Oracle at:
 
 > [http://www.oracle.com/technetwork/java/javase/downloads/index.html](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 

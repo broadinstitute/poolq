@@ -15,22 +15,22 @@ import org.broadinstitute.gpp.poolq3.seq.*
 import org.log4s.{Logger, getLogger}
 
 final class ScoringConsumer(
-  rowReference: Reference,
-  colReference: Reference,
-  countAmbiguous: Boolean,
-  alwaysCountColumnBarcodes: Boolean,
-  umiReference: Option[BarcodeSet],
-  unexpectedSequenceTrackerOpt: Option[UnexpectedSequenceTracker],
-  pairedEndMode: Boolean
+    rowReference: Reference,
+    colReference: Reference,
+    countAmbiguous: Boolean,
+    alwaysCountColumnBarcodes: Boolean,
+    umiReference: Option[BarcodeSet],
+    unexpectedSequenceTrackerOpt: Option[UnexpectedSequenceTracker],
+    pairedEndMode: Boolean
 ) extends Consumer:
 
-  private[this] val log: Logger = getLogger
+  private val log: Logger = getLogger
 
-  private[this] val unexpectedSequenceQueue: ArrayBlockingQueue[(Array[Char], Array[Char])] =
+  private val unexpectedSequenceQueue: ArrayBlockingQueue[(Array[Char], Array[Char])] =
     new ArrayBlockingQueue(1000)
 
   // used to tell the unexpected sequence tracker thread when processing is done
-  @volatile private[this] var done = false
+  @volatile private var done = false
 
   // tracks the state as we go
   override val state =
@@ -42,7 +42,7 @@ final class ScoringConsumer(
     )
 
   // this thread is used to write unexpected sequences to the file cache
-  private[this] val unexpectedSequenceTrackerThread: Thread = new Thread:
+  private val unexpectedSequenceTrackerThread: Thread = new Thread:
 
     final override def run(): Unit =
       assert(unexpectedSequenceTrackerOpt.isDefined)
@@ -143,7 +143,7 @@ final class ScoringConsumer(
   end consume
 
   // Process the row and column barcodes when both are found and match to reference data
-  private[this] def matchedRowAndCol(row: MatchedBarcode, col: MatchedBarcode, umi: Option[FoundBarcode]): Unit =
+  private def matchedRowAndCol(row: MatchedBarcode, col: MatchedBarcode, umi: Option[FoundBarcode]): Unit =
     val r = row.barcode
     val c = col.barcode
     log.debug(s"Incrementing state for ($r, $c}).")
@@ -160,7 +160,7 @@ final class ScoringConsumer(
   end matchedRowAndCol
 
   // Process a UMI barcode if we're doing that
-  private[this] def handleUmi(umi: Option[FoundBarcode], ref: BarcodeSet, r: String, c: String): Unit =
+  private def handleUmi(umi: Option[FoundBarcode], ref: BarcodeSet, r: String, c: String): Unit =
     umi match
       case Some(s) =>
         val u = new String(s.barcode)
@@ -176,14 +176,14 @@ final class ScoringConsumer(
         // this means we were configured for UMI but we didn't extract a UMI barcode at all
         state.umiBarcodeNotFound += 1
 
-  private[this] def updateColumnBarcodeStats(colBc: Seq[MatchedBarcode], col: FoundBarcode): Unit =
+  private def updateColumnBarcodeStats(colBc: Seq[MatchedBarcode], col: FoundBarcode): Unit =
     // the if and else if branches aren't really related but they are also mutually exclusive, so if one matches
     // there is no reason to test the other
     if countAmbiguous || colBc.lengthCompare(1) == 0 then colBc.foreach(mb => state.knownCol.increment(mb.barcode))
     else if colBc.isEmpty && !containsN(col.barcode) then
       val _ = state.unknownCol.increment(new String(col.barcode))
 
-  private[this] def updateRowBarcodePositionStats(row: Option[FoundBarcode], revRow: Option[FoundBarcode]): Unit =
+  private def updateRowBarcodePositionStats(row: Option[FoundBarcode], revRow: Option[FoundBarcode]): Unit =
     row.foreach(r => state.rowBarcodeStats.update(r.offset0))
     revRow.foreach(r => state.revRowBarcodeStats.update(r.offset0))
     if row.isEmpty && revRow.isEmpty then state.neitherRowBarcodeFound += 1

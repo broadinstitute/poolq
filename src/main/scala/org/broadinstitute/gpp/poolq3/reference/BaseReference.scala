@@ -10,9 +10,9 @@ import scala.collection.mutable
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap
 
 abstract class BaseReference(
-  final val allBarcodes: Seq[String],
-  barcodeToInputBarcode: Object2ObjectMap[String, String],
-  barcodeEntries: Object2ObjectMap[String, mutable.LinkedHashSet[String]]
+    final val allBarcodes: Seq[String],
+    barcodeToInputBarcode: Object2ObjectMap[String, String],
+    barcodeEntries: Object2ObjectMap[String, mutable.LinkedHashSet[String]]
 ) extends Reference:
 
   require(allBarcodes.nonEmpty, "Reference may not be empty")

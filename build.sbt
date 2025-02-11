@@ -2,7 +2,7 @@ val artifactId = "poolq"
 
 inThisBuild(
   List(
-    scalaVersion := "3.3.3",
+    scalaVersion := "3.6.3",
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision,
     versionScheme := Some("early-semver")
@@ -11,21 +11,21 @@ inThisBuild(
 
 lazy val versions = new {
   val betterFiles = "3.9.2"
-  val catsEffect3 = "3.5.4"
-  val cats = "2.10.0"
-  val commonsIo = "2.16.1"
-  val commonsText = "1.12.0"
+  val catsEffect3 = "3.5.7"
+  val cats = "2.13.0"
+  val commonsIo = "2.18.0"
+  val commonsText = "1.13.0"
   val commonsMath3 = "3.6.1"
-  val fastutil = "8.5.13"
-  val fs2 = "3.10.2"
+  val fastutil = "8.5.15"
+  val fs2 = "3.11.0"
   val log4s = "1.10.0"
   val logback = "1.2.13"
-  val munit = "0.7.29"
-  val munitCatsEffect3 = "1.0.7"
+  val munit = "1.1.0"
+  val munitCatsEffect3 = "2.0.0"
   val samTools = "3.0.5"
-  val scalaCheck = "1.18.0"
-  val scalaCsv = "1.3.10"
-  val scalaTest = "3.2.18"
+  val scalaCheck = "1.18.1"
+  val scalaCsv = "2.0.0"
+  val scalaTest = "3.2.19"
   val scalaTestPlusScalaCheck = "3.2.18.0"
   val scopt = "4.1.0"
   val slf4j = "1.7.36"
@@ -52,7 +52,7 @@ lazy val libraries = new {
   val commonsText = "org.apache.commons" % "commons-text" % versions.commonsText
   val munit = "org.scalameta" %% "munit" % versions.munit
   val munitScalacheck = "org.scalameta" %% "munit-scalacheck" % versions.munit
-  val munitCatsEffect3 = "org.typelevel" %% "munit-cats-effect-3" % versions.munitCatsEffect3
+  val munitCatsEffect = "org.typelevel" %% "munit-cats-effect" % versions.munitCatsEffect3
   val scalaTest = "org.scalatest" %% "scalatest" % versions.scalaTest
   val scalaCheck = "org.scalacheck" %% "scalacheck" % versions.scalaCheck
   val scalaTestPlusScalaCheck = "org.scalatestplus" %% "scalacheck-1-17" % versions.scalaTestPlusScalaCheck
@@ -77,7 +77,7 @@ lazy val dependencies =
     libraries.fs2Core % Test,
     libraries.fs2Io % Test,
     libraries.munit % Test,
-    libraries.munitCatsEffect3 % Test,
+    libraries.munitCatsEffect % Test,
     libraries.munitScalacheck % Test,
     libraries.scalaCheck % Test,
     libraries.scalaTest % Test,
@@ -99,11 +99,11 @@ lazy val headerSettings = List(
 lazy val assemblySettings = List(
   assembly / assemblyJarName := "../bin/poolq3.jar",
   assembly / assemblyMergeStrategy := {
-    case "logback.xml"                                                 => MergeStrategy.first
-    case "logback-test.xml"                                            => MergeStrategy.discard
-    case PathList("module-info.class")                                 => MergeStrategy.discard
+    case "logback.xml" => MergeStrategy.first
+    case "logback-test.xml" => MergeStrategy.discard
+    case PathList("module-info.class") => MergeStrategy.discard
     case PathList("META-INF", "versions", xs @ _, "module-info.class") => MergeStrategy.discard
-    case "module-info.class"                                           => MergeStrategy.first
+    case "module-info.class" => MergeStrategy.first
     case x =>
       val old = (assembly / assemblyMergeStrategy).value
       old(x)

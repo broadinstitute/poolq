@@ -21,25 +21,25 @@ import org.broadinstitute.gpp.poolq3.testutil.contents
 
 class BarcodeCountsTest extends FunSuite:
 
-  private[this] val Condition1 = "DMSO"
-  private[this] val Condition2 = "ITMFA"
-  private[this] val Condition3 = "No Drug"
-  private[this] val SampleBarcode1 = "GTAT"
-  private[this] val SampleBarcode2 = "ACAT"
-  private[this] val SampleBarcode3 = "TCAG"
-  private[this] val SampleBarcode4 = "TCCG"
+  private val Condition1 = "DMSO"
+  private val Condition2 = "ITMFA"
+  private val Condition3 = "No Drug"
+  private val SampleBarcode1 = "GTAT"
+  private val SampleBarcode2 = "ACAT"
+  private val SampleBarcode3 = "TCAG"
+  private val SampleBarcode4 = "TCCG"
 
-  private[this] val Construct1 = "AACCGGTTAACCGGTTTTAAG"
-  private[this] val Construct2 = "CGCTGATTCACGGGATCTAGT"
-  private[this] val Construct3 = "TAGTCTGTATCGCCAGCTTCC"
-  private[this] val Construct4 = "TGATAGACTAGTGTTGCTGCA"
-  private[this] val ConstructId1 = "BRDN01"
-  private[this] val ConstructId2 = "BRDN02"
-  private[this] val ConstructId3 = "BRDN03"
-  private[this] val ConstructId4 = "BRDN04"
-  private[this] val ConstructId5 = "BRDN04"
+  private val Construct1 = "AACCGGTTAACCGGTTTTAAG"
+  private val Construct2 = "CGCTGATTCACGGGATCTAGT"
+  private val Construct3 = "TAGTCTGTATCGCCAGCTTCC"
+  private val Construct4 = "TGATAGACTAGTGTTGCTGCA"
+  private val ConstructId1 = "BRDN01"
+  private val ConstructId2 = "BRDN02"
+  private val ConstructId3 = "BRDN03"
+  private val ConstructId4 = "BRDN04"
+  private val ConstructId5 = "BRDN04"
 
-  private[this] val Constructs =
+  private val Constructs =
     List(
       ReferenceEntry(Construct1, ConstructId1),
       ReferenceEntry(Construct1, ConstructId5),
@@ -48,9 +48,9 @@ class BarcodeCountsTest extends FunSuite:
       ReferenceEntry(Construct4, ConstructId4)
     )
 
-  private[this] val rowReference = ExactReference(Constructs, identity, includeAmbiguous = false)
+  private val rowReference = ExactReference(Constructs, identity, includeAmbiguous = false)
 
-  private[this] val colReference =
+  private val colReference =
     ExactReference(
       List(
         ReferenceEntry(SampleBarcode1, Condition1),
@@ -68,7 +68,7 @@ class BarcodeCountsTest extends FunSuite:
   // b2   23     26     6
   // b3   66     73     32
   // b4   45     68     17
-  private[this] val reads =
+  private val reads =
     List.fill(13)((Construct1, SampleBarcode1)) ++
       List.fill(1)((Construct1, SampleBarcode2)) ++
       List.fill(97)((Construct1, SampleBarcode3)) ++
@@ -82,7 +82,7 @@ class BarcodeCountsTest extends FunSuite:
       List.fill(68)((Construct4, SampleBarcode2)) ++
       List.fill(17)((Construct4, SampleBarcode4))
 
-  private[this] val barcodes = CloseableIterable.ofList(reads.map { case (row, col) =>
+  private val barcodes = CloseableIterable.ofList(reads.map { case (row, col) =>
     Barcodes(Some(FoundBarcode(row.toCharArray, 0)), None, Some(FoundBarcode(col.toCharArray, 0)), None)
   })
 
@@ -196,7 +196,7 @@ class BarcodeCountsTest extends FunSuite:
     val bcre = "barcode-counts-file-test-umi-.+-([ACGT]{5}|UNMATCHED-UMI).txt".r
     def umiBarcodeFor(f: Path): Option[String] = f.getFileName.toString match
       case bcre(umi) => umi.some
-      case _         => None
+      case _ => None
 
     try
       val _ = BarcodeCountsWriter.write(

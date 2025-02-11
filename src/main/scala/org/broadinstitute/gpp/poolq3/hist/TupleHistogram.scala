@@ -11,7 +11,7 @@ import it.unimi.dsi.fastutil.objects.{Object2IntOpenHashMap, Object2ObjectOpenHa
 
 class TupleHistogram[A] extends Histogram[(A, A)]:
 
-  private[this] val hist: Object2ObjectOpenHashMap[A, Object2IntOpenHashMap[A]] = new Object2ObjectOpenHashMap()
+  private val hist: Object2ObjectOpenHashMap[A, Object2IntOpenHashMap[A]] = new Object2ObjectOpenHashMap()
 
   /** Increment the occurrences of key `k` */
   override def increment(k: (A, A)): Int =

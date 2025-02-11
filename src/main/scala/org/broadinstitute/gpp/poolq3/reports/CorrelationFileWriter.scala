@@ -22,13 +22,13 @@ import org.log4s.{Logger, getLogger}
   */
 object CorrelationFileWriter:
 
-  private[this] val log: Logger = getLogger
+  private val log: Logger = getLogger
 
   def write(
-    file: Path,
-    normalizedCounts: Map[String, Map[ColId, Double]],
-    rowReference: Reference,
-    colReference: Reference
+      file: Path,
+      normalizedCounts: Map[String, Map[ColId, Double]],
+      rowReference: Reference,
+      colReference: Reference
   ): Try[Option[CorrelationFileType.type]] =
     if colReference.allIds.size < 2 || rowReference.allBarcodes.size < 2 then
       log.warn(
@@ -54,9 +54,9 @@ object CorrelationFileWriter:
     pw.println("\t" + colReference.allIds.mkString("\t"))
 
   private def makeCountsMatrix(
-    counts: Map[String, Map[ColId, Double]],
-    rowReference: Reference,
-    colReference: Reference
+      counts: Map[String, Map[ColId, Double]],
+      rowReference: Reference,
+      colReference: Reference
   ): Array[Array[Double]] =
     val matrix = Array.ofDim[Double](rowReference.allBarcodes.size, colReference.allIds.size)
 

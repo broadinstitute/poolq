@@ -19,11 +19,11 @@ object LogNormalizedCountsWriter:
   type ColId = String
 
   def write(
-    file: Path,
-    counts: Map[String, Map[ColId, Double]],
-    rowReference: Reference,
-    colReference: Reference,
-    dialect: ReportsDialect
+      file: Path,
+      counts: Map[String, Map[ColId, Double]],
+      rowReference: Reference,
+      colReference: Reference,
+      dialect: ReportsDialect
   ): Try[Unit] =
     Using(new PrintWriter(file.toFile)) { pw =>
       val colHeadings = colReference.allIds.mkString("\t")
@@ -41,9 +41,9 @@ object LogNormalizedCountsWriter:
     }
 
   def logNormalizedCounts(
-    hist: ReadOnlyHistogram[(String, String)],
-    rowReference: Reference,
-    colReference: Reference
+      hist: ReadOnlyHistogram[(String, String)],
+      rowReference: Reference,
+      colReference: Reference
   ): Map[String, Map[ColId, Double]] =
     val columnReadCounts: Map[String, Int] = getColumnReadCounts(rowReference, colReference, hist)
 

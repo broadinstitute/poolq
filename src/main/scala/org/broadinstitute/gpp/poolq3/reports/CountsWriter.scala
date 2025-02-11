@@ -18,24 +18,24 @@ import org.broadinstitute.gpp.poolq3.reference.Reference
 object CountsWriter:
 
   def write(
-    countsFile: Path,
-    umiFileDir: Option[Path],
-    hist: ShardedHistogram[String, (String, String)],
-    rowReference: Reference,
-    colReference: Reference,
-    umiBarcodes: Option[BarcodeSet],
-    dialect: ReportsDialect
+      countsFile: Path,
+      umiFileDir: Option[Path],
+      hist: ShardedHistogram[String, (String, String)],
+      rowReference: Reference,
+      colReference: Reference,
+      umiBarcodes: Option[BarcodeSet],
+      dialect: ReportsDialect
   ): Try[Unit] =
     umiBarcodes match
-      case None     => write(countsFile, hist, rowReference, colReference, dialect)
+      case None => write(countsFile, hist, rowReference, colReference, dialect)
       case Some(ub) => writeUmi(countsFile, umiFileDir, hist, rowReference, colReference, ub, dialect)
 
   private[reports] def write(
-    countsFile: Path,
-    hist: ReadOnlyHistogram[(String, String)],
-    rowReference: Reference,
-    colReference: Reference,
-    dialect: ReportsDialect
+      countsFile: Path,
+      hist: ReadOnlyHistogram[(String, String)],
+      rowReference: Reference,
+      colReference: Reference,
+      dialect: ReportsDialect
   ): Try[Unit] =
     Using(new PrintWriter(countsFile.toFile)) { pw =>
       // write headers
@@ -56,13 +56,13 @@ object CountsWriter:
     }
 
   private[reports] def writeUmi(
-    countsFile: Path,
-    umiFileDirOpt: Option[Path],
-    hist: ShardedHistogram[String, (String, String)],
-    rowReference: Reference,
-    colReference: Reference,
-    umiBarcodes: BarcodeSet,
-    dialect: ReportsDialect
+      countsFile: Path,
+      umiFileDirOpt: Option[Path],
+      hist: ShardedHistogram[String, (String, String)],
+      rowReference: Reference,
+      colReference: Reference,
+      umiBarcodes: BarcodeSet,
+      dialect: ReportsDialect
   ): Try[Unit] =
     val parsedFilename = parseFilename(countsFile)
     val umiFileDir = umiFileDirOpt.getOrElse(countsFile.resolveSibling("umi-counts"))

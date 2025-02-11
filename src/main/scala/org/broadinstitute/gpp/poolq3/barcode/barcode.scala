@@ -8,24 +8,18 @@ package org.broadinstitute.gpp.poolq3.barcode
 import java.nio.file.Path
 
 import scala.collection.mutable
+import scala.compiletime.uninitialized
 
-import org.broadinstitute.gpp.poolq3.parser.{
-  CloseableIterable,
-  CloseableIterator,
-  DmuxedIterable,
-  FastqParser,
-  SamParser,
-  TextParser
-}
+import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, CloseableIterator, DmuxedIterable, FastqParser, SamParser, TextParser}
 import org.broadinstitute.gpp.poolq3.types.{BamType, FastqType, Read, ReadsFileType, SamType, TextType}
 import org.broadinstitute.gpp.poolq3.{PoolQInput, ReadsSource}
 
 def barcodeSource(
-  config: PoolQInput,
-  rowBarcodePolicy: BarcodePolicy,
-  revRowBarcodePolicyOpt: Option[BarcodePolicy],
-  colBarcodePolicyOpt: Either[Int, BarcodePolicy],
-  umiBarcodePolicyOpt: Option[BarcodePolicy]
+    config: PoolQInput,
+    rowBarcodePolicy: BarcodePolicy,
+    revRowBarcodePolicyOpt: Option[BarcodePolicy],
+    colBarcodePolicyOpt: Either[Int, BarcodePolicy],
+    umiBarcodePolicyOpt: Option[BarcodePolicy]
 ): CloseableIterable[Barcodes] =
   (config.readsSource, revRowBarcodePolicyOpt, colBarcodePolicyOpt) match
     case (ReadsSource.Split(index, forward), None, Right(colBarcodePolicy)) =>
@@ -72,10 +66,10 @@ def barcodeSource(
 
 def parserFor(file: Path): CloseableIterable[Read] =
   ReadsFileType.fromFilename(file.getFileName.toString) match
-    case Some(FastqType)               => new FastqParser(file)
+    case Some(FastqType) => new FastqParser(file)
     case Some(SamType) | Some(BamType) => new SamParser(file)
-    case Some(TextType)                => new TextParser(file)
-    case None                          => throw new IllegalArgumentException(s"File $file is of an unknown file type")
+    case Some(TextType) => new TextParser(file)
+    case None => throw new IllegalArgumentException(s"File $file is of an unknown file type")
 
 def parserFor(files: List[Path]): CloseableIterable[Read] =
   parserFor[Path, Read](files, p => parserFor(p).iterator)
@@ -87,7 +81,7 @@ private[barcode] def parserFor[A, B](sources: List[A], mkIterator: A => Closeabl
 
       private val queue: mutable.Queue[A] = mutable.Queue.from(sources)
 
-      var current: CloseableIterator[B] = _
+      var current: CloseableIterator[B] = uninitialized
 
       override def hasNext: Boolean =
         var currentHasNext = if current == null then false else current.hasNext

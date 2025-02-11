@@ -28,4 +28,4 @@ private[parser] def skipHeader(br: BufferedReader, re: Regex): Unit =
   val line = br.readLine()
   line match
     case re(_) => br.reset()
-    case _     => // do nothing
+    case _ => // do nothing

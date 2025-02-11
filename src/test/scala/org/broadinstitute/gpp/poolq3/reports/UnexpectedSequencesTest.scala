@@ -20,26 +20,26 @@ import org.broadinstitute.gpp.poolq3.{PoolQ, TestResources}
 
 class UnexpectedSequencesTest extends FunSuite with TestResources:
 
-  private[this] val rowReferenceBarcodes =
+  private val rowReferenceBarcodes =
     List("AAAAAAAAAAAAAAAAAAAA", "AAAAAAAAAAAAAAAAAAAC", "AAAAAAAAAAAAAAAAAAAG", "AAAAAAAAAAAAAAAAAAAT").map(b =>
       ReferenceEntry(b, b)
     )
 
-  private[this] val colReferenceBarcodes = List(
+  private val colReferenceBarcodes = List(
     ReferenceEntry("AAAA", "Eh"),
     ReferenceEntry("AAAT", "Eh"),
     ReferenceEntry("CCCC", "Sea"),
     ReferenceEntry("CCCG", "Sea")
   )
 
-  private[this] val rowReference = VariantReference(rowReferenceBarcodes, identity, includeAmbiguous = false)
-  private[this] val colReference = ExactReference(colReferenceBarcodes, identity, includeAmbiguous = false)
+  private val rowReference = VariantReference(rowReferenceBarcodes, identity, includeAmbiguous = false)
+  private val colReference = ExactReference(colReferenceBarcodes, identity, includeAmbiguous = false)
 
-  private[this] val globalReference =
+  private val globalReference =
     ExactReference(List(ReferenceEntry("GATGTGCAGTGAGTAGCGAG", "Oh, that one")), identity, includeAmbiguous = false)
 
   // these reads should not be included in the unexpected sequence report for reasons noted below
-  private[this] val expectedReads =
+  private val expectedReads =
     List(
       ("AAAAAAAAAAAAAAAAAAAA", "TTTT"), // known row barcode, unknown column barcode
       ("AAAAAAAAAAAAAAAAAAAC", "AAAA"), // known row barcode, known column barcode
@@ -48,7 +48,7 @@ class UnexpectedSequencesTest extends FunSuite with TestResources:
     )
 
   // these reads should be included in the unexpected sequence report for reasons noted below
-  private[this] val unexpectedReads =
+  private val unexpectedReads =
     List(
       ("TTTTTTTTTTTTTTTTTTTT", "AAAA"), // unknown row barcode, known column barcode
       ("GATGTGCAGTGAGTAGCGAG", "CCCG") // unknown row barcode, known column barcode
@@ -154,7 +154,7 @@ class UnexpectedSequencesTest extends FunSuite with TestResources:
   }
 
   private def testIt(underlyingBarcodes: List[(String, String)], unexpectedReadCount: Int, maxMapSize: Int)(implicit
-    loc: Location
+      loc: Location
   ): Unit =
     val barcodes = CloseableIterable.ofList(underlyingBarcodes.map { case (row, col) =>
       Barcodes(Some(FoundBarcode(row.toCharArray, 0)), None, Some(FoundBarcode(col.toCharArray, 0)), None)

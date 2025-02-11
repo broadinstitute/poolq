@@ -16,10 +16,10 @@ final class FastqParser(file: Path) extends CloseableIterable[Read]:
     */
   private[parser] class FastqIterator(is: InputStream) extends CloseableIterator[Read]:
 
-    private[this] val reader = new BufferedReader(new InputStreamReader(is))
-    private[this] var line = reader.readLine()
+    private val reader = new BufferedReader(new InputStreamReader(is))
+    private var line = reader.readLine()
 
-    final private[this] def nextLine(): String =
+    final private def nextLine(): String =
       val ret = line
       line = reader.readLine()
       ret

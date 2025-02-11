@@ -49,13 +49,13 @@ object Reference:
     (Seq[String], Object2ObjectMap[String, String], Object2ObjectMap[String, mutable.LinkedHashSet[String]])
 
   def apply(
-    matcher: String,
-    barcodeProcessor: String => String,
-    includeAmbiguous: Boolean,
-    bs: Seq[ReferenceEntry]
+      matcher: String,
+      barcodeProcessor: String => String,
+      includeAmbiguous: Boolean,
+      bs: Seq[ReferenceEntry]
   ): Reference =
     matcher.toLowerCase match
-      case "exact"    => ExactReference(bs, barcodeProcessor, includeAmbiguous)
+      case "exact" => ExactReference(bs, barcodeProcessor, includeAmbiguous)
       case "mismatch" => VariantReference(bs, barcodeProcessor, includeAmbiguous)
       case _ =>
         throw new IllegalArgumentException(
@@ -96,9 +96,9 @@ object Reference:
   end build
 
   def truncationVariants(
-    barcodes: Seq[String],
-    barcodeProcessor: String => String,
-    includeAmbiguous: Boolean
+      barcodes: Seq[String],
+      barcodeProcessor: String => String,
+      includeAmbiguous: Boolean
   ): Object2ObjectMap[String, List[String]] =
     val map = new Object2ObjectOpenHashMap[String, List[String]]
     map.defaultReturnValue(Nil)

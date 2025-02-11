@@ -37,7 +37,7 @@ object KeyMask:
 
   end apply
 
-  private[this] def create(pattern: String, mergedRanges: Seq[KeyRange]): KeyMask =
+  private def create(pattern: String, mergedRanges: Seq[KeyRange]): KeyMask =
     mergedRanges.length match
       case 1 =>
         val r = mergedRanges.head

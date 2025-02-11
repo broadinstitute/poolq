@@ -16,10 +16,10 @@ import org.log4s.{Logger, getLogger}
 
 final class UnexpectedSequenceTracker(cacheDir: Path, colReference: Reference) extends Closeable:
 
-  private[this] val log: Logger = getLogger
+  private val log: Logger = getLogger
 
   // prep the directory and create file writers
-  private[this] val outputFileWriters: Map[String, BufferedWriter] =
+  private val outputFileWriters: Map[String, BufferedWriter] =
     val _ = Files.createDirectories(cacheDir)
     colReference.allBarcodes.map(barcode => barcode -> newWriterFor(barcode)).toMap
 
@@ -41,7 +41,7 @@ final class UnexpectedSequenceTracker(cacheDir: Path, colReference: Reference) e
       catch case NonFatal(e) => log.error(e)("Error closing file")
     }
 
-  private[this] def newWriterFor(shard: String): BufferedWriter =
+  private def newWriterFor(shard: String): BufferedWriter =
     val name = cacheDir.resolve(nameFor(shard))
     new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(name)))
 
@@ -49,6 +49,6 @@ end UnexpectedSequenceTracker
 
 object UnexpectedSequenceTracker:
 
-  private[this] val fileExtension: String = ".txt"
+  private val fileExtension: String = ".txt"
 
   def nameFor(shard: String) = s"unexpected-$shard$fileExtension"
