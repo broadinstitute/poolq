@@ -1,6 +1,6 @@
 # PoolQ 3.0
 
-Copyright (c) 2024 Genetic Perturbation Platform, The Broad Institute of Harvard and MIT.
+Copyright (c) 2025 Genetic Perturbation Platform, The Broad Institute of Harvard and MIT.
 
 [![Build Status](https://github.com/broadinstitute/poolq/actions/workflows/ci.yml/badge.svg)](https://github.com/broadinstitute/poolq/actions/workflows/ci.yml)
 

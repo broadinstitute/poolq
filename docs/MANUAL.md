@@ -2,7 +2,7 @@
 
 PoolQ is a counter for indexed samples from next-gen sequencing of pooled DNA.
 
-_This documentation covers PoolQ version 3.11.0 (last updated 02/13/2024)._
+_This documentation covers PoolQ version 3.13.0 (last updated 02/11/2025)._
 
 ## Background
 
