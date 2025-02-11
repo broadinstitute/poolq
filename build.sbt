@@ -99,11 +99,11 @@ lazy val headerSettings = List(
 lazy val assemblySettings = List(
   assembly / assemblyJarName := "../bin/poolq3.jar",
   assembly / assemblyMergeStrategy := {
-    case "logback.xml"                                                 => MergeStrategy.first
-    case "logback-test.xml"                                            => MergeStrategy.discard
-    case PathList("module-info.class")                                 => MergeStrategy.discard
+    case "logback.xml" => MergeStrategy.first
+    case "logback-test.xml" => MergeStrategy.discard
+    case PathList("module-info.class") => MergeStrategy.discard
     case PathList("META-INF", "versions", xs @ _, "module-info.class") => MergeStrategy.discard
-    case "module-info.class"                                           => MergeStrategy.first
+    case "module-info.class" => MergeStrategy.first
     case x =>
       val old = (assembly / assemblyMergeStrategy).value
       old(x)

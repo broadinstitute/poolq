@@ -11,4 +11,4 @@ object Dmuxed:
     val regex = s"@.*[^ACGTN]([ACGTN]{$length})$$".r
     _ match
       case regex(barcode) => Some(FoundBarcode(barcode.toCharArray, 0))
-      case _              => None
+      case _ => None

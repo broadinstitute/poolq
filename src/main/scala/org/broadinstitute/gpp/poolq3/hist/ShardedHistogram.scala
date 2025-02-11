@@ -37,7 +37,7 @@ class BasicShardedHistogram[A, B](make: => Histogram[B]) extends ShardedHistogra
 
   override def forShard(shard: Option[A]): Histogram[B] =
     shard match
-      case None    => nullShard
+      case None => nullShard
       case Some(s) => hs.compute(s, (_, h) => if h == null then make else h)
 
   override def increment(shard: Option[A], k: B): Int = forShard(shard).increment(k)

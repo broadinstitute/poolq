@@ -30,9 +30,9 @@ def countsHeaderText(dialect: ReportsDialect, colHeadings: String, nRows: Int, n
 
 /** Returns a map from column ID to the total read count for that column */
 def getColumnReadCounts(
-  rowReference: Reference,
-  colReference: Reference,
-  hist: ReadOnlyHistogram[(String, String)]
+    rowReference: Reference,
+    colReference: Reference,
+    hist: ReadOnlyHistogram[(String, String)]
 ): Map[String, Int] =
   colReference.allIds.map { colId =>
     val readCount =

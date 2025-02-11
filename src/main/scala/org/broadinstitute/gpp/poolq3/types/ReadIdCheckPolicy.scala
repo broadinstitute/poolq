@@ -14,10 +14,10 @@ sealed trait ReadIdCheckPolicy:
 object ReadIdCheckPolicy:
 
   def forName(s: String): ReadIdCheckPolicy = s.toLowerCase() match
-    case "lax"      => ReadIdCheckPolicy.Lax
-    case "strict"   => ReadIdCheckPolicy.Strict
+    case "lax" => ReadIdCheckPolicy.Lax
+    case "strict" => ReadIdCheckPolicy.Strict
     case "illumina" => ReadIdCheckPolicy.Illumina
-    case _          => throw new IllegalArgumentException(s"$s is not a read ID check policy")
+    case _ => throw new IllegalArgumentException(s"$s is not a read ID check policy")
 
   case object Lax extends ReadIdCheckPolicy:
     def check(r1: Read, r2: Read): Unit = ()

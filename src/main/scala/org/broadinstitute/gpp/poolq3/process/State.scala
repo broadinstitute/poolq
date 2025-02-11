@@ -8,10 +8,10 @@ package org.broadinstitute.gpp.poolq3.process
 import org.broadinstitute.gpp.poolq3.hist.{Histogram, ShardedHistogram}
 
 final class State(
-  val known: ShardedHistogram[String, (String, String)],
-  val knownCol: Histogram[String],
-  val unknownCol: Histogram[String],
-  val unknownUmi: Histogram[String]
+    val known: ShardedHistogram[String, (String, String)],
+    val knownCol: Histogram[String],
+    val unknownCol: Histogram[String],
+    val unknownUmi: Histogram[String]
 ):
 
   var reads: Int = 0

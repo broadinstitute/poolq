@@ -6,8 +6,8 @@
 package org.broadinstitute.gpp.poolq3.barcode
 
 final case class Barcodes(
-  row: Option[FoundBarcode],
-  revRow: Option[FoundBarcode],
-  col: Option[FoundBarcode],
-  umi: Option[FoundBarcode]
+    row: Option[FoundBarcode],
+    revRow: Option[FoundBarcode],
+    col: Option[FoundBarcode],
+    umi: Option[FoundBarcode]
 )

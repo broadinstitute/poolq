@@ -22,7 +22,7 @@ object RunInfoWriter:
       val cli =
         settings
           .map {
-            case (arg, "")    => s"  --$arg"
+            case (arg, "") => s"  --$arg"
             case (arg, param) => s"  --$arg $param"
           }
           .mkString(" \\\n")
