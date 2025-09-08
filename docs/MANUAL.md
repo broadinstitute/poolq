@@ -2,7 +2,7 @@
 
 PoolQ is a counter for indexed samples from next-gen sequencing of pooled DNA.
 
-_This documentation covers PoolQ version 3.13.0 (last updated 02/11/2025)._
+_This documentation covers PoolQ version 3.12.1 (last updated 08/08/2025)._
 
 ## Background
 
@@ -215,9 +215,9 @@ sgRNAs, ORFs, or other constructs utilized in a pooled experiment.
 - The columns can be separated by either commas or tabs
 - The file may not include any column headers or any extra columns
 - Barcode sequences must contain only A, T, C or G and semantic delimeters `;`, `-`, `:`
-    - Semantic delimiters are ignored during data processing; they exist for human readability only
-    - For paired-end sequencing PoolQ can optionally infer the length of the forward and reverse
-      barcodes by splitting them on the first occurrence of any semantic delimiter
+  - Semantic delimiters are ignored during data processing; they exist for human readability only
+  - For paired-end sequencing PoolQ can optionally infer the length of the forward and reverse
+    barcodes by splitting them on the first occurrence of any semantic delimiter
 - A barcode ID cannot occur more than once in the file
 - Every barcode in the reference file must have the same length
 - You can have multiple IDs mapping to the same barcode sequence; the counts file will report the
@@ -465,16 +465,16 @@ We currently report:
   barcode
 - The average frequency of unknown column barcode sequences
 - For each column barcode mapped to a condition, we report:
-    - the barcode
-    - the condition
-    - the total number of reads matching the column barcode plus an expected row barcode
-    - the total number of reads matching the column barcode _and_ containing a valid row barcode
-      region (by either containing a search prefix, matching the search template, or the row
-      barcode start index); when run with `--always-count-col-barcodes`, this is simply the total
-      number of reads matching that column barcode
-    - the percent of reads for the column barcode with a valid row barcode region that successfully
-      matched a row barcode in the reference file
-    - the log normalized number of matches
+  - the barcode
+  - the condition
+  - the total number of reads matching the column barcode plus an expected row barcode
+  - the total number of reads matching the column barcode _and_ containing a valid row barcode
+    region (by either containing a search prefix, matching the search template, or the row
+    barcode start index); when run with `--always-count-col-barcodes`, this is simply the total
+    number of reads matching that column barcode
+  - the percent of reads for the column barcode with a valid row barcode region that successfully
+    matched a row barcode in the reference file
+  - the log normalized number of matches
 - For each column barcode not mapped to a condition, we report the barcode and the total number of
   reads
 
@@ -611,7 +611,7 @@ You can run PoolQ from any Windows, Mac, or Linux machine, but it requires some 
 how to launch programs from the command line on your given operating system.
 
 1. Open a terminal window for your operating system
-2. Change directories to the `poolq-3.11.0` directory
+2. Change directories to the `poolq-3.12.1` directory
 
 - On Windows, run:
 
@@ -628,7 +628,7 @@ how to launch programs from the command line on your given operating system.
 If you successfully launched PoolQ, you should see a usage message explaining all of the
 command-line options:
 
-    poolq3 3.11.0
+    poolq3 3.12.1
     Usage: poolq [options]
 
       --row-reference <file>   reference file for row barcodes (i.e., constructs)
@@ -754,5 +754,5 @@ column barcodes.
 
 ## Contact Us
 
-Your feedback of any kind is much appreciated. Please email us at
-gpp-informatics@broadinstitute.org.
+Please contact us via
+[gpp-informatics@broadinstitute.org](https://portals.broadinstitute.org/gppx/portals/broad/contactus).
