@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.12.2
+* Updated documentation
+
 ## 3.12.1
 No user-facing changes
 
