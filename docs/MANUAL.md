@@ -754,5 +754,6 @@ column barcodes.
 
 ## Contact Us
 
-Please contact us via
-[gpp-informatics@broadinstitute.org](https://portals.broadinstitute.org/gppx/portals/broad/contactus).
+To report a problem with PoolQ, please use the
+[GitHub issue tracking system](https://github.com/broadinstitute/poolq/issues). For all other inquiries,
+please contact us via https://portals.broadinstitute.org/gppx/portals/broad/contactus
