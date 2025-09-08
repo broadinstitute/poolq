@@ -22,14 +22,15 @@ To contribute a feature to PoolQ, we recommend you take these steps:
 
 ### Identify a feature
 
-We do not currently have an public-facing issue tracking system for PoolQ. If you believe you have encountered a gap in
-PoolQ's functionality, please consult the PoolQ manual to ensure that no such functionality has already been
-implemented.
+We use the [GitHub issue tracking system](https://github.com/broadinstitute/poolq/issues) to track bugfixes
+and improvements to PoolQ. If you believe you have encountered a bug or gap in PoolQ's functionality, please
+consult issue tracker and check the PoolQ manual to verify the issue or the feature is not covered there.
 
 ### Let us know you are interested
 
-Please contact us at `gpp-informatics@broadinstitute.org` to let us know you are interested in working on a feature.
-We can help vet and shape your idea and offer you an indication of whether the feature would be of general interest.
+You can register your interest in contributing a fix or a feature by creating or commenting on an issue in the
+[GitHub issue tracking system](https://github.com/broadinstitute/poolq/issues). We can help vet and shape your
+idea and offer you an indication of whether the feature would be of general interest.
 
 ### Build PoolQ
 
@@ -48,7 +49,7 @@ Run `make test-all` to compile PoolQ and run its system tests.
 ### Implement the feature
 
 Please be sure to follow best practices in software engineering when implementing your change. The PoolQ code is
-generally focused on striking a balance between safety and performance. Remember that results must be reproducable but
+generally focused on striking a balance between safety and performance. Remember that results must be reproducible but
 also that PoolQ must process very large files and small performance impact can add up if it needs to be called 250
 million times while processing an input data set.
 
