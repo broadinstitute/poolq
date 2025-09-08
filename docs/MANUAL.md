@@ -2,7 +2,7 @@
 
 PoolQ is a counter for indexed samples from next-gen sequencing of pooled DNA.
 
-_This documentation covers PoolQ version 3.12.1 (last updated 08/08/2025)._
+_This documentation covers PoolQ version 3.12.2 (last updated 08/08/2025)._
 
 ## Background
 
@@ -611,7 +611,7 @@ You can run PoolQ from any Windows, Mac, or Linux machine, but it requires some 
 how to launch programs from the command line on your given operating system.
 
 1. Open a terminal window for your operating system
-2. Change directories to the `poolq-3.12.1` directory
+2. Change directories to the `poolq-3.12.2` directory
 
 - On Windows, run:
 
@@ -628,7 +628,7 @@ how to launch programs from the command line on your given operating system.
 If you successfully launched PoolQ, you should see a usage message explaining all of the
 command-line options:
 
-    poolq3 3.12.1
+    poolq3 3.12.2
     Usage: poolq [options]
 
       --row-reference <file>   reference file for row barcodes (i.e., constructs)
