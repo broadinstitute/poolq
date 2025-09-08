@@ -11,19 +11,20 @@ inThisBuild(
 
 lazy val versions = new {
   val betterFiles = "3.9.2"
-  val catsEffect3 = "3.5.7"
+  val catsEffect3 = "3.6.3"
   val cats = "2.13.0"
-  val commonsIo = "2.18.0"
-  val commonsText = "1.13.0"
+  val commonsIo = "2.20.0"
+  val commonsText = "1.14.0"
   val commonsMath3 = "3.6.1"
-  val fastutil = "8.5.15"
-  val fs2 = "3.11.0"
+  val fastutil = "8.5.16"
+  val fs2 = "3.12.2"
   val log4s = "1.10.0"
   val logback = "1.2.13"
-  val munit = "1.1.0"
-  val munitCatsEffect3 = "2.0.0"
+  val munit = "1.1.1"
+  val munitCatsEffect3 = "2.1.0"
+  val munitScalaCheck = "1.1.0"
   val samTools = "3.0.5"
-  val scalaCheck = "1.18.1"
+  val scalaCheck = "1.19.0"
   val scalaCsv = "2.0.0"
   val scalaTest = "3.2.19"
   val scalaTestPlusScalaCheck = "3.2.18.0"
@@ -51,7 +52,7 @@ lazy val libraries = new {
   // test dependency definitions
   val commonsText = "org.apache.commons" % "commons-text" % versions.commonsText
   val munit = "org.scalameta" %% "munit" % versions.munit
-  val munitScalacheck = "org.scalameta" %% "munit-scalacheck" % versions.munit
+  val munitScalacheck = "org.scalameta" %% "munit-scalacheck" % versions.munitScalaCheck
   val munitCatsEffect = "org.typelevel" %% "munit-cats-effect" % versions.munitCatsEffect3
   val scalaTest = "org.scalatest" %% "scalatest" % versions.scalaTest
   val scalaCheck = "org.scalacheck" %% "scalacheck" % versions.scalaCheck
