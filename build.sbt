@@ -2,7 +2,7 @@ val artifactId = "poolq"
 
 inThisBuild(
   List(
-    scalaVersion := "3.6.3",
+    scalaVersion := "3.3.6",
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision,
     versionScheme := Some("early-semver")
