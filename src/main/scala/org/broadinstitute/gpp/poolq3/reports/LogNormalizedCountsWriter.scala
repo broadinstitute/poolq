@@ -45,7 +45,7 @@ object LogNormalizedCountsWriter:
       rowReference: Reference,
       colReference: Reference
   ): Map[String, Map[ColId, Double]] =
-    val columnReadCounts: Map[String, Int] = getColumnReadCounts(rowReference, colReference, hist)
+    val columnReadCounts: Map[String, Long] = getColumnReadCounts(rowReference, colReference, hist)
 
     rowReference.allBarcodes.map { row =>
       val columns = colReference.allIds.map { colId =>
@@ -54,7 +54,7 @@ object LogNormalizedCountsWriter:
             .barcodesForId(colId)
             .map(col => hist.count((row, col)))
             .sum
-        val columnCount = columnReadCounts.getOrElse(colId, 0)
+        val columnCount = columnReadCounts.getOrElse(colId, 0L)
         colId -> logNormalize(coocurrenceCount, columnCount)
       }.toMap
 

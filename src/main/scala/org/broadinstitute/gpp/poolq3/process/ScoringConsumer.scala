@@ -174,7 +174,7 @@ final class ScoringConsumer(
         end if
       case None =>
         // this means we were configured for UMI but we didn't extract a UMI barcode at all
-        state.umiBarcodeNotFound += 1
+        state.umiBarcodeNotFound += 1L
 
   private def updateColumnBarcodeStats(colBc: Seq[MatchedBarcode], col: FoundBarcode): Unit =
     // the if and else if branches aren't really related but they are also mutually exclusive, so if one matches
@@ -186,11 +186,11 @@ final class ScoringConsumer(
   private def updateRowBarcodePositionStats(row: Option[FoundBarcode], revRow: Option[FoundBarcode]): Unit =
     row.foreach(r => state.rowBarcodeStats.update(r.offset0))
     revRow.foreach(r => state.revRowBarcodeStats.update(r.offset0))
-    if row.isEmpty && revRow.isEmpty then state.neitherRowBarcodeFound += 1
+    if row.isEmpty && revRow.isEmpty then state.neitherRowBarcodeFound += 1L
 
-  override def readsProcessed: Int = state.reads
+  override def readsProcessed: Long = state.reads
 
-  override def matchingReads: Int = state.matches
+  override def matchingReads: Long = state.matches
 
   override def matchPercent: Float = state.matchPercent.toFloat
 

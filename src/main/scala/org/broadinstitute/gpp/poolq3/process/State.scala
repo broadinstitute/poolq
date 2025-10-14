@@ -14,13 +14,13 @@ final class State(
     val unknownUmi: Histogram[String]
 ):
 
-  var reads: Int = 0
-  var exactMatches: Int = 0
-  var matches: Int = 0
-  var neitherRowBarcodeFound: Int = 0
-  def rowBarcodeNotFound: Int = rowBarcodeStats.notFound(reads)
-  def revRowBarcodeNotFound: Int = revRowBarcodeStats.notFound(reads)
-  var umiBarcodeNotFound: Int = 0
+  var reads: Long = 0L
+  var exactMatches: Long = 0L
+  var matches: Long = 0L
+  var neitherRowBarcodeFound: Long = 0L
+  def rowBarcodeNotFound: Long = rowBarcodeStats.notFound(reads)
+  def revRowBarcodeNotFound: Long = revRowBarcodeStats.notFound(reads)
+  var umiBarcodeNotFound: Long = 0L
   val rowBarcodeStats: BarcodeStats = new BarcodeStats
   val revRowBarcodeStats: BarcodeStats = new BarcodeStats
 

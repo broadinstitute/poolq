@@ -36,7 +36,7 @@ final class PoolQProcess(
     override def run(): Unit =
       val t0 = System.currentTimeMillis()
 
-      def logProgress(n: Int): Unit =
+      def logProgress(n: Long): Unit =
         val nd = consumer.readsProcessed.toFloat
         val dt = System.currentTimeMillis() - t0
         val avg = nd / dt
@@ -53,7 +53,7 @@ final class PoolQProcess(
           case NonFatal(e) => log.error(e)(s"Error processing read ${consumer.readsProcessed}")
         // update the log periodically
         val n = consumer.readsProcessed
-        if n % reportFrequency == 0 then logProgress(n)
+        if n % reportFrequency == 0L then logProgress(n)
       end while
       logProgress(consumer.readsProcessed)
 

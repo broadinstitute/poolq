@@ -18,13 +18,13 @@ class TupleHistogramTest extends FunSuite with ScalaCheckSuite:
     val _ = h.increment(("AAAA", "TTTT"))
     val _ = h.increment(("AAAA", "TTTT"))
 
-    assertEquals(h.count(("AAAA", "TTTT")), 4)
-    assertEquals(h.count(("AAAA", "TTTC")), 0)
+    assertEquals(h.count(("AAAA", "TTTT")), 4L)
+    assertEquals(h.count(("AAAA", "TTTC")), 0L)
   }
 
   property("track frequencies for arbitrary data") {
     forAll { (data: List[(Char, Char)]) =>
-      val expectedCounts: Map[(Char, Char), Int] = data.groupBy(identity).view.mapValues(_.length).toMap
+      val expectedCounts: Map[(Char, Char), Long] = data.groupBy(identity).view.mapValues(_.length.toLong).toMap
 
       val hist = new TupleHistogram[Char]
       data.foreach(hist.increment)

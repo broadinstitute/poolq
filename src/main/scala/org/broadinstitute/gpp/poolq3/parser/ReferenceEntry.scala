@@ -5,7 +5,7 @@
  */
 package org.broadinstitute.gpp.poolq3.parser
 
-case class ReferenceEntry(referenceBarcode: String, referenceId: String):
+final case class ReferenceEntry(referenceBarcode: String, referenceId: String):
   val dnaBarcode: String = referenceBarcode.replaceAll("[:;-]", "").toUpperCase
   def barcodeLength: Int = dnaBarcode.length
 

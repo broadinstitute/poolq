@@ -25,8 +25,8 @@ class ShardedHistogramTest extends FunSuite with ScalaCheckSuite:
     // make sure the resulting histogram checks out
     assertEquals(h.shards, Set("CCCC", "CCCT"))
     assertEquals(h.keys, Set("AAAA", "TTTT"))
-    assertEquals(h.count("AAAA"), 4)
-    assertEquals(h.forShard(Some("CCCC")).count("AAAA"), 2)
+    assertEquals(h.count("AAAA"), 4L)
+    assertEquals(h.forShard(Some("CCCC")).count("AAAA"), 2L)
     assertEquals(h.keys(None), Set("AAAA"))
     assertEquals(h.keys(Some("CCCC")), Set("AAAA"))
     assertEquals(h.keys(Some("CCCT")), Set("AAAA", "TTTT"))
@@ -42,7 +42,7 @@ class ShardedHistogramTest extends FunSuite with ScalaCheckSuite:
 
       val dataByShard = data.groupMap(t => key(t._1))(_._2)
       val expectedShardedHistogram = dataByShard.map { case (k, vs) =>
-        k -> vs.groupBy(identity).view.mapValues(_.length).toMap
+        k -> vs.groupBy(identity).view.mapValues(_.length.toLong).toMap
       }
       expectedShardedHistogram.foreach { case (shard, expectedHistogramShard) =>
         val actualHistogramShard = actualHistogram.forShard(shard)

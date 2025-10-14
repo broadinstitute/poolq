@@ -18,13 +18,13 @@ class OpenHashMapHistogramTest extends FunSuite with ScalaCheckSuite:
     val _ = h.increment("AAAA")
     val _ = h.increment("AAAA")
 
-    assertEquals(h.count("AAAA"), 4)
-    assertEquals(h.count("CCCC"), 0)
+    assertEquals(h.count("AAAA"), 4L)
+    assertEquals(h.count("CCCC"), 0L)
   }
 
   property("OpenHashMapHistogram should track frequencies for arbitrary data") {
     forAll { (data: List[Int]) =>
-      val expectedCounts: Map[Int, Int] = data.groupBy(identity).view.mapValues(_.length).toMap
+      val expectedCounts: Map[Int, Long] = data.groupBy(identity).view.mapValues(_.length.toLong).toMap
 
       val hist = new OpenHashMapHistogram[Int]
       data.foreach(hist.increment)

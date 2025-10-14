@@ -33,7 +33,7 @@ def getColumnReadCounts(
     rowReference: Reference,
     colReference: Reference,
     hist: ReadOnlyHistogram[(String, String)]
-): Map[String, Int] =
+): Map[String, Long] =
   colReference.allIds.map { colId =>
     val readCount =
       (for

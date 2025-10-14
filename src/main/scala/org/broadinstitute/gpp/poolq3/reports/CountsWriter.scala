@@ -48,7 +48,7 @@ object CountsWriter:
         writeRowIdentifiers(rowReference, rowBc, pw)
 
         // write counts
-        val columns: Seq[Int] = colReference.allIds.map { colId =>
+        val columns: Seq[Long] = colReference.allIds.map { colId =>
           colReference.barcodesForId(colId).map(colBc => hist.count((rowBc, colBc))).sum
         }
         pw.println(columns.mkString("\t"))
