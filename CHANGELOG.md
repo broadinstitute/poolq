@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.13.0
+* Support FASTQ files containing more than 2 billion reads
+
 ## 3.12.2
 * Updated documentation
 
