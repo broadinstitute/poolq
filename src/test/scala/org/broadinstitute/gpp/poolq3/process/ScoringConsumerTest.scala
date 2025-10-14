@@ -26,12 +26,12 @@ class ScoringConsumerTest extends FunSuite:
     consumer.consume(barcodes)
     val state = consumer.state
 
-    assertEquals(state.known.count(("AAAAAAAAAA", "AAA")), 1)
-    assertEquals(state.knownCol.count("AAA"), 1)
-    assertEquals(state.reads, 1)
-    assertEquals(state.exactMatches, 1)
-    assertEquals(state.matches, 1)
-    assertEquals(state.rowBarcodeNotFound, 0)
+    assertEquals(state.known.count(("AAAAAAAAAA", "AAA")), 1L)
+    assertEquals(state.knownCol.count("AAA"), 1L)
+    assertEquals(state.reads, 1L)
+    assertEquals(state.exactMatches, 1L)
+    assertEquals(state.matches, 1L)
+    assertEquals(state.rowBarcodeNotFound, 0L)
     assertEquals(state.rowBarcodeStats.min, 23)
     assertEquals(state.rowBarcodeStats.max, 23)
   }
@@ -47,12 +47,12 @@ class ScoringConsumerTest extends FunSuite:
     consumer.consume(barcodes2)
     val state = consumer.state
 
-    assertEquals(state.known.count(("AAAAAAAAAA", "AAA")), 2)
-    assertEquals(state.knownCol.count("AAA"), 2)
-    assertEquals(state.reads, 2)
-    assertEquals(state.exactMatches, 2)
-    assertEquals(state.matches, 2)
-    assertEquals(state.rowBarcodeNotFound, 0)
+    assertEquals(state.known.count(("AAAAAAAAAA", "AAA")), 2L)
+    assertEquals(state.knownCol.count("AAA"), 2L)
+    assertEquals(state.reads, 2L)
+    assertEquals(state.exactMatches, 2L)
+    assertEquals(state.matches, 2L)
+    assertEquals(state.rowBarcodeNotFound, 0L)
     assertEquals(state.rowBarcodeStats.min, 22)
     assertEquals(state.rowBarcodeStats.max, 23)
   }
@@ -68,13 +68,13 @@ class ScoringConsumerTest extends FunSuite:
     for
       r <- rowReference.allBarcodes
       c <- colReference.allBarcodes
-    do assertEquals(state.known.count((r, c)), 0)
+    do assertEquals(state.known.count((r, c)), 0L)
 
-    assertEquals(state.knownCol.count("AAA"), 1)
-    assertEquals(state.reads, 1)
-    assertEquals(state.exactMatches, 0)
-    assertEquals(state.matches, 0)
-    assertEquals(state.rowBarcodeNotFound, 0)
+    assertEquals(state.knownCol.count("AAA"), 1L)
+    assertEquals(state.reads, 1L)
+    assertEquals(state.exactMatches, 0L)
+    assertEquals(state.matches, 0L)
+    assertEquals(state.rowBarcodeNotFound, 0L)
     assertEquals(state.rowBarcodeStats.min, 23)
     assertEquals(state.rowBarcodeStats.max, 23)
   }
@@ -88,13 +88,13 @@ class ScoringConsumerTest extends FunSuite:
     val state = consumer.state
 
     colReference.allBarcodes.foreach { c =>
-      assertEquals(state.knownCol.count(c), 0)
-      rowReference.allBarcodes.foreach(r => assertEquals(state.known.count((r, c)), 0))
+      assertEquals(state.knownCol.count(c), 0L)
+      rowReference.allBarcodes.foreach(r => assertEquals(state.known.count((r, c)), 0L))
     }
-    assertEquals(state.reads, 1)
-    assertEquals(state.exactMatches, 0)
-    assertEquals(state.matches, 0)
-    assertEquals(state.rowBarcodeNotFound, 0)
+    assertEquals(state.reads, 1L)
+    assertEquals(state.exactMatches, 0L)
+    assertEquals(state.matches, 0L)
+    assertEquals(state.rowBarcodeNotFound, 0L)
     assertEquals(state.rowBarcodeStats.min, 23)
     assertEquals(state.rowBarcodeStats.max, 23)
   }
@@ -110,13 +110,13 @@ class ScoringConsumerTest extends FunSuite:
     for
       r <- rowReference.allBarcodes
       c <- colReference.allBarcodes
-    do assertEquals(state.known.count((r, c)), 0)
+    do assertEquals(state.known.count((r, c)), 0L)
 
-    assertEquals(state.knownCol.count("AAA"), 0)
-    assertEquals(state.reads, 1)
-    assertEquals(state.exactMatches, 0)
-    assertEquals(state.matches, 0)
-    assertEquals(state.rowBarcodeNotFound, 0)
+    assertEquals(state.knownCol.count("AAA"), 0L)
+    assertEquals(state.reads, 1L)
+    assertEquals(state.exactMatches, 0L)
+    assertEquals(state.matches, 0L)
+    assertEquals(state.rowBarcodeNotFound, 0L)
     assertEquals(state.rowBarcodeStats.min, 23)
     assertEquals(state.rowBarcodeStats.max, 23)
   }
@@ -131,13 +131,13 @@ class ScoringConsumerTest extends FunSuite:
     for
       r <- rowReference.allBarcodes
       c <- colReference.allBarcodes
-    do assertEquals(state.known.count((r, c)), 0)
+    do assertEquals(state.known.count((r, c)), 0L)
 
-    assertEquals(state.knownCol.count("AAA"), 0)
-    assertEquals(state.reads, 1)
-    assertEquals(state.exactMatches, 0)
-    assertEquals(state.matches, 0)
-    assertEquals(state.rowBarcodeNotFound, 1)
+    assertEquals(state.knownCol.count("AAA"), 0L)
+    assertEquals(state.reads, 1L)
+    assertEquals(state.exactMatches, 0L)
+    assertEquals(state.matches, 0L)
+    assertEquals(state.rowBarcodeNotFound, 1L)
     assertEquals(state.rowBarcodeStats.min, Int.MaxValue)
     assertEquals(state.rowBarcodeStats.max, -1)
   }
@@ -152,13 +152,13 @@ class ScoringConsumerTest extends FunSuite:
     for
       r <- rowReference.allBarcodes
       c <- colReference.allBarcodes
-    do assertEquals(state.known.count((r, c)), 0)
+    do assertEquals(state.known.count((r, c)), 0L)
 
-    assertEquals(state.knownCol.count("AAA"), 1)
-    assertEquals(state.reads, 1)
-    assertEquals(state.exactMatches, 0)
-    assertEquals(state.matches, 0)
-    assertEquals(state.rowBarcodeNotFound, 1)
+    assertEquals(state.knownCol.count("AAA"), 1L)
+    assertEquals(state.reads, 1L)
+    assertEquals(state.exactMatches, 0L)
+    assertEquals(state.matches, 0L)
+    assertEquals(state.rowBarcodeNotFound, 1L)
     assertEquals(state.rowBarcodeStats.min, Int.MaxValue)
     assertEquals(state.rowBarcodeStats.max, -1)
   }
@@ -173,13 +173,13 @@ class ScoringConsumerTest extends FunSuite:
     for
       r <- rowReference.allBarcodes
       c <- colReference.allBarcodes
-    do assertEquals(state.known.count((r, c)), 0)
+    do assertEquals(state.known.count((r, c)), 0L)
 
-    assertEquals(state.knownCol.count("AAA"), 0)
-    assertEquals(state.reads, 1)
-    assertEquals(state.exactMatches, 0)
-    assertEquals(state.matches, 0)
-    assertEquals(state.rowBarcodeNotFound, 0)
+    assertEquals(state.knownCol.count("AAA"), 0L)
+    assertEquals(state.reads, 1L)
+    assertEquals(state.exactMatches, 0L)
+    assertEquals(state.matches, 0L)
+    assertEquals(state.rowBarcodeNotFound, 0L)
     assertEquals(state.rowBarcodeStats.min, 19)
     assertEquals(state.rowBarcodeStats.max, 19)
   }
@@ -194,13 +194,13 @@ class ScoringConsumerTest extends FunSuite:
     for
       r <- rowReference.allBarcodes
       c <- colReference.allBarcodes
-    do assertEquals(state.known.count((r, c)), 0)
+    do assertEquals(state.known.count((r, c)), 0L)
 
-    assertEquals(state.knownCol.count("AAA"), 0)
-    assertEquals(state.reads, 1)
-    assertEquals(state.exactMatches, 0)
-    assertEquals(state.matches, 0)
-    assertEquals(state.rowBarcodeNotFound, 1)
+    assertEquals(state.knownCol.count("AAA"), 0L)
+    assertEquals(state.reads, 1L)
+    assertEquals(state.exactMatches, 0L)
+    assertEquals(state.matches, 0L)
+    assertEquals(state.rowBarcodeNotFound, 1L)
     assertEquals(state.rowBarcodeStats.min, Int.MaxValue)
     assertEquals(state.rowBarcodeStats.max, -1)
   }
@@ -219,12 +219,12 @@ class ScoringConsumerTest extends FunSuite:
     consumer.consume(barcodes)
     val state = consumer.state
 
-    assertEquals(state.known.count(("AAAAAAAAAA", "AAA")), 1)
-    assertEquals(state.knownCol.count("AAA"), 1)
-    assertEquals(state.reads, 1)
-    assertEquals(state.exactMatches, 1)
-    assertEquals(state.matches, 1)
-    assertEquals(state.rowBarcodeNotFound, 0)
+    assertEquals(state.known.count(("AAAAAAAAAA", "AAA")), 1L)
+    assertEquals(state.knownCol.count("AAA"), 1L)
+    assertEquals(state.reads, 1L)
+    assertEquals(state.exactMatches, 1L)
+    assertEquals(state.matches, 1L)
+    assertEquals(state.rowBarcodeNotFound, 0L)
     assertEquals(state.rowBarcodeStats.min, 23)
     assertEquals(state.rowBarcodeStats.max, 23)
     assertEquals(state.unknownUmi.keys, Set.empty[String])
@@ -246,14 +246,14 @@ class ScoringConsumerTest extends FunSuite:
 
     // we still count it
     val t = ("AAAAAAAAAA", "AAA")
-    assertEquals(state.known.count(t), 1)
+    assertEquals(state.known.count(t), 1L)
     // but it goes in the catch-all shard
-    state.known.shards.foreach(shard => assertEquals(state.known.forShard(Some(shard)).count(t), 0))
-    assertEquals(state.knownCol.count("AAA"), 1)
-    assertEquals(state.reads, 1)
-    assertEquals(state.exactMatches, 1)
-    assertEquals(state.matches, 1)
-    assertEquals(state.rowBarcodeNotFound, 0)
+    state.known.shards.foreach(shard => assertEquals(state.known.forShard(Some(shard)).count(t), 0L))
+    assertEquals(state.knownCol.count("AAA"), 1L)
+    assertEquals(state.reads, 1L)
+    assertEquals(state.exactMatches, 1L)
+    assertEquals(state.matches, 1L)
+    assertEquals(state.rowBarcodeNotFound, 0L)
     assertEquals(state.rowBarcodeStats.min, 23)
     assertEquals(state.rowBarcodeStats.max, 23)
     assertEquals(state.unknownUmi.keys, Set("TTTT"))
@@ -272,16 +272,16 @@ class ScoringConsumerTest extends FunSuite:
     consumer.consume(barcodes)
     val state = consumer.state
 
-    assertEquals(state.known.count(("AAAAAAAAAA", "AAA")), 1)
-    assertEquals(state.knownCol.count("AAA"), 1)
-    assertEquals(state.reads, 1)
-    assertEquals(state.exactMatches, 1)
-    assertEquals(state.matches, 1)
-    assertEquals(state.neitherRowBarcodeFound, 0)
-    assertEquals(state.rowBarcodeNotFound, 0)
+    assertEquals(state.known.count(("AAAAAAAAAA", "AAA")), 1L)
+    assertEquals(state.knownCol.count("AAA"), 1L)
+    assertEquals(state.reads, 1L)
+    assertEquals(state.exactMatches, 1L)
+    assertEquals(state.matches, 1L)
+    assertEquals(state.neitherRowBarcodeFound, 0L)
+    assertEquals(state.rowBarcodeNotFound, 0L)
     assertEquals(state.rowBarcodeStats.min, 23)
     assertEquals(state.rowBarcodeStats.max, 23)
-    assertEquals(state.revRowBarcodeNotFound, 0)
+    assertEquals(state.revRowBarcodeNotFound, 0L)
     assertEquals(state.revRowBarcodeStats.min, 20)
     assertEquals(state.revRowBarcodeStats.max, 20)
   }
@@ -294,17 +294,17 @@ class ScoringConsumerTest extends FunSuite:
     consumer.consume(barcodes)
     val state = consumer.state
 
-    assertEquals(state.known.count(("AAAAAAAAAA", "AAA")), 0)
+    assertEquals(state.known.count(("AAAAAAAAAA", "AAA")), 0L)
     // in XY-compatibility mode this would be 1
-    assertEquals(state.knownCol.count("AAA"), 0)
-    assertEquals(state.reads, 1)
-    assertEquals(state.exactMatches, 0)
-    assertEquals(state.matches, 0)
-    assertEquals(state.neitherRowBarcodeFound, 0)
-    assertEquals(state.rowBarcodeNotFound, 1)
+    assertEquals(state.knownCol.count("AAA"), 0L)
+    assertEquals(state.reads, 1L)
+    assertEquals(state.exactMatches, 0L)
+    assertEquals(state.matches, 0L)
+    assertEquals(state.neitherRowBarcodeFound, 0L)
+    assertEquals(state.rowBarcodeNotFound, 1L)
     assertEquals(state.rowBarcodeStats.min, Int.MaxValue)
     assertEquals(state.rowBarcodeStats.max, -1)
-    assertEquals(state.revRowBarcodeNotFound, 0)
+    assertEquals(state.revRowBarcodeNotFound, 0L)
     assertEquals(state.revRowBarcodeStats.min, 20)
     assertEquals(state.revRowBarcodeStats.max, 20)
   }
@@ -317,17 +317,17 @@ class ScoringConsumerTest extends FunSuite:
     consumer.consume(barcodes)
     val state = consumer.state
 
-    assertEquals(state.known.count(("AAAAAAAAAA", "AAA")), 0)
+    assertEquals(state.known.count(("AAAAAAAAAA", "AAA")), 0L)
     // in XY-compatibility mode this would be 1
-    assertEquals(state.knownCol.count("AAA"), 0)
-    assertEquals(state.reads, 1)
-    assertEquals(state.exactMatches, 0)
-    assertEquals(state.matches, 0)
-    assertEquals(state.neitherRowBarcodeFound, 0)
-    assertEquals(state.rowBarcodeNotFound, 0)
+    assertEquals(state.knownCol.count("AAA"), 0L)
+    assertEquals(state.reads, 1L)
+    assertEquals(state.exactMatches, 0L)
+    assertEquals(state.matches, 0L)
+    assertEquals(state.neitherRowBarcodeFound, 0L)
+    assertEquals(state.rowBarcodeNotFound, 0L)
     assertEquals(state.rowBarcodeStats.min, 8)
     assertEquals(state.rowBarcodeStats.max, 8)
-    assertEquals(state.revRowBarcodeNotFound, 1)
+    assertEquals(state.revRowBarcodeNotFound, 1L)
     assertEquals(state.revRowBarcodeStats.min, Int.MaxValue)
     assertEquals(state.revRowBarcodeStats.max, -1)
   }

@@ -17,9 +17,9 @@ class NoOpConsumer extends Consumer:
   final override def consume(parsedBarcode: Barcodes): Unit =
     reads += 1
 
-  override def readsProcessed: Int = reads
+  override def readsProcessed: Long = reads
 
-  override def matchingReads: Int = 0
+  override def matchingReads: Long = 0
 
   override def matchPercent: Float = 0.0f
 

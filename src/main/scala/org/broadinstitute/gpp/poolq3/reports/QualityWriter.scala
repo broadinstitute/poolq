@@ -105,7 +105,7 @@ object QualityWriter:
       colBarcode: String
   ): Seq[String] =
     val conditions = colReference.idsForBarcode(colBarcode).mkString(",")
-    val matchedRowAndCol: Int =
+    val matchedRowAndCol: Long =
       rowReference.allBarcodes.map(rowBarcode => state.known.count((rowBarcode, colBarcode))).sum
 
     val matchedCol = state.knownCol.count(colBarcode)

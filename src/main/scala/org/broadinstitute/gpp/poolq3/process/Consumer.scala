@@ -17,9 +17,9 @@ trait Consumer extends Closeable:
 
   def consume(parsedBarcode: Barcodes): Unit
 
-  def readsProcessed: Int
+  def readsProcessed: Long
 
-  def matchingReads: Int
+  def matchingReads: Long
 
   def matchPercent: Float
 

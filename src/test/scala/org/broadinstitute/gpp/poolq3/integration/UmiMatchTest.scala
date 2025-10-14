@@ -49,16 +49,16 @@ class UmiMatchTest extends FunSuite:
   private val rowReference = ExactReference(rowReferenceBarcodes, identity, includeAmbiguous = true)
   private val colReference = ExactReference(colReferenceBarcodes, identity, includeAmbiguous = false)
 
-  private val expectedCounts: Map[(Option[String], Option[String], Option[String]), Int] = Map(
-    (None, None, None) -> 2,
-    (brdn01.some, sea1.some, None) -> 1,
-    (brdn01.some, sea1.some, fake.some) -> 3,
-    (brdn01.some, sea2.some, e09.some) -> 9,
-    (brdn02.some, eh1.some, f02.some) -> 11,
-    (brdn03.some, sea1.some, e09.some) -> 6,
-    (brdn04.some, eh2.some, a01.some) -> 8,
-    (brdn06.some, sea2.some, a01.some) -> 13,
-    (brdn07.some, eh1.some, e09.some) -> 5
+  private val expectedCounts: Map[(Option[String], Option[String], Option[String]), Long] = Map(
+    (None, None, None) -> 2L,
+    (brdn01.some, sea1.some, None) -> 1L,
+    (brdn01.some, sea1.some, fake.some) -> 3L,
+    (brdn01.some, sea2.some, e09.some) -> 9L,
+    (brdn02.some, eh1.some, f02.some) -> 11L,
+    (brdn03.some, sea1.some, e09.some) -> 6L,
+    (brdn04.some, eh2.some, a01.some) -> 8L,
+    (brdn06.some, sea2.some, a01.some) -> 13L,
+    (brdn07.some, eh1.some, e09.some) -> 5L
   )
 
   private val barcodes = CloseableIterable.ofList {
@@ -70,7 +70,8 @@ class UmiMatchTest extends FunSuite:
           co.map(c => FoundBarcode(c.toCharArray, 0)),
           uo.map(u => FoundBarcode(u.toCharArray, 24))
         )
-      List.fill(counts)(bcs)
+      // none of the test counts will overflow so `.toInt` is safe
+      List.fill(counts.toInt)(bcs)
     }
     Random.shuffle(l.toList)
   }
@@ -82,8 +83,8 @@ class UmiMatchTest extends FunSuite:
     val ret = PoolQ.runProcess(barcodes, consumer)
     val state = ret.get.state
 
-    assertEquals(state.reads, 58)
-    assertEquals(state.exactMatches, 56)
+    assertEquals(state.reads, 58L)
+    assertEquals(state.exactMatches, 56L)
 
     val hist = state.known
     for

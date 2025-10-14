@@ -16,14 +16,14 @@ trait ShardedHistogram[A, B] extends ReadOnlyHistogram[B]:
 
   def forShard(shard: Option[A]): Histogram[B]
 
-  def increment(shard: Option[A], k: B): Int
+  def increment(shard: Option[A], k: B): Long
 
   def keys(shard: Option[A]): Set[B]
 
   override def keys: Set[B]
 
-  override def count(k: B): Int =
-    var ret = 0
+  override def count(k: B): Long =
+    var ret = 0L
     shards.foreach(s => ret += forShard(Some(s)).count(k))
     ret += forShard(None).count(k)
     ret
@@ -40,7 +40,7 @@ class BasicShardedHistogram[A, B](make: => Histogram[B]) extends ShardedHistogra
       case None => nullShard
       case Some(s) => hs.compute(s, (_, h) => if h == null then make else h)
 
-  override def increment(shard: Option[A], k: B): Int = forShard(shard).increment(k)
+  override def increment(shard: Option[A], k: B): Long = forShard(shard).increment(k)
 
   override def shards: Set[A] = hs.keySet().asScala.toSet
 

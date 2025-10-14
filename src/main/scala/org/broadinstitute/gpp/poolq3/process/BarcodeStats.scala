@@ -10,19 +10,19 @@ class BarcodeStats:
   private var minPos: Int = Int.MaxValue
   private var maxPos: Int = -1
   private var sum: Long = 0L
-  private var found: Int = 0
+  private var found: Long = 0L
 
   def min: Int = minPos
   def max: Int = maxPos
 
-  def notFound(totalReads: Int): Int = totalReads - found
+  def notFound(totalReads: Long): Long = totalReads - found
 
   def avg: Option[Double] =
     if found < 1 then None
     else Some(sum / found.toDouble)
 
   def update(pos: Int): Unit =
-    found += 1
+    found += 1L
     minPos = math.min(minPos, pos)
     maxPos = math.max(maxPos, pos)
     sum += pos

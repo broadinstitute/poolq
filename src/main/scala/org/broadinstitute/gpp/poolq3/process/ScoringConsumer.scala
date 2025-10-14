@@ -188,9 +188,9 @@ final class ScoringConsumer(
     revRow.foreach(r => state.revRowBarcodeStats.update(r.offset0))
     if row.isEmpty && revRow.isEmpty then state.neitherRowBarcodeFound += 1
 
-  override def readsProcessed: Int = state.reads
+  override def readsProcessed: Long = state.reads
 
-  override def matchingReads: Int = state.matches
+  override def matchingReads: Long = state.matches
 
   override def matchPercent: Float = state.matchPercent.toFloat
 

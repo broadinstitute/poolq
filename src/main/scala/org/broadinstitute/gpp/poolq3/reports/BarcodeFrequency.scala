@@ -5,9 +5,9 @@
  */
 package org.broadinstitute.gpp.poolq3.reports
 
-private[reports] case class BarcodeFrequency(bc: String, frequency: Int)
+private[reports] case class BarcodeFrequency(bc: String, frequency: Long)
 
 private[reports] object BarcodeFrequency:
 
   implicit val ord: Ordering[BarcodeFrequency] =
-    Ordering.by[BarcodeFrequency, (Int, String)](b => (-b.frequency, b.bc)).reverse
+    Ordering.by[BarcodeFrequency, (Long, String)](b => (-b.frequency, b.bc)).reverse

@@ -36,27 +36,27 @@ class PairedEndMatchTest extends FunSuite:
   private val rowReference = ExactReference(rowReferenceBarcodes, identity, includeAmbiguous = false)
   private val colReference = ExactReference(colReferenceBarcodes, identity, includeAmbiguous = false)
 
-  private val expectedCounts: Map[(Option[String], Option[String]), Int] = Map(
+  private val expectedCounts: Map[(Option[String], Option[String]), Long] = Map(
     // found nothing
-    (None, None) -> 4,
+    (None, None) -> 4L,
     // found row
-    (Some(r1), None) -> 3,
-    (Some(r3), None) -> 2,
+    (Some(r1), None) -> 3L,
+    (Some(r3), None) -> 2L,
     // found column
-    (None, Some(c2)) -> 6,
+    (None, Some(c2)) -> 6L,
     //  found both
-    (Some(r1), Some(c1)) -> 9,
-    (Some(r1), Some(c2)) -> 6,
-    (Some(r1), Some(c3)) -> 12,
-    (Some(r2), Some(c1)) -> 10,
-    (Some(r2), Some(c2)) -> 2,
-    (Some(r2), Some(c3)) -> 8,
-    (Some(r3), Some(c1)) -> 11,
-    (Some(r3), Some(c2)) -> 7,
-    (Some(r3), Some(c3)) -> 13,
-    (Some(r4), Some(c1)) -> 16,
-    (Some(r4), Some(c2)) -> 3,
-    (Some(r4), Some(c3)) -> 5
+    (Some(r1), Some(c1)) -> 9L,
+    (Some(r1), Some(c2)) -> 6L,
+    (Some(r1), Some(c3)) -> 12L,
+    (Some(r2), Some(c1)) -> 10L,
+    (Some(r2), Some(c2)) -> 2L,
+    (Some(r2), Some(c3)) -> 8L,
+    (Some(r3), Some(c1)) -> 11L,
+    (Some(r3), Some(c2)) -> 7L,
+    (Some(r3), Some(c3)) -> 13L,
+    (Some(r4), Some(c1)) -> 16L,
+    (Some(r4), Some(c2)) -> 3L,
+    (Some(r4), Some(c3)) -> 5L
   )
 
   private val barcodes = CloseableIterable.ofList {
@@ -68,7 +68,8 @@ class PairedEndMatchTest extends FunSuite:
           co.map(c => FoundBarcode(c.toCharArray, 0)),
           None
         )
-      List.fill(counts)(bcs)
+      // none of these test counts will overflow so `.toInt` is safe
+      List.fill(counts.toInt)(bcs)
     }
     Random.shuffle(l.toList)
   }
@@ -80,15 +81,15 @@ class PairedEndMatchTest extends FunSuite:
     val ret = PoolQ.runProcess(barcodes, consumer)
     val state = ret.get.state
 
-    assertEquals(state.reads, 117)
-    assertEquals(state.exactMatches, 102)
+    assertEquals(state.reads, 117L)
+    assertEquals(state.exactMatches, 102L)
 
     val hist = state.known
     for
       row <- rowReference.allBarcodes
       col <- colReference.allBarcodes
       tuple = (Some(row), Some(col))
-      expectedTupleCount = expectedCounts.getOrElse(tuple, 0)
+      expectedTupleCount = expectedCounts.getOrElse(tuple, 0L)
     do assertEquals(hist.forShard(None).count((row, col)), expectedTupleCount)
 
   }
