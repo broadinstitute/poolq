@@ -7,4 +7,4 @@ package org.broadinstitute.gpp.poolq3.types
 
 import org.broadinstitute.gpp.poolq3.process.State
 
-case class PoolQRunSummary(totalReads: Int, matchingReads: Int, matchPercent: Float, state: State)
+final case class PoolQRunSummary(totalReads: Long, matchingReads: Long, matchPercent: Float, state: State)

@@ -7,4 +7,4 @@ package org.broadinstitute.gpp.poolq3.reports
 
 import java.nio.file.Path
 
-case class ParsedFilename(dir: Path, basename: String, extension: Option[String])
+final case class ParsedFilename(dir: Path, basename: String, extension: Option[String])
