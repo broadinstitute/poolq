@@ -2,6 +2,7 @@
 
 ## 3.13.0
 * Support FASTQ files containing more than 2 billion reads
+* Revised barcode policy support for paired-end mode
 
 ## 3.12.2
 * Updated documentation
