@@ -17,15 +17,15 @@ sealed trait BarcodePolicy:
   def find(read: Read): Option[FoundBarcode]
 
 object BarcodePolicy:
-  private val Regex = """^([A-Z]+)(.+)""".r
+  private val Regex = """^([A-Z]+[:@])(.+)""".r
 
   def apply(desc: String, refBarcodeLength: Option[Int], skipShortReads: Boolean): BarcodePolicy =
     desc match
       case Regex(descriptor, rest) =>
         descriptor match
-          case "FIXED" => FixedOffsetPolicy(rest, refBarcodeLength, skipShortReads)
-          case "PREFIX" => KnownPrefixPolicy(rest, refBarcodeLength)
-          case "KEYMASK" | "TEMPLATE" => TemplatePolicy(rest, refBarcodeLength)
+          case "FIXED:" | "FIXED@" => FixedOffsetPolicy(rest, refBarcodeLength, skipShortReads)
+          case "PREFIX:" => KnownPrefixPolicy(rest, refBarcodeLength)
+          case "KEYMASK:" | "TEMPLATE:" => TemplatePolicy(rest, refBarcodeLength)
           case _ =>
             throw new IllegalArgumentException(s"Unrecognized barcode policy: $desc")
       case _ => throw new IllegalArgumentException(s"Unrecognized barcode policy: $desc")
@@ -45,8 +45,8 @@ final case class FixedOffsetPolicy(startPos0: Int, length: Int, skipShortReads: 
 end FixedOffsetPolicy
 
 object FixedOffsetPolicy:
-  private val Regex1: Regex = """^[:@](\d+)$""".r
-  private val Regex2: Regex = """^[:@](\d+):(\d+)$""".r
+  private val Regex1: Regex = """^(\d+)$""".r
+  private val Regex2: Regex = """^(\d+):(\d+)$""".r
 
   def apply(s: String, refBarcodeLength: Option[Int], skipShortReads: Boolean): FixedOffsetPolicy =
     (refBarcodeLength, s) match
@@ -107,8 +107,8 @@ final case class KmpKnownPrefixPolicy(
 end KmpKnownPrefixPolicy
 
 object KnownPrefixPolicy:
-  val Regex1: Regex = """^:([ACGT]+)(?:@(\d+)?(-\d+)?)?:(\d+)$""".r
-  val Regex2: Regex = """^:([ACGT]+)(?:@(\d+)?(-\d+)?)$""".r
+  val Regex1: Regex = """^([ACGT]+)(?:@(\d+)?(-\d+)?)?:(\d+)$""".r
+  val Regex2: Regex = """^([ACGT]+)(?:@(\d+)?(-\d+)?)$""".r
 
   def apply(s: String, refBarcodeLength: Option[Int]): KnownPrefixPolicy =
     (refBarcodeLength, s) match
@@ -130,7 +130,7 @@ sealed trait TemplatePolicy extends BarcodePolicy with Product with Serializable
 
 object TemplatePolicy:
 
-  val Regex1: Regex = """^:([ACGTRYSWKMBDHVNacgtryswkmbdhvn]+)(?:@(\d+)?(-\d+)?)?$""".r
+  val Regex1: Regex = """^([ACGTRYSWKMBDHVNacgtryswkmbdhvn]+)(?:@(\d+)?(-\d+)?)?$""".r
   val Regex2: Regex = """^([acgt]+)(N+)(n+)([acgt]+)(N+)[acgt]*$""".r
 
   def apply(s: String, refBarcodeLength: Option[Int]): TemplatePolicy =
