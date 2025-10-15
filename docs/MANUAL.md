@@ -263,7 +263,16 @@ Barcode policies indicate how PoolQ should locate various types of barcodes in t
 supports 3 basic policies: fixed-location, search prefix, template. Barcode policies may be specified
 to locate row, column, and UMI barcodes.
 
-##### Fixed Location
+Some barcode policies may specify the lengths of barcodes to extract from reads and match against
+reference data. If a length is specified in the barcode policy, the length specified by the barcode
+policy takes precedence over any other information. If a length is not specified, PoolQ will use the
+length of the barcodes in the corresponding reference file.
+
+In certain cases, these lengths must agree exactly. This is the case when doing paired-end sequencing,
+and when using any form of template barcode policy (in this case, the expected barcode length is
+determined by the template).
+
+#### Fixed Location
 
 The fixed-location policy indicates that a barcode exists at a single, known position within the
 read. For a 0-based index `i`, you can specify a fixed strategy by passing `FIXED@i`. So a barcode
@@ -275,7 +284,7 @@ finding a 6-base barcode twelve bases into the read is specified as `FIXED@11:6`
 specify a length, PoolQ will choose the length based on the length of barcodes found in the
 corresponding reference file.
 
-##### Search Prefix
+#### Search Prefix
 
 The search prefix policy is useful when barcodes may occur at different positions within each read,
 assuming the barcode region is always immediately preceded by some known DNA sequence. When
@@ -294,7 +303,7 @@ end of the policy; so the policy for finding a 6-base barcode twelve bases into 
 specified as `PREFIX@11-19:6`. If you do not specify a length, PoolQ will choose the length based on
 the length of barcodes found in the corresponding reference file.
 
-##### Template
+#### Template
 
 The template matching policy is useful when barcodes may occur at different positions from read to
 read, but the barcode can be identified by examining the surrounding context. Template matching also
@@ -328,7 +337,8 @@ matches. To indicate that the template should only be located beginning at the 1
 read, specify `TEMPLATE:caccgNNNNctcnnnNNNNa@11`. To indicate that the prefix must start before the
 20th base of the read, specify `TEMPLATE:caccgNNNNctcnnnNNNNa@-19`. These two parameters may also be
 specified in conjunction: `TEMPLATE:caccgNNNNctcnnnNNNNa@11-19`. Unlike with the fixed-location and
-prefix search policies, you cannot limit the length of the matched barcode.
+prefix search policies, you cannot limit the length of the matched barcode. The length of the
+barcodes in the reference file must match the length of extracted barcode _exactly_.
 
 #### Row Barcode Policy
 
@@ -429,7 +439,8 @@ When processing paired end sequence data, PoolQ will infer the length of the bar
 of the reference file by searching for the first occurrence of a semantic delimiter (`:`, `-`, or
 `;`). For example, if the reference file contains barcodes of the form `CACCG;CCGG`, PoolQ will
 infer that the forward read contains barcodes of length 5, while the reverse read contains barcodes
-of length 4.
+of length 4. If there are multiple semantic delimiters in the reference barcodes, inference is no
+longer possible, and barcode lengths _must_ be specified by the barcode policy.
 
 ## PoolQ Outputs
 
@@ -756,4 +767,4 @@ column barcodes.
 
 To report a problem with PoolQ, please use the
 [GitHub issue tracking system](https://github.com/broadinstitute/poolq/issues). For all other inquiries,
-please contact us via https://portals.broadinstitute.org/gppx/portals/broad/contactus
+please contact us via [https://portals.broadinstitute.org/gppx/portals/broad/contactus](https://portals.broadinstitute.org/gppx/portals/broad/contactus)
