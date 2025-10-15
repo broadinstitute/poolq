@@ -68,6 +68,13 @@ object PoolQ:
         config.skipShortReads
       )
 
+    if config.isPairedEnd then
+      require(
+        rowReferenceData.barcodeLength == rowBarcodeLength,
+        "In paired-end mode, the length of the barcodes in the reference data must be exactly equal to the length of the barcodes " +
+          s"according to the barcode policies. Reference barcodes have length ${rowReferenceData.barcodeLength}, policies require $rowBarcodeLength"
+      )
+
     val colBarcodePolicyOpt =
       config.colBarcodePolicyStr.map(pol => BarcodePolicy(pol, colReferenceData.barcodeLength, config.skipShortReads))
 
