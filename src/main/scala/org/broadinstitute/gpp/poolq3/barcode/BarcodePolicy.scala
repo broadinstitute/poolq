@@ -19,7 +19,7 @@ sealed trait BarcodePolicy:
 object BarcodePolicy:
   private val Regex = """^([A-Z]+)(.+)""".r
 
-  def apply(desc: String, refBarcodeLength: Int, skipShortReads: Boolean): BarcodePolicy =
+  def apply(desc: String, refBarcodeLength: Option[Int], skipShortReads: Boolean): BarcodePolicy =
     desc match
       case Regex(descriptor, rest) =>
         descriptor match
@@ -48,11 +48,11 @@ object FixedOffsetPolicy:
   private val Regex1: Regex = """^[:@](\d+)$""".r
   private val Regex2: Regex = """^[:@](\d+):(\d+)$""".r
 
-  def apply(s: String, refBarcodeLength: Int, skipShortReads: Boolean): FixedOffsetPolicy =
-    s match
-      case Regex1(sp0) =>
-        FixedOffsetPolicy(sp0.toInt, refBarcodeLength, skipShortReads)
-      case Regex2(sp0, len) =>
+  def apply(s: String, refBarcodeLength: Option[Int], skipShortReads: Boolean): FixedOffsetPolicy =
+    (refBarcodeLength, s) match
+      case (Some(len), Regex1(sp0)) =>
+        FixedOffsetPolicy(sp0.toInt, len, skipShortReads)
+      case (_, Regex2(sp0, len)) =>
         FixedOffsetPolicy(sp0.toInt, len.toInt, skipShortReads)
       case _ =>
         throw new IllegalArgumentException(s"Incomprehensible fixed offset barcode policy: $s")
@@ -107,14 +107,19 @@ final case class KmpKnownPrefixPolicy(
 end KmpKnownPrefixPolicy
 
 object KnownPrefixPolicy:
-  val Regex: Regex = """^:([ACGT]+)(?:@(\d+)?(-\d+)?)?(:\d+)?$""".r
+  val Regex1: Regex = """^:([ACGT]+)(?:@(\d+)?(-\d+)?)?:(\d+)$""".r
+  val Regex2: Regex = """^:([ACGT]+)(?:@(\d+)?(-\d+)?)$""".r
 
-  def apply(s: String, refBarcodeLength: Int): KnownPrefixPolicy =
-    s match
-      case Regex(prefix, minStr, maxStr, lengthStr) =>
+  def apply(s: String, refBarcodeLength: Option[Int]): KnownPrefixPolicy =
+    (refBarcodeLength, s) match
+      case (_, Regex1(prefix, minStr, maxStr, lengthStr)) =>
         val min = Option(minStr).map(_.toInt)
         val max = Option(maxStr).map(_.tail.toInt)
-        val length = Option(lengthStr).map(_.tail.toInt).getOrElse(refBarcodeLength)
+        val length = lengthStr.toInt
+        IndexOfKnownPrefixPolicy(prefix, length, min, max)
+      case (Some(length), Regex2(prefix, minStr, maxStr)) =>
+        val min = Option(minStr).map(_.toInt)
+        val max = Option(maxStr).map(_.tail.toInt)
         IndexOfKnownPrefixPolicy(prefix, length, min, max)
       case _ =>
         throw new IllegalArgumentException(s"Incomprehensible known prefix barcode policy: $s")
@@ -128,20 +133,24 @@ object TemplatePolicy:
   val Regex1: Regex = """^:([ACGTRYSWKMBDHVNacgtryswkmbdhvn]+)(?:@(\d+)?(-\d+)?)?$""".r
   val Regex2: Regex = """^([acgt]+)(N+)(n+)([acgt]+)(N+)[acgt]*$""".r
 
-  def apply(s: String, refBarcodeLength: Int): TemplatePolicy =
+  def apply(s: String, refBarcodeLength: Option[Int]): TemplatePolicy =
     s match
       case Regex1(ctx, minStr, maxStr) =>
         ctx match
           case Regex2(p1, b1, gap, p2, b2) =>
-            if (b1.length + b2.length) != refBarcodeLength then
-              throw new IllegalArgumentException(s"$s is not compatible with the provided reference file")
+            refBarcodeLength.foreach { len =>
+              if (b1.length + b2.length) != len then
+                throw new IllegalArgumentException(s"$s is not compatible with the provided reference file")
+            }
             val min = Option(minStr).map(_.toInt)
             val max = Option(maxStr).map(_.tail.toInt)
             SplitBarcodePolicy(p1.toUpperCase, b1.length, gap.length, p2.toUpperCase, b2.length, min, max)
           case _ =>
             val km = KeyMask(ctx)
-            if km.keyLengthInBases != refBarcodeLength then
-              throw new IllegalArgumentException(s"$s is not compatible with the provided reference file")
+            refBarcodeLength.foreach { len =>
+              if km.keyLengthInBases != len then
+                throw new IllegalArgumentException(s"$s is not compatible with the provided reference file")
+            }
             val min = Option(minStr).map(_.toInt)
             val max = Option(maxStr).map(_.tail.toInt)
             GeneralTemplatePolicy(km, min, max)
