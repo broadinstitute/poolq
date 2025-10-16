@@ -12,7 +12,7 @@ import org.broadinstitute.gpp.poolq3.types.Read
 
 class DmuxedBarcodeSourceTest extends FunSuite:
 
-  private val rowPolicy = BarcodePolicy("FIXED@0", 10, skipShortReads = true)
+  private val rowPolicy = BarcodePolicy("FIXED@0", 10.some, skipShortReads = true)
 
   def fb(s: String) = Barcodes(FoundBarcode(s.toCharArray, 0).some, None, None, None)
 

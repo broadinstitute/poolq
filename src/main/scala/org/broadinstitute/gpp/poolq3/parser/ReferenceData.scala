@@ -23,7 +23,7 @@ class ReferenceData(val mappings: Seq[ReferenceEntry]):
 
   def barcodeLength: Int = mappings.head.barcodeLength
 
-  def barcodeLengths: (Int, Int) = mappings.head.barcodeLengths
+  lazy val barcodeLengths: Option[(Int, Int)] = mappings.head.barcodeLengths
 
   def forColumnBarcodes(dialect: ReportsDialect): ReferenceData =
     val columnBarcodeMappings = mappings.map { m =>

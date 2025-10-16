@@ -12,8 +12,8 @@ import org.broadinstitute.gpp.poolq3.types.{Read, ReadIdCheckPolicy}
 
 class DmuxedPairedEndBarcodeSourceTest extends FunSuite:
 
-  private val rowPolicy = BarcodePolicy("FIXED@0", 4, skipShortReads = true)
-  private val revRowPolicy = BarcodePolicy("FIXED@0", 3, skipShortReads = true)
+  private val rowPolicy = BarcodePolicy("FIXED@0", 4.some, skipShortReads = true)
+  private val revRowPolicy = BarcodePolicy("FIXED@0", 3.some, skipShortReads = true)
 
   def fb(r1: String, r2: String) =
     Barcodes(FoundBarcode(r1.toCharArray, 0).some, FoundBarcode(r2.toCharArray, 0).some, None, None)

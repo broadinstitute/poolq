@@ -68,13 +68,22 @@ object PoolQ:
         config.skipShortReads
       )
 
+    if config.isPairedEnd then
+      require(
+        rowReferenceData.barcodeLength == rowBarcodeLength,
+        "In paired-end mode, the length of the barcodes in the reference data must be exactly equal to the length of the barcodes " +
+          s"according to the barcode policies. Reference barcodes have length ${rowReferenceData.barcodeLength}, policies require $rowBarcodeLength"
+      )
+
     val colBarcodePolicyOpt =
-      config.colBarcodePolicyStr.map(pol => BarcodePolicy(pol, colReferenceData.barcodeLength, config.skipShortReads))
+      config.colBarcodePolicyStr.map(pol =>
+        BarcodePolicy(pol, colReferenceData.barcodeLength.some, config.skipShortReads)
+      )
 
     val umiInfo = (config.input.umiReference, config.umiBarcodePolicyStr).mapN { (r, p) =>
       log.info("Reading UMI reference data")
       val ref = BarcodeSet(r)
-      val pol = BarcodePolicy(p, ref.barcodeLength, skipShortReads = false)
+      val pol = BarcodePolicy(p, ref.barcodeLength.some, skipShortReads = false)
       (ref, pol)
     }
 
@@ -220,13 +229,17 @@ object PoolQ:
   ): (BarcodePolicy, Option[BarcodePolicy], Int) =
     (reverseRowBarcodePolicyStr, reverseRowReads)
       .mapN { (revPolicy, _) =>
-        val (forwardRowBcLength, revRowBcLength) = rowReferenceData.barcodeLengths
-        val rowBarcodePolicy = BarcodePolicy(rowBarcodePolicyStr, forwardRowBcLength, skipShortReads)
-        val revRowBarcodePolicy = BarcodePolicy(revPolicy, revRowBcLength, skipShortReads)
+        // attempt to determine the length of the read1 and read2 barcodes by examining the reference file
+        val (forwardRowBcLengthOpt, revRowBcLengthOpt) = rowReferenceData.barcodeLengths.unzip
+
+        // parse the policy strings
+        val rowBarcodePolicy = BarcodePolicy(rowBarcodePolicyStr, forwardRowBcLengthOpt, skipShortReads)
+        val revRowBarcodePolicy = BarcodePolicy(revPolicy, revRowBcLengthOpt, skipShortReads)
+
         (rowBarcodePolicy, Some(revRowBarcodePolicy), rowBarcodePolicy.length + revRowBarcodePolicy.length)
       }
       .getOrElse {
-        val rowBarcodePolicy = BarcodePolicy(rowBarcodePolicyStr, rowReferenceData.barcodeLength, skipShortReads)
+        val rowBarcodePolicy = BarcodePolicy(rowBarcodePolicyStr, rowReferenceData.barcodeLength.some, skipShortReads)
         (rowBarcodePolicy, None, rowBarcodePolicy.length)
       }
 
