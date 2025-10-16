@@ -17,11 +17,12 @@ sealed trait BarcodePolicy:
   def find(read: Read): Option[FoundBarcode]
 
 object BarcodePolicy:
-  private val Regex = """^([A-Z]+[:@])(.+)""".r
+  // matches a non-empty string of uppercase letters followed by either : or @ and then more text
+  private val PolicyTypeRe = """^([A-Z]+[:@])(.+)""".r
 
   def apply(desc: String, refBarcodeLength: Option[Int], skipShortReads: Boolean): BarcodePolicy =
     desc match
-      case Regex(descriptor, rest) =>
+      case PolicyTypeRe(descriptor, rest) =>
         descriptor match
           case "FIXED:" | "FIXED@" => FixedOffsetPolicy(rest, refBarcodeLength, skipShortReads)
           case "PREFIX:" => KnownPrefixPolicy(rest, refBarcodeLength)
@@ -45,14 +46,16 @@ final case class FixedOffsetPolicy(startPos0: Int, length: Int, skipShortReads: 
 end FixedOffsetPolicy
 
 object FixedOffsetPolicy:
-  private val Regex1: Regex = """^(\d+)$""".r
-  private val Regex2: Regex = """^(\d+):(\d+)$""".r
+  // matches a single non-empty numeric string (start offset)
+  private val FixedStartRe: Regex = """^(\d+)$""".r
+  // matches two non-empty numeric strings separated by a colon (start offset, length)
+  private val FixedStartWithLengthRe: Regex = """^(\d+):(\d+)$""".r
 
   def apply(s: String, refBarcodeLength: Option[Int], skipShortReads: Boolean): FixedOffsetPolicy =
     (refBarcodeLength, s) match
-      case (Some(len), Regex1(sp0)) =>
+      case (Some(len), FixedStartRe(sp0)) =>
         FixedOffsetPolicy(sp0.toInt, len, skipShortReads)
-      case (_, Regex2(sp0, len)) =>
+      case (_, FixedStartWithLengthRe(sp0, len)) =>
         FixedOffsetPolicy(sp0.toInt, len.toInt, skipShortReads)
       case _ =>
         throw new IllegalArgumentException(s"Incomprehensible fixed offset barcode policy: $s")
@@ -107,17 +110,21 @@ final case class KmpKnownPrefixPolicy(
 end KmpKnownPrefixPolicy
 
 object KnownPrefixPolicy:
-  val Regex1: Regex = """^([ACGT]+)(?:@(\d+)?(-\d+)?)?:(\d+)$""".r
-  val Regex2: Regex = """^([ACGT]+)(?:@(\d+)?(-\d+)?)$""".r
+  // matches a DNA prefix followed by a colon, then a numerical search range (1 number or 2 numbers separated by a dash)
+  // followed by an optional colon a length
+  val PrefixRangeLengthRe: Regex = """^([ACGT]+)(?:@(\d+)?(-\d+)?)?:(\d+)$""".r
+
+  // matches a DNA prefix followed by a colon, then a numerical search range (1 number or 2 numbers separated by a dash)
+  val PrefixRangeRe: Regex = """^([ACGT]+)(?:@(\d+)?(-\d+)?)$""".r
 
   def apply(s: String, refBarcodeLength: Option[Int]): KnownPrefixPolicy =
     (refBarcodeLength, s) match
-      case (_, Regex1(prefix, minStr, maxStr, lengthStr)) =>
+      case (_, PrefixRangeLengthRe(prefix, minStr, maxStr, lengthStr)) =>
         val min = Option(minStr).map(_.toInt)
         val max = Option(maxStr).map(_.tail.toInt)
         val length = lengthStr.toInt
         IndexOfKnownPrefixPolicy(prefix, length, min, max)
-      case (Some(length), Regex2(prefix, minStr, maxStr)) =>
+      case (Some(length), PrefixRangeRe(prefix, minStr, maxStr)) =>
         val min = Option(minStr).map(_.toInt)
         val max = Option(maxStr).map(_.tail.toInt)
         IndexOfKnownPrefixPolicy(prefix, length, min, max)
@@ -129,15 +136,19 @@ end KnownPrefixPolicy
 sealed trait TemplatePolicy extends BarcodePolicy with Product with Serializable
 
 object TemplatePolicy:
+  // Matches a DNA template followed by an optional colon and a numerical search range (1 number or 2 numbers separated by a dash)
+  val TemplateRangeRe: Regex = """^([ACGTRYSWKMBDHVNacgtryswkmbdhvn]+)(?:@(\d+)?(-\d+)?)?$""".r
 
-  val Regex1: Regex = """^([ACGTRYSWKMBDHVNacgtryswkmbdhvn]+)(?:@(\d+)?(-\d+)?)?$""".r
-  val Regex2: Regex = """^([acgt]+)(N+)(n+)([acgt]+)(N+)[acgt]*$""".r
+  // Further refines the DNA template match to determine if this template has 2 runs of captured sequence, a common special-case
+  // pattern that can be handled by an optimized template matching policy implementation
+  // This regex is applied specifically to the keymask template extracted from the first capturing group of the above regex
+  val SplitBarcodeRe: Regex = """^([acgt]+)(N+)(n+)([acgt]+)(N+)[acgt]*$""".r
 
   def apply(s: String, refBarcodeLength: Option[Int]): TemplatePolicy =
     s match
-      case Regex1(ctx, minStr, maxStr) =>
+      case TemplateRangeRe(ctx, minStr, maxStr) =>
         ctx match
-          case Regex2(p1, b1, gap, p2, b2) =>
+          case SplitBarcodeRe(p1, b1, gap, p2, b2) =>
             refBarcodeLength.foreach { len =>
               if (b1.length + b2.length) != len then
                 throw new IllegalArgumentException(s"$s is not compatible with the provided reference file")
