@@ -95,8 +95,12 @@ class UnexpectedSequencesTest extends FunSuite with TestResources:
     val barcodes = CloseableIterable.ofList(
       List(
         Barcodes(
-          Some(FoundBarcode("AAAAAAAAAA".toCharArray, 0)), Some(FoundBarcode("CCCCCCCCCC".toCharArray, 0)), Some(FoundBarcode("CCCG".toCharArray, 0)), None)
+          Some(FoundBarcode("AAAAAAAAAA".toCharArray, 0)),
+          Some(FoundBarcode("CCCCCCCCCC".toCharArray, 0)),
+          Some(FoundBarcode("CCCG".toCharArray, 0)),
+          None
         )
+      )
     )
 
     val tmpPath = Files.createTempDirectory("unexpected-sequences-test")
