@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.13.1
+
+### Bugfixes
+
+* For paired-end mode, in the unexpected sequence report, report the combined read1 and read2 barcodes
+
 ## 3.13.0
 
 ### Improvements
