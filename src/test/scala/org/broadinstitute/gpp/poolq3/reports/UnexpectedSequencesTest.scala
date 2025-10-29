@@ -91,6 +91,45 @@ class UnexpectedSequencesTest extends FunSuite with TestResources:
 
   }
 
+  test("PoolQ should report combined row barcodes in paired-end mode") {
+    val barcodes = CloseableIterable.ofList(
+      List(
+        Barcodes(
+          Some(FoundBarcode("AAAAAAAAAA".toCharArray, 0)), Some(FoundBarcode("CCCCCCCCCC".toCharArray, 0)), Some(FoundBarcode("CCCG".toCharArray, 0)), None)
+        )
+    )
+
+    val tmpPath = Files.createTempDirectory("unexpected-sequences-test")
+    try
+      val outputFile = tmpPath.resolve("unexpected-sequences.txt")
+      val cachePath = tmpPath.resolve("cache")
+      val ust = new UnexpectedSequenceTracker(cachePath, colReference)
+      val consumer =
+        new ScoringConsumer(rowReference, colReference, countAmbiguous = true, false, None, Some(ust), false)
+
+      // run PoolQ and write the file
+      val _ = PoolQ.runProcess(barcodes, consumer).get
+
+      UnexpectedSequenceWriter
+        .write(outputFile, cachePath, 100, colReference, Some(globalReference), 100)
+        .get
+
+      val expected =
+        s"""Sequence\tTotal\tAAAA\tAAAT\tCCCC\tCCCG\tPotential IDs
+           |AAAAAAAAAACCCCCCCCCC\t1\t0\t0\t0\t1\t
+           |""".stripMargin
+
+      Using.resource(Source.fromFile(outputFile.toFile)) { contents =>
+        // now check the contents
+        val actual = contents.mkString
+        assertEquals(actual, expected)
+      }
+    finally
+      val _ = tmpPath.toFile.toScala.delete()
+
+    end try
+  }
+
   test("read unexpected sequence cache") {
     val cachePath = resourcePath("unexpected-sequences")
     val outputFile = Files.createTempFile("unexpected", ".txt")
