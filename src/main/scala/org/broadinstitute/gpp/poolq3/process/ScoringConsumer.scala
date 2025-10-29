@@ -119,8 +119,8 @@ final class ScoringConsumer(
         // if we are tracking unexpected sequences and we matched the column barcode to the reference data but didn't
         // match the row barcode to the reference data, and the row barcode doesn't have an N in it, then queue the
         // row barcode for inclusion in the unexpected sequence report
-        if unexpectedSequenceTrackerOpt.isDefined && colBc.nonEmpty && rowBc.isEmpty && !containsN(parsedRow.barcode)
-        then unexpectedSequenceQueue.put((parsedRow.barcode, parsedCol.barcode))
+        if unexpectedSequenceTrackerOpt.isDefined && colBc.nonEmpty && rowBc.isEmpty && !containsN(combinedBarcode)
+        then unexpectedSequenceQueue.put((combinedBarcode, parsedCol.barcode))
 
       case (None, r, None) =>
         updateRowBarcodePositionStats(None, r)
