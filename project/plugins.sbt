@@ -1,6 +1,6 @@
 addSbtPlugin("ch.epfl.scala" % "sbt-missinglink" % "0.3.6")
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.4")
-addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.5")
+addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.6")
 addSbtPlugin("com.codecommit" % "sbt-github-packages" % "0.5.3")
 addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "1.2.0")
 addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.13.1")
