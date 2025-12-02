@@ -126,7 +126,12 @@ object UnexpectedSequenceWriter:
       }
 
       // find the most popular N row barcodes
-      val mostCommonRowBarcodesRanked = allRowBarcodeCounts.toVector.sortBy(-_._2).take(nSequencesToReport).map(_._1)
+      val stringOrd: Ordering[String] = Ordering[String]
+      val mostCommonRowBarcodesRanked =
+        // make an ordering that prioritizes high numbers and lexicographically earlier barcodes
+        given Ordering[String] = stringOrd.reverse
+        topNBy(allRowBarcodeCounts, nSequencesToReport, (x, y) => (y, x), Ordering[(Int, String)]).map(_._2)
+
       val mostCommonRowBarcodes = mostCommonRowBarcodesRanked.toSet
 
       // filter out everything else and convert to an immutable map
