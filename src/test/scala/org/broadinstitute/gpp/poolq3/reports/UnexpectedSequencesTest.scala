@@ -235,4 +235,24 @@ class UnexpectedSequencesTest extends FunSuite with TestResources:
 
   end testIt
 
+  test("topNBy") {
+    val counts: Map[String, Int] =
+      Map(
+        "ACA" -> 983,
+        "GTC" -> 839,
+        "TCA" -> 392,
+        "ACT" -> 389,
+        "GAC" -> 293,
+        "TAG" -> 180,
+        "AAA" -> 100,
+        "AGT" -> 93,
+        "CCA" -> 29,
+        "GTA" -> 2
+      )
+    assertEquals(
+      UnexpectedSequenceWriter.topNBy(counts, 4, (x, y) => (y, x), Ordering[(Int, String)]),
+      Vector("ACA" -> 983, "GTC" -> 839, "TCA" -> 392, "ACT" -> 389).map(_.swap)
+    )
+  }
+
 end UnexpectedSequencesTest

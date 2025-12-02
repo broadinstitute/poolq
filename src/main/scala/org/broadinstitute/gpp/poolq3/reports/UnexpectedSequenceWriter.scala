@@ -144,6 +144,20 @@ object UnexpectedSequenceWriter:
 
   end loadCache
 
+  private[reports] def topNBy[A, B](xs: Iterable[A], n: Int, f: A => B, ord: Ordering[B]): Vector[B] =
+    given Ordering[B] = ord.reverse
+    val pq: mutable.PriorityQueue[B] = new mutable.PriorityQueue
+    xs.foreach { x =>
+      pq.addOne(f(x))
+      if pq.size > n then
+        val _ = pq.dequeue()
+    }
+    val ret: Vector[B] = pq.toVector
+    assert(ret.size <= n)
+    ret.reverse
+
+  end topNBy
+
   private[reports] def printUnexpectedCounts(
       colReference: Reference,
       globalReferenceOpt: Option[Reference],
