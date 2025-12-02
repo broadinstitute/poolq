@@ -2,7 +2,7 @@
 
 PoolQ is a counter for indexed samples from next-gen sequencing of pooled DNA.
 
-_This documentation covers PoolQ version 3.13.3 (last updated 10/14/2025)._
+_This documentation covers PoolQ version 3.13.2 (last updated 12/2/2025)._
 
 ## Background
 
@@ -571,7 +571,7 @@ PoolQ you will need a Java 11 JDK. You can download an appropriate JRE or JDK fr
 You can download PoolQ from an as yet undetermined location. The file you download is a ZIP file
 that you will need to unzip. In most cases, this is as simple as right-clicking on the zip file, and
 selecting something like "extract contents" from the popup menu. This will create a new folder on
-your computer named `poolq-3.13.0`, with the following contents:
+your computer named `poolq-3.13.2`, with the following contents:
 
 - `poolq3.jar`
 - `poolq3.bat`
@@ -622,7 +622,7 @@ You can run PoolQ from any Windows, Mac, or Linux machine, but it requires some 
 how to launch programs from the command line on your given operating system.
 
 1. Open a terminal window for your operating system
-2. Change directories to the `poolq-3.13.0` directory
+2. Change directories to the `poolq-3.13.2` directory
 
 - On Windows, run:
 
@@ -639,7 +639,7 @@ how to launch programs from the command line on your given operating system.
 If you successfully launched PoolQ, you should see a usage message explaining all of the
 command-line options:
 
-    poolq3 3.13.0
+    poolq3 3.13.2
     Usage: poolq [options]
 
       --row-reference <file>   reference file for row barcodes (i.e., constructs)
