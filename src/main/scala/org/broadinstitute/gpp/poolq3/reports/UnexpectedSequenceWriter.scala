@@ -16,8 +16,6 @@ import scala.util.{Try, Using}
 import org.broadinstitute.gpp.poolq3.process.UnexpectedSequenceTracker.nameFor
 import org.broadinstitute.gpp.poolq3.reference.Reference
 import org.log4s.{Logger, getLogger}
-import scala.collection.mutable.HashMap
-import scala.collection.mutable.Queue
 
 object UnexpectedSequenceWriter:
 
@@ -83,7 +81,7 @@ object UnexpectedSequenceWriter:
     val rowColBarcodeCounts = new mutable.HashMap[String, mutable.Map[String, Int]]()
 
     // create & populate the list of readers
-    val readers: Queue[CachedBarcodes] = mutable.Queue()
+    val readers: mutable.Queue[CachedBarcodes] = mutable.Queue()
     try
       colReference.allBarcodes.foreach { colBc =>
         val file = cacheDir.resolve(nameFor(colBc))
