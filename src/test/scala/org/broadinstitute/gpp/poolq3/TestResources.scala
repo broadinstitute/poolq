@@ -10,12 +10,12 @@ import java.nio.file.{Path, Paths}
 trait TestResources:
 
   def resourcePath(clazz: Class[?], name: String): Path =
-    val r = clazz.getResource(name)
+    val r = clazz.getResource(name).toURI()
     require(r != null, s"Can't find resource at path $name for ${getClass.getName}")
     Paths.get(r.getPath)
 
   def resourcePath(name: String): Path =
-    val r = this.getClass.getResource(name)
+    val r = this.getClass.getResource(name).toURI()
     require(r != null, s"Can't find resource at path $name for ${getClass.getName}")
     Paths.get(r.getPath)
 
