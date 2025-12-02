@@ -5,6 +5,8 @@
  */
 package org.broadinstitute.gpp.poolq3.process
 
+import java.text.NumberFormat
+import java.util.Locale
 import java.util.concurrent.{ArrayBlockingQueue, TimeUnit}
 
 import scala.util.control.NonFatal
@@ -27,6 +29,8 @@ final class PoolQProcess(
 
   private val log: Logger = getLogger
 
+  private val nf: NumberFormat = NumberFormat.getInstance(Locale.getDefault())
+
   private val queue: ArrayBlockingQueue[Barcodes] = new ArrayBlockingQueue(queueSize)
 
   @volatile private var done = false
@@ -41,14 +45,17 @@ final class PoolQProcess(
         val dt = System.currentTimeMillis() - t0
         val avg = nd / dt
         val pct = consumer.matchPercent
-        log.info(s"Processed $n reads in $dt ms ($avg reads/ms). Match percent: $pct; queue size: ${queue.size()}")
+        log.info(
+          s"Processed ${nf.format(n)} reads in $dt ms ($avg reads/ms). Match percent: $pct; queue size: ${queue.size()}"
+        )
+      end logProgress
 
       while !done || !queue.isEmpty do // as long as we're not done OR there is still work in the queue
         try Option(queue.poll(100, TimeUnit.MILLISECONDS)).foreach(next => consumer.consume(next))
         catch
           case _: InterruptedException =>
             log.warn(
-              s"Interrupted. Done = $done Processed ${consumer.readsProcessed} reads; queue has ${queue.size()} remaining"
+              s"Interrupted. Done = $done Processed ${nf.format(consumer.readsProcessed)} reads; queue has ${queue.size()} remaining"
             )
           case NonFatal(e) => log.error(e)(s"Error processing read ${consumer.readsProcessed}")
         // update the log periodically
