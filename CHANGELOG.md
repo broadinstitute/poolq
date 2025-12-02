@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.13.2
+
+### Improvements
+
+* Reduce memory overhead for the unexpected sequence
+* In the logs, report read counts using the default locale for formatting
+
 ## 3.13.1
 
 ### Bugfixes
