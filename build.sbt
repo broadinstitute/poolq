@@ -29,7 +29,7 @@ lazy val versions = new {
   val scalaTest = "3.2.19"
   val scalaTestPlusScalaCheck = "3.2.18.0"
   val scopt = "4.1.0"
-  val slf4j = "1.7.36"
+  val slf4j = "2.0.17"
 }
 
 lazy val libraries = new {
