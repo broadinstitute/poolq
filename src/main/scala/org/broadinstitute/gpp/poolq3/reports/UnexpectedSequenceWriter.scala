@@ -108,12 +108,11 @@ object UnexpectedSequenceWriter:
       // at this point, we either exhausted the readers or we filled the map; go through the remaining data
       // and tally things up, but don't add new keys to the outer map
       readers.foreach { rdr =>
-        val colBc = rdr.colBc
         rdr.foreach { rowBc =>
           // now, we only update if there was an existing entry in `rowColBarcodeCounts` because it means it's
           // in the set of things we're keeping track of
           rowColBarcodeCounts.get(rowBc).foreach { colBarcodeMap =>
-            val _ = colBarcodeMap.updateWith(colBc) {
+            val _ = colBarcodeMap.updateWith(rdr.colBc) {
               case None => Some(1)
               case Some(c) => Some(c + 1)
             }
