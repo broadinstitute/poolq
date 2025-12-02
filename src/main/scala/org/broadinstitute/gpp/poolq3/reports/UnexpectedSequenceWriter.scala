@@ -16,6 +16,8 @@ import scala.util.{Try, Using}
 import org.broadinstitute.gpp.poolq3.process.UnexpectedSequenceTracker.nameFor
 import org.broadinstitute.gpp.poolq3.reference.Reference
 import org.log4s.{Logger, getLogger}
+import scala.collection.mutable.HashMap
+import scala.collection.mutable.Queue
 
 object UnexpectedSequenceWriter:
 
@@ -79,10 +81,9 @@ object UnexpectedSequenceWriter:
       maxMapSize: Int
   ): (Map[String, Map[String, Int]], Vector[String]) =
     val rowColBarcodeCounts = new mutable.HashMap[String, mutable.Map[String, Int]]()
-    val allRowBarcodeCounts = new mutable.HashMap[String, Int]()
 
     // create & populate the list of readers
-    val readers = mutable.Queue[CachedBarcodes]()
+    val readers: Queue[CachedBarcodes] = mutable.Queue()
     try
       colReference.allBarcodes.foreach { colBc =>
         val file = cacheDir.resolve(nameFor(colBc))
@@ -100,10 +101,6 @@ object UnexpectedSequenceWriter:
           case None => Some(1)
           case Some(c) => Some(c + 1)
         }
-        val _ = allRowBarcodeCounts.updateWith(rowBc) {
-          case None => Some(1)
-          case Some(c) => Some(c + 1)
-        }
       end while
       // at this point, we either exhausted the readers or we filled the map; go through the remaining data
       // and tally things up, but don't add new keys to the outer map
@@ -113,10 +110,6 @@ object UnexpectedSequenceWriter:
           // in the set of things we're keeping track of
           rowColBarcodeCounts.get(rowBc).foreach { colBarcodeMap =>
             val _ = colBarcodeMap.updateWith(rdr.colBc) {
-              case None => Some(1)
-              case Some(c) => Some(c + 1)
-            }
-            val _ = allRowBarcodeCounts.updateWith(rowBc) {
               case None => Some(1)
               case Some(c) => Some(c + 1)
             }
@@ -130,7 +123,13 @@ object UnexpectedSequenceWriter:
       val mostCommonRowBarcodesRanked =
         // make an ordering that prioritizes high numbers and lexicographically earlier barcodes
         given Ordering[String] = stringOrd.reverse
-        topNBy(allRowBarcodeCounts, nSequencesToReport, (x, y) => (y, x), Ordering[(Int, String)]).map(_._2)
+        topNBy(
+          rowColBarcodeCounts,
+          nSequencesToReport,
+          (rowBc, perColCounts) => (perColCounts.values.sum, rowBc),
+          Ordering[(Int, String)]
+        ).map(_._2)
+      end mostCommonRowBarcodesRanked
 
       val mostCommonRowBarcodes = mostCommonRowBarcodesRanked.toSet
 
