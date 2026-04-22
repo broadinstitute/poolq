@@ -205,7 +205,7 @@ object PoolQ:
           UnexpectedSequenceWriter.removeCache(dir)
         ret
       }
-      _ = log.info(s"Writing run info ${config.output.unexpectedSequencesFile}")
+      _ = log.info(s"Writing run info ${config.output.runInfoFile}")
       _ <- RunInfoWriter.write(config.output.runInfoFile, config)
       _ = log.info("PoolQ complete")
     yield PoolQSummary(runSummary, AlwaysWrittenFiles ++ Set(cfto, usfto).flatten)
