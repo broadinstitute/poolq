@@ -13,7 +13,7 @@ import org.scalacheck.Prop.forAll
 
 class TemplatePolicyTest extends FunSuite with ScalaCheckSuite {
 
-  test("KeyMaskPolicy should do a thing") {
+  test("KeyMaskPolicy should work in the simple case") {
     val km = KeyMask("caccgNNNNNnnnnnnnnnttacaNNNNN")
     val kmp = GeneralTemplatePolicy(km, Some(11))
 
