@@ -44,14 +44,15 @@ class KmpKnownPrefixPolicyTest extends FunSuite with ScalaCheckSuite:
     val barcodeLength = 20
     val minPrefixPos = 22
     val policy = KmpKnownPrefixPolicy(prefix, barcodeLength, Some(minPrefixPos))
+    val nonPrefixBase = Gen.oneOf('A', 'T', 'N')
     forAll(
-      dnaSeqMaxN(acgtn, minPrefixPos - prefix.length),
+      dnaSeqMaxN(nonPrefixBase, minPrefixPos - prefix.length),
       Gen.chooseNum(0, minPrefixPos),
-      dnaSeqOfN(acgtn, barcodeLength)
+      dnaSeqOfN(nonPrefixBase, barcodeLength)
     ) { (bases, prefixPos, barcode) =>
       val pre = bases.take(prefixPos)
       val post = bases.drop(prefixPos)
-      val seq = pre + "CACCG" + post + barcode
+      val seq = pre + prefix + post + barcode
       assertEquals(policy.find(Read("id", seq)), None)
     }
   }
@@ -62,8 +63,9 @@ class KmpKnownPrefixPolicyTest extends FunSuite with ScalaCheckSuite:
     val minPrefixPos = 22
     val maxPrefixPos = 29
     val policy = KmpKnownPrefixPolicy(prefix, barcodeLength, Some(minPrefixPos), Some(maxPrefixPos))
-    forAll(dnaSeqOfN(acgtn, maxPrefixPos + 1), dnaSeqOfN(acgtn, barcodeLength)) { (pre, barcode) =>
-      val seq = pre + "CACCG" + barcode
+    val nonPrefixBase = Gen.oneOf('A', 'T', 'N')
+    forAll(dnaSeqOfN(nonPrefixBase, maxPrefixPos + 1), dnaSeqOfN(nonPrefixBase, barcodeLength)) { (pre, barcode) =>
+      val seq = pre + prefix + barcode
       assertEquals(policy.find(Read("id", seq)), None)
     }
   }
