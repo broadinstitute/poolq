@@ -36,7 +36,7 @@ class SeqPackageTest extends FunSuite with ScalaCheckSuite:
     forAll(barcode, barcode)((x, y) => assert(countMismatches(x, y) >= 0))
   }
 
-  test("should be 0 iff and only iff x = y") {
+  test("should be 0 iff x = y") {
     forAll(barcode, barcode) { (x, y) =>
       val xydist = countMismatches(x, y)
       if x != y then
