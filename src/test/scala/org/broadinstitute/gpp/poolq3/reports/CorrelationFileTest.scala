@@ -10,15 +10,14 @@ import java.nio.file.Files
 import scala.io.Source
 import scala.util.{Random, Using}
 
+import munit.FunSuite
 import org.broadinstitute.gpp.poolq3.PoolQ
 import org.broadinstitute.gpp.poolq3.barcode.{Barcodes, FoundBarcode}
 import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, ReferenceEntry}
 import org.broadinstitute.gpp.poolq3.process.ScoringConsumer
 import org.broadinstitute.gpp.poolq3.reference.ExactReference
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers.*
 
-class CorrelationFileTest extends AnyFlatSpec:
+class CorrelationFileTest extends FunSuite:
 
   private val Condition1 = "DMSO"
   private val Condition2 = "ITMFA"
@@ -71,7 +70,7 @@ class CorrelationFileTest extends AnyFlatSpec:
     Barcodes(Some(FoundBarcode(row.toCharArray, 0)), None, Some(FoundBarcode(col.toCharArray, 0)), None)
   })
 
-  "CorrelationFileWriter" should "write a correct correlation file" in {
+  test("CorrelationFileWriter should write a correct correlation file") {
     val outputFile = Files.createTempFile("correlation-file-test", ".txt")
     try
       val consumer = new ScoringConsumer(rowReference, colReference, countAmbiguous = true, false, None, None, false)
@@ -91,14 +90,14 @@ class CorrelationFileTest extends AnyFlatSpec:
 
       Using.resource(Source.fromFile(outputFile.toFile)) { contents =>
         // now check the contents
-        contents.mkString should be(expected)
+        assertEquals(contents.mkString, expected)
       }
     finally
       val _ = Files.deleteIfExists(outputFile)
     end try
   }
 
-  it should "not write a correlation file for a run with a single condition" in {
+  test("should not write a correlation file for a run with a single condition") {
     val singleCondRef =
       ExactReference(
         List(ReferenceEntry(SampleBarcode1, Condition1), ReferenceEntry(SampleBarcode2, Condition1)),
@@ -115,19 +114,17 @@ class CorrelationFileTest extends AnyFlatSpec:
       val normalizedCounts = LogNormalizedCountsWriter.logNormalizedCounts(state.known, rowReference, singleCondRef)
 
       // we've set a trap - if we try to compute a correlation, the library code should throw an exception
-      val _ = noException should be thrownBy {
-        CorrelationFileWriter.write(outputFile, normalizedCounts, rowReference, singleCondRef)
-      }
+      val _ = CorrelationFileWriter.write(outputFile, normalizedCounts, rowReference, singleCondRef)
 
       // be sure also that we didn't actually write anything to the file
-      Using(Source.fromFile(outputFile.toFile))(src => src.getLines().mkString("\n") should be(""))
+      Using(Source.fromFile(outputFile.toFile))(src => assertEquals(src.getLines().mkString("\n"), ""))
 
     finally
       val _ = Files.deleteIfExists(outputFile)
     end try
   }
 
-  it should "not write a correlation file for a run with a single row barcode" in {
+  test("should not write a correlation file for a run with a single row barcode") {
     val rowReference =
       ExactReference(Constructs.take(1).map(b => ReferenceEntry(b, b)), identity, includeAmbiguous = false)
     val singleCondRef =
@@ -146,12 +143,10 @@ class CorrelationFileTest extends AnyFlatSpec:
       val normalizedCounts = LogNormalizedCountsWriter.logNormalizedCounts(state.known, rowReference, singleCondRef)
 
       // we've set a trap - if we try to compute a correlation, the library code should throw an exception
-      val _ = noException should be thrownBy {
-        CorrelationFileWriter.write(outputFile, normalizedCounts, rowReference, singleCondRef)
-      }
+      val _ = CorrelationFileWriter.write(outputFile, normalizedCounts, rowReference, singleCondRef)
 
       // be sure also that we didn't actually write anything to the file
-      Using(Source.fromFile(outputFile.toFile))(src => src.getLines().mkString("\n") should be(""))
+      Using(Source.fromFile(outputFile.toFile))(src => assertEquals(src.getLines().mkString("\n"), ""))
 
     finally
       val _ = Files.deleteIfExists(outputFile)

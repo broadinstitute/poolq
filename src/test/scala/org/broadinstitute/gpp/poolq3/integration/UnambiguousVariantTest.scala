@@ -5,15 +5,14 @@
  */
 package org.broadinstitute.gpp.poolq3.integration
 
+import munit.FunSuite
 import org.broadinstitute.gpp.poolq3.PoolQ
 import org.broadinstitute.gpp.poolq3.barcode.{Barcodes, FoundBarcode}
 import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, ReferenceEntry}
 import org.broadinstitute.gpp.poolq3.process.ScoringConsumer
 import org.broadinstitute.gpp.poolq3.reference.{ExactReference, VariantReference}
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers.*
 
-class UnambiguousVariantTest extends AnyFlatSpec:
+class UnambiguousVariantTest extends FunSuite:
 
   private val rowReferenceBarcodes = List("AAAAAAAAAAAAAAAAAAAA", "AAAAAAAAAAAAAAAAAAAC").map(b => ReferenceEntry(b, b))
 
@@ -35,23 +34,23 @@ class UnambiguousVariantTest extends AnyFlatSpec:
     }
   }
 
-  "PoolQ" should "match a read with an N" in {
+  test("PoolQ should match a read with an N") {
     val consumer = new ScoringConsumer(rowReference, colReference, countAmbiguous = true, false, None, None, false)
 
     val ret = PoolQ.runProcess(reads, consumer)
     val state = ret.get.state
 
-    val _ = state.reads should be(1)
-    val _ = state.exactMatches should be(0)
+    assertEquals(state.reads, 1L)
+    assertEquals(state.exactMatches, 0L)
 
     val hist = state.known
-    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAA", "AAAA")) should be(1)
+    assertEquals(hist.count(("AAAAAAAAAAAAAAAAAAAA", "AAAA")), 1L)
     for
       row <- rowReferenceBarcodes.map(_.dnaBarcode)
       col <- colReferenceBarcodes.map(_.dnaBarcode)
     do
-      val expected = if row.forall(_ == 'A') && col.forall(_ == 'A') then 1 else 0
-      hist.count((row, col)) should be(expected)
+      val expected = if row.forall(_ == 'A') && col.forall(_ == 'A') then 1L else 0L
+      assertEquals(hist.count((row, col)), expected)
   }
 
 end UnambiguousVariantTest

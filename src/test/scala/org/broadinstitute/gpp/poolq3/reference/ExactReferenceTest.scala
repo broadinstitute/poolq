@@ -5,41 +5,40 @@
  */
 package org.broadinstitute.gpp.poolq3.reference
 
+import munit.{FunSuite, ScalaCheckSuite}
 import org.broadinstitute.gpp.poolq3.gen.barcode
 import org.broadinstitute.gpp.poolq3.parser.ReferenceEntry
 import org.scalacheck.Gen
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers.*
-import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks.*
+import org.scalacheck.Prop.forAll
 
-class ExactReferenceTest extends AnyFlatSpec:
+class ExactReferenceTest extends FunSuite with ScalaCheckSuite:
   val referenceGen: Gen[List[String]] = Gen.listOfN(1000, barcode)
 
-  "ExactReference" should "find matches for a given barcode" in {
+  test("ExactReference should find matches for a given barcode") {
     forAll(referenceGen) { (barcodes: List[String]) =>
       val reference = ExactReference(barcodes.map(b => ReferenceEntry(b, b)), identity, includeAmbiguous = false)
 
       barcodes.foreach { bc =>
-        val _ = reference.isDefined(bc) should be(true)
-        val _ = reference.find(bc) should be(Seq(MatchedBarcode(bc, 0)))
-        reference.idsForBarcode(bc) should be(Seq(bc))
+        assert(reference.isDefined(bc))
+        assertEquals(reference.find(bc), Seq(MatchedBarcode(bc, 0)))
+        assertEquals(reference.idsForBarcode(bc), Seq(bc))
       }
 
-      val _ = reference.allIds.toSet should be(barcodes.toSet)
-      reference.allBarcodes.toSet should be(barcodes.toSet)
+      assertEquals(reference.allIds.toSet, barcodes.toSet)
+      assertEquals(reference.allBarcodes.toSet, barcodes.toSet)
     }
   }
 
-  it should "find variants with the correct distance" in {
+  test("should find variants with the correct distance") {
     val reference =
       ExactReference(Seq(ReferenceEntry("AAAAAAAAAAAAAAAAAAAA", "One")), identity, includeAmbiguous = false)
-    val _ = reference.find("AAAAAAAAAAAAAAAAAAAA") should be(Seq(MatchedBarcode("AAAAAAAAAAAAAAAAAAAA", 0)))
-    val _ = reference.find("NAAAAAAAAAAAAAAAAAAA") should be(Seq())
-    val _ = reference.find("AAAAAAAAAAAAAAAAAAAT") should be(Seq())
-    val _ = reference.find("NAAAAAAAAAAAAAAAAAAT") should be(Seq())
+    assertEquals(reference.find("AAAAAAAAAAAAAAAAAAAA"), Seq(MatchedBarcode("AAAAAAAAAAAAAAAAAAAA", 0)))
+    assertEquals(reference.find("NAAAAAAAAAAAAAAAAAAA"), Seq())
+    assertEquals(reference.find("AAAAAAAAAAAAAAAAAAAT"), Seq())
+    assertEquals(reference.find("NAAAAAAAAAAAAAAAAAAT"), Seq())
 
-    val _ = reference.barcodesForId("One") should be(Seq("AAAAAAAAAAAAAAAAAAAA"))
-    reference.idsForBarcode("AAAAAAAAAAAAAAAAAAAA") should be(Seq("One"))
+    assertEquals(reference.barcodesForId("One"), Seq("AAAAAAAAAAAAAAAAAAAA"))
+    assertEquals(reference.idsForBarcode("AAAAAAAAAAAAAAAAAAAA"), Seq("One"))
   }
 
 end ExactReferenceTest

@@ -8,16 +8,15 @@ package org.broadinstitute.gpp.poolq3.integration.legacy
 import java.nio.file.Path
 
 import better.files.*
+import munit.FunSuite
 import org.broadinstitute.gpp.poolq3.reports.PoolQ2Dialect
 import org.broadinstitute.gpp.poolq3.testutil.contents
 import org.broadinstitute.gpp.poolq3.{PoolQ, PoolQConfig, PoolQInput, PoolQOutput, TestResources}
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers.*
 
-class LegacyIntegrationTest extends AnyFlatSpec with TestResources:
+class LegacyIntegrationTest extends FunSuite with TestResources:
 
   private def filesSame(actual: Path, expected: Path): Unit =
-    val _ = contents(actual) should be(contents(expected))
+    assertEquals(contents(actual), contents(expected))
 
   /** Tests PoolQ end-to-end, using 10000 reads, 8 constructs, and 42 conditions. Compares the results to expected
     * results.
@@ -26,7 +25,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources:
     *
     * NOTE: the correctness of the results was verified by hand.
     */
-  "PoolQ" should "testPoolQReads10000Reference8Conditions42" in {
+  test("PoolQ should testPoolQReads10000Reference8Conditions42") {
     for
       countsFile <- File.temporaryFile("counts", ".txt")
       barcodeCountsFile <- File.temporaryFile("barcode-counts", ".txt")
@@ -66,10 +65,10 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources:
       filesSame(normalizedCountsFile.path, resourcePath("lognorm-10000-8-42.txt"))
       filesSame(barcodeCountsFile.path, resourcePath("barcode-counts-10000-8-42.txt"))
       filesSame(qualityFile.path, resourcePath("quality-10000-8-42.txt"))
-      unexpectedSequenceCacheDir.exists should be(false)
+      assertEquals(unexpectedSequenceCacheDir.exists, false)
   }
 
-  "PoolQ" should "optionally not remove the unexpected sequence cache" in {
+  test("PoolQ should optionally not remove the unexpected sequence cache") {
     for
       countsFile <- File.temporaryFile("counts", ".txt")
       barcodeCountsFile <- File.temporaryFile("barcode-counts", ".txt")
@@ -110,7 +109,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources:
       filesSame(normalizedCountsFile.path, resourcePath("lognorm-10000-8-42.txt"))
       filesSame(barcodeCountsFile.path, resourcePath("barcode-counts-10000-8-42.txt"))
       filesSame(qualityFile.path, resourcePath("quality-10000-8-42.txt"))
-      unexpectedSequenceCacheDir.exists should be(true)
+      assertEquals(unexpectedSequenceCacheDir.exists, true)
   }
 
   /** Tests PoolQ end-to-end, using 42 base reads. The longer reads allow for comparison with the whole construct, and
@@ -121,7 +120,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources:
     * construct have a single base mismatch 1 read that matches the first construct, but with a barcode that is not in
     * the conditions file one successful read each for the first 10 conditions
     */
-  it should "testPoolQLongerReads" in {
+  test("should testPoolQLongerReads") {
     for
       countsFile <- File.temporaryFile("counts", ".txt")
       normalizedCountsFile <- File.temporaryFile("normcounts", ".txt")
@@ -166,7 +165,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources:
   /** Tests PoolQ end-to-end, using 42-base reads. The longer reads allow for comparison with the whole construct, and
     * also test the fact that PoolQ ignores any bases in the read that follow the construct.
     */
-  it should "testPoolQMultipleBarcodesPerCondition" in {
+  test("should testPoolQMultipleBarcodesPerCondition") {
     for
       countsFile <- File.temporaryFile("counts", ".txt")
       normalizedCountsFile <- File.temporaryFile("normcounts", ".txt")
@@ -212,7 +211,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources:
   /** Tests the case of multiplexed reads, where the reads are long enough to contain the entire construct barcode
     * sequence.
     */
-  it should "testPoolQMultiplexedReads" in {
+  test("should testPoolQMultiplexedReads") {
     for
       countsFile <- File.temporaryFile("counts", ".txt")
       normalizedCountsFile <- File.temporaryFile("normcounts", ".txt")
@@ -253,7 +252,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources:
       filesSame(qualityFile.toJava.toPath, resourcePath("next500-quality.txt"))
   }
 
-  it should "testPoolQMultiplexedShortReads" in {
+  test("should testPoolQMultiplexedShortReads") {
     for
       countsFile <- File.temporaryFile("counts", ".txt")
       normalizedCountsFile <- File.temporaryFile("normcounts", ".txt")
@@ -298,7 +297,7 @@ class LegacyIntegrationTest extends AnyFlatSpec with TestResources:
     * also tests the fact that PoolQ ignores any bases in the read that follow the construct. In this example, one
     * barcode maps to multiple construct IDs.
     */
-  it should "testPoolQDuplicateConstructs" in {
+  test("should testPoolQDuplicateConstructs") {
     for
       countsFile <- File.temporaryFile("counts", ".txt")
       normalizedCountsFile <- File.temporaryFile("normcounts", ".txt")

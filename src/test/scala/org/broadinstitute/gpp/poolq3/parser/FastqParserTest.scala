@@ -6,12 +6,11 @@
 package org.broadinstitute.gpp.poolq3.parser
 
 import better.files.*
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers.*
+import munit.FunSuite
 
-class FastqParserTest extends AnyFlatSpec:
+class FastqParserTest extends FunSuite:
 
-  "FastqParser" should "reject a malformed FASTQ file" in {
+  test("FastqParser should reject a malformed FASTQ file") {
     val data =
       """@HWUSI-EAS100R:6:23:398:3989#1
         |AACTCACG
@@ -31,7 +30,7 @@ class FastqParserTest extends AnyFlatSpec:
     finally file.delete()
   }
 
-  "FastqParser" should "reject a misaligned FASTQ file" in {
+  test("FastqParser should reject a misaligned FASTQ file") {
     val data =
       """+
         |4<<8-767
@@ -49,7 +48,7 @@ class FastqParserTest extends AnyFlatSpec:
     finally file.delete()
   }
 
-  it should "parse complete records" in {
+  test("should parse complete records") {
     val data =
       """@HWUSI-EAS100R:6:23:398:3989#1
         |AACTCACG
@@ -64,12 +63,12 @@ class FastqParserTest extends AnyFlatSpec:
       file.overwrite(data)
       val fqp = new FastqParser(file.path)
       val fqi = fqp.iterator
-      val _ = (fqi.toList should have).length(2)
+      assertEquals(fqi.toList.length, 2)
       fqi.close()
     finally file.delete()
   }
 
-  it should "reject a file ending with only 1 line" in {
+  test("should reject a file ending with only 1 line") {
     val data = "@HWUSI-EAS100R:6:23:398:3989#1"
     val file: File = File.newTemporaryFile("FastqParserTest", ".fastq")
     try

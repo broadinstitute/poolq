@@ -5,15 +5,14 @@
  */
 package org.broadinstitute.gpp.poolq3.integration
 
+import munit.FunSuite
 import org.broadinstitute.gpp.poolq3.PoolQ
 import org.broadinstitute.gpp.poolq3.barcode.{Barcodes, FoundBarcode}
 import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, ReferenceEntry}
 import org.broadinstitute.gpp.poolq3.process.ScoringConsumer
 import org.broadinstitute.gpp.poolq3.reference.{ExactReference, VariantReference}
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers.*
 
-class AmbiguousMatchTest extends AnyFlatSpec:
+class AmbiguousMatchTest extends FunSuite:
 
   private val rowReferenceBarcodes = List(
     "AAAAAAAAAAAAAAAAAAAA",
@@ -56,50 +55,50 @@ class AmbiguousMatchTest extends AnyFlatSpec:
     }
   )
 
-  "PoolQ" should "count ambiguous bases" in {
+  test("PoolQ should count ambiguous bases") {
     val consumer = new ScoringConsumer(rowReference, colReference, countAmbiguous = true, false, None, None, false)
 
     val ret = PoolQ.runProcess(barcodes, consumer)
     val state = ret.get.state
 
-    val _ = state.reads should be(9)
-    val _ = state.exactMatches should be(3)
+    assertEquals(state.reads, 9L)
+    assertEquals(state.exactMatches, 3L)
 
     val hist = state.known
-    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAA", "AAAA")) should be(1)
-    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAA", "AAAT")) should be(1)
-    val _ = hist.count(("GATGTGCAGTGAGTAGCGAG", "AAAA")) should be(1)
-    val _ = hist.count(("CCGGTTGATGCGTGGTGATG", "CCCC")) should be(1)
-    val _ = hist.count(("AATGTGAAAATGTGATGAAT", "CCCG")) should be(1)
+    assertEquals(hist.count(("AAAAAAAAAAAAAAAAAAAA", "AAAA")), 1L)
+    assertEquals(hist.count(("AAAAAAAAAAAAAAAAAAAA", "AAAT")), 1L)
+    assertEquals(hist.count(("GATGTGCAGTGAGTAGCGAG", "AAAA")), 1L)
+    assertEquals(hist.count(("CCGGTTGATGCGTGGTGATG", "CCCC")), 1L)
+    assertEquals(hist.count(("AATGTGAAAATGTGATGAAT", "CCCG")), 1L)
 
     // these all correspond to the ambiguous match at the end
-    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAA", "CCCC")) should be(1)
-    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAC", "CCCC")) should be(1)
-    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAG", "CCCC")) should be(1)
-    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAT", "CCCC")) should be(1)
+    assertEquals(hist.count(("AAAAAAAAAAAAAAAAAAAA", "CCCC")), 1L)
+    assertEquals(hist.count(("AAAAAAAAAAAAAAAAAAAC", "CCCC")), 1L)
+    assertEquals(hist.count(("AAAAAAAAAAAAAAAAAAAG", "CCCC")), 1L)
+    assertEquals(hist.count(("AAAAAAAAAAAAAAAAAAAT", "CCCC")), 1L)
 
     // these are combinations that didn't occur
-    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAA", "CCCG")) should be(0)
+    assertEquals(hist.count(("AAAAAAAAAAAAAAAAAAAA", "CCCG")), 0L)
 
-    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAC", "AAAA")) should be(0)
-    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAC", "AAAT")) should be(0)
-    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAC", "CCCG")) should be(0)
+    assertEquals(hist.count(("AAAAAAAAAAAAAAAAAAAC", "AAAA")), 0L)
+    assertEquals(hist.count(("AAAAAAAAAAAAAAAAAAAC", "AAAT")), 0L)
+    assertEquals(hist.count(("AAAAAAAAAAAAAAAAAAAC", "CCCG")), 0L)
 
-    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAG", "AAAA")) should be(0)
-    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAG", "AAAT")) should be(0)
-    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAG", "CCCG")) should be(0)
+    assertEquals(hist.count(("AAAAAAAAAAAAAAAAAAAG", "AAAA")), 0L)
+    assertEquals(hist.count(("AAAAAAAAAAAAAAAAAAAG", "AAAT")), 0L)
+    assertEquals(hist.count(("AAAAAAAAAAAAAAAAAAAG", "CCCG")), 0L)
 
-    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAT", "AAAA")) should be(0)
-    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAT", "AAAT")) should be(0)
-    val _ = hist.count(("AAAAAAAAAAAAAAAAAAAT", "CCCG")) should be(0)
+    assertEquals(hist.count(("AAAAAAAAAAAAAAAAAAAT", "AAAA")), 0L)
+    assertEquals(hist.count(("AAAAAAAAAAAAAAAAAAAT", "AAAT")), 0L)
+    assertEquals(hist.count(("AAAAAAAAAAAAAAAAAAAT", "CCCG")), 0L)
 
-    val _ = hist.count(("GATGTGCAGTGAGTAGCGAG", "AAAT")) should be(0)
-    val _ = hist.count(("GATGTGCAGTGAGTAGCGAG", "CCCC")) should be(0)
-    val _ = hist.count(("GATGTGCAGTGAGTAGCGAG", "CCCG")) should be(0)
+    assertEquals(hist.count(("GATGTGCAGTGAGTAGCGAG", "AAAT")), 0L)
+    assertEquals(hist.count(("GATGTGCAGTGAGTAGCGAG", "CCCC")), 0L)
+    assertEquals(hist.count(("GATGTGCAGTGAGTAGCGAG", "CCCG")), 0L)
 
-    val _ = hist.count(("AATGTGAAAATGTGATGAAT", "AAAA")) should be(0)
-    val _ = hist.count(("AATGTGAAAATGTGATGAAT", "AAAT")) should be(0)
-    hist.count(("AATGTGAAAATGTGATGAAT", "CCCC")) should be(0)
+    assertEquals(hist.count(("AATGTGAAAATGTGATGAAT", "AAAA")), 0L)
+    assertEquals(hist.count(("AATGTGAAAATGTGATGAAT", "AAAT")), 0L)
+    assertEquals(hist.count(("AATGTGAAAATGTGATGAAT", "CCCC")), 0L)
   }
 
 end AmbiguousMatchTest

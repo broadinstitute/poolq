@@ -5,15 +5,14 @@
  */
 package org.broadinstitute.gpp.poolq3.integration
 
+import munit.FunSuite
 import org.broadinstitute.gpp.poolq3.PoolQ
 import org.broadinstitute.gpp.poolq3.barcode.{Barcodes, FoundBarcode}
 import org.broadinstitute.gpp.poolq3.parser.{CloseableIterable, ReferenceEntry}
 import org.broadinstitute.gpp.poolq3.process.ScoringConsumer
 import org.broadinstitute.gpp.poolq3.reference.{ExactReference, VariantReference}
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers.*
 
-class LongBarcodeMatchTest extends AnyFlatSpec:
+class LongBarcodeMatchTest extends FunSuite:
 
   private val rowReferenceBarcodes = List(
     ReferenceEntry(
@@ -88,43 +87,55 @@ class LongBarcodeMatchTest extends AnyFlatSpec:
     }
   )
 
-  "PoolQ" should "count ambiguous bases" in {
+  test("PoolQ should count ambiguous bases") {
     val consumer = new ScoringConsumer(rowReference, colReference, countAmbiguous = true, false, None, None, false)
 
     val ret = PoolQ.runProcess(barcodes, consumer)
     val state = ret.get.state
 
-    val _ = state.reads should be(9)
-    val _ = state.exactMatches should be(2)
-    val _ = state.matches should be(4)
+    assertEquals(state.reads, 9L)
+    assertEquals(state.exactMatches, 2L)
+    assertEquals(state.matches, 4L)
 
     val hist = state.known
 
     // these are all the matches
-    val _ = hist.count(
-      (
-        "TTTCTGTCATCCAAATACTCCACACGCAAATTTCCTTCCACTCGGATAAGATGCTGAGGAGGGGCCAGACCTAAGAGCAATCAGTGAGGAATCAGAGGCCTGGGGACCCTGGGCAACCAGCCCTGTCGTCTCTCCAGCCCCAGC",
-        "AAAT"
-      )
-    ) should be(1)
-    val _ = hist.count(
-      (
-        "TTTCTGTCATCCAAATACTCCACACGCAAATTTCCTTCCACTCGGATAAGATGCTGAGGAGGGGCCAGACCTAAGAGCAATCAGTGAGGAATCAGAGGCCTGGGGACCCTGGGCAACCAGCCCTGTCGTCTCTCCAGCCCCAGC",
-        "AAAA"
-      )
-    ) should be(1)
-    val _ = hist.count(
-      (
-        "TTTCTGTCATCCAAATACTCCACACGCAAATTTCCTTCCACTCGGATAAGATGCTGAGGAGGGGCCAGACCTAAGAGCAATCAGTGAGGAATCAGAGGCCTGGGGACCCTGGGCAACCAGCCCTGTCGTCTCTCCAGCCCCAGC",
-        "CCCG"
-      )
-    ) should be(1)
-    hist.count(
-      (
-        "TTTCTGTCATCCAAATACTCCACACGCAAATTTCCTTCCACTCGGATAAGATGCTGAGGAGGGGCCAGACCTAAGAGCAATCAGTGAGGAATCAGAGGCCTGGGGACCCTGGGCAACCAGCCCTGTCGTCTCTCCAGCCCCAGC",
-        "CCCC"
-      )
-    ) should be(1)
+    assertEquals(
+      hist.count(
+        (
+          "TTTCTGTCATCCAAATACTCCACACGCAAATTTCCTTCCACTCGGATAAGATGCTGAGGAGGGGCCAGACCTAAGAGCAATCAGTGAGGAATCAGAGGCCTGGGGACCCTGGGCAACCAGCCCTGTCGTCTCTCCAGCCCCAGC",
+          "AAAT"
+        )
+      ),
+      1L
+    )
+    assertEquals(
+      hist.count(
+        (
+          "TTTCTGTCATCCAAATACTCCACACGCAAATTTCCTTCCACTCGGATAAGATGCTGAGGAGGGGCCAGACCTAAGAGCAATCAGTGAGGAATCAGAGGCCTGGGGACCCTGGGCAACCAGCCCTGTCGTCTCTCCAGCCCCAGC",
+          "AAAA"
+        )
+      ),
+      1L
+    )
+    assertEquals(
+      hist.count(
+        (
+          "TTTCTGTCATCCAAATACTCCACACGCAAATTTCCTTCCACTCGGATAAGATGCTGAGGAGGGGCCAGACCTAAGAGCAATCAGTGAGGAATCAGAGGCCTGGGGACCCTGGGCAACCAGCCCTGTCGTCTCTCCAGCCCCAGC",
+          "CCCG"
+        )
+      ),
+      1L
+    )
+    assertEquals(
+      hist.count(
+        (
+          "TTTCTGTCATCCAAATACTCCACACGCAAATTTCCTTCCACTCGGATAAGATGCTGAGGAGGGGCCAGACCTAAGAGCAATCAGTGAGGAATCAGAGGCCTGGGGACCCTGGGCAACCAGCCCTGTCGTCTCTCCAGCCCCAGC",
+          "CCCC"
+        )
+      ),
+      1L
+    )
   }
 
 end LongBarcodeMatchTest
