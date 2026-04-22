@@ -34,9 +34,9 @@ final class FastqParser(file: Path) extends CloseableIterable[Read]:
 
       if line3 == null then throw InvalidFileException(file, "File contains an incomplete FASTQ read")
 
-      if line0.charAt(0) != '@' then
+      if line0 != null && line0.charAt(0) != '@' then
         throw InvalidFileException(file, "Corrupt or incorrect FASTQ: field 1 must begin with '@'")
-      if line2.charAt(0) != '+' then
+      if line2 != null && line2.charAt(0) != '+' then
         throw InvalidFileException(file, "Corrupt or incorrect FASTQ: field 3 must begin with '+'")
 
       Read(line0, line1)
