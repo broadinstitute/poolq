@@ -26,8 +26,6 @@ lazy val versions = new {
   val samTools = "3.0.5"
   val scalaCheck = "1.19.0"
   val scalaCsv = "2.0.0"
-  val scalaTest = "3.2.20"
-  val scalaTestPlusScalaCheck = "3.2.18.0"
   val scopt = "4.1.0"
   val slf4j = "2.0.17"
 }
@@ -54,9 +52,7 @@ lazy val libraries = new {
   val munit = "org.scalameta" %% "munit" % versions.munit
   val munitScalacheck = "org.scalameta" %% "munit-scalacheck" % versions.munitScalaCheck
   val munitCatsEffect = "org.typelevel" %% "munit-cats-effect" % versions.munitCatsEffect3
-  val scalaTest = "org.scalatest" %% "scalatest" % versions.scalaTest
   val scalaCheck = "org.scalacheck" %% "scalacheck" % versions.scalaCheck
-  val scalaTestPlusScalaCheck = "org.scalatestplus" %% "scalacheck-1-17" % versions.scalaTestPlusScalaCheck
 }
 
 lazy val dependencies =
@@ -80,9 +76,7 @@ lazy val dependencies =
     libraries.munit % Test,
     libraries.munitCatsEffect % Test,
     libraries.munitScalacheck % Test,
-    libraries.scalaCheck % Test,
-    libraries.scalaTest % Test,
-    libraries.scalaTestPlusScalaCheck % Test
+    libraries.scalaCheck % Test
   )
 
 lazy val headerLicenseText =
