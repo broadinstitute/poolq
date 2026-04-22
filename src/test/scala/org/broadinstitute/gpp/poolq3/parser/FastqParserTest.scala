@@ -69,4 +69,16 @@ class FastqParserTest extends AnyFlatSpec:
     finally file.delete()
   }
 
+  it should "reject a file ending with only 1 line" in {
+    val data = "@HWUSI-EAS100R:6:23:398:3989#1"
+    val file: File = File.newTemporaryFile("FastqParserTest", ".fastq")
+    try
+      file.overwrite(data)
+      val fqp = new FastqParser(file.path)
+      intercept[InvalidFileException] {
+        fqp.toList
+      }
+    finally file.delete()
+  }
+
 end FastqParserTest
