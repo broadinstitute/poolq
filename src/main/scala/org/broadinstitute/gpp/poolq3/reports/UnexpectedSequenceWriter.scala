@@ -44,7 +44,7 @@ object UnexpectedSequenceWriter:
       catch case NonFatal(_) => log.warn(s"Unable to delete ${p.toAbsolutePath}")
 
     // run for side effects
-    Files.list(unexpectedSequenceCacheDir).forEach(tryDelete)
+    Using.resource(Files.list(unexpectedSequenceCacheDir))(paths => paths.forEach(tryDelete))
     tryDelete(unexpectedSequenceCacheDir)
 
   end removeCache
