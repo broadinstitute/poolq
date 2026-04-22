@@ -5,87 +5,86 @@
  */
 package org.broadinstitute.gpp.poolq3.seq
 
+import munit.{FunSuite, ScalaCheckSuite}
 import org.broadinstitute.gpp.poolq3.gen.{acgtn, barcode, dnaSeq, nonEmptyDnaSeq}
 import org.scalacheck.Gen
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers.*
-import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks.*
+import org.scalacheck.Prop.forAll
 
-class SeqPackageTest extends AnyFlatSpec:
+class SeqPackageTest extends FunSuite with ScalaCheckSuite:
 
-  "complement" should "complement a string of DNA" in {
-    val _ = complement("") should be("")
-    val _ = complement("ACGT") should be("TGCA")
-    complement("NAATTTG") should be("NTTAAAC")
+  test("complement should complement a string of DNA") {
+    assertEquals(complement(""), "")
+    assertEquals(complement("ACGT"), "TGCA")
+    assertEquals(complement("NAATTTG"), "NTTAAAC")
   }
 
-  "complement" should "roundtrip arbitrary DNA" in {
-    forAll(barcode)(b => complement(complement(b)) should be(b))
+  test("complement should roundtrip arbitrary DNA") {
+    forAll(barcode)(b => assertEquals(complement(complement(b)), b))
   }
 
-  "reverseComplement" should "reverse complement a string of DNA" in {
-    val _ = reverseComplement("") should be("")
-    val _ = reverseComplement("ACGT") should be("ACGT")
-    reverseComplement("NTTGTATTTA") should be("TAAATACAAN")
+  test("reverseComplement should reverse complement a string of DNA") {
+    assertEquals(reverseComplement(""), "")
+    assertEquals(reverseComplement("ACGT"), "ACGT")
+    assertEquals(reverseComplement("NTTGTATTTA"), "TAAATACAAN")
   }
 
-  "reverseComplement" should "roundtrip arbitrary DNA" in {
-    forAll(barcode)(b => reverseComplement(reverseComplement(b)) should be(b))
+  test("reverseComplement should roundtrip arbitrary DNA") {
+    forAll(barcode)(b => assertEquals(reverseComplement(reverseComplement(b)), b))
   }
 
-  "ndist" should "always be >= 0" in {
-    forAll(barcode, barcode)((x, y) => countMismatches(x, y) should be >= 0)
+  test("ndist should always be >= 0") {
+    forAll(barcode, barcode)((x, y) => assert(countMismatches(x, y) >= 0))
   }
 
-  it should "be 0 iff and only iff x = y" in {
+  test("should be 0 iff and only iff x = y") {
     forAll(barcode, barcode) { (x, y) =>
       val xydist = countMismatches(x, y)
       if x != y then
-        val _ = xydist should be > 0
-        val _ = countMismatches(x, x) should be(0)
-        countMismatches(y, y) should be(0)
-      else xydist should be(0)
+        assert(xydist > 0)
+        assertEquals(countMismatches(x, x), 0)
+        assertEquals(countMismatches(y, y), 0)
+      else assertEquals(xydist, 0)
     }
   }
 
-  it should "be symmetric" in {
-    forAll(barcode, barcode)((x, y) => countMismatches(x, y) should be(countMismatches(y, x)))
+  test("should be symmetric") {
+    forAll(barcode, barcode)((x, y) => assertEquals(countMismatches(x, y), countMismatches(y, x)))
   }
 
-  it should "satisfy the triangle inequality in our domain" in {
+  test("should satisfy the triangle inequality in our domain") {
     forAll(barcode, barcode, barcode) { (x, y, z) =>
-      (countMismatches(x, y) + countMismatches(y, z)) should be >= countMismatches(x, z)
+      assert((countMismatches(x, y) + countMismatches(y, z)) >= countMismatches(x, z))
     }
   }
 
-  "isDna" should "return true for ACGTN bases" in {
-    forAll(nonEmptyDnaSeq(acgtn))(s => isDna(s) should be(true))
+  test("isDna should return true for ACGTN bases") {
+    forAll(nonEmptyDnaSeq(acgtn))(s => assert(isDna(s)))
   }
 
-  it should "return false for non ACGTN bases" in {
+  test("should return false for non ACGTN bases") {
     val nonDnaChar =
       Gen.choose(Char.MinValue, Char.MaxValue).suchThat {
         Set('A', 'C', 'G', 'T', 'N').contains(_) == false
       }
     forAll(nonEmptyDnaSeq(acgtn), nonEmptyDnaSeq(acgtn), nonDnaChar) { (s1, s2, c) =>
-      isDna(s1 + c.toString + s2) should be(false)
+      assert(!isDna(s1 + c.toString + s2))
     }
   }
 
-  "nCount" should "return at most max Ns" in {
-    val _ = nCount("AAANAN".toCharArray, 0) should be(1)
-    val _ = nCount("AAANAN".toCharArray, 1) should be(1)
-    val _ = nCount("AAANAN".toCharArray, 2) should be(2)
-    val _ = nCount("AAANAN".toCharArray, 3) should be(2)
-    nCount("TGNTA".toCharArray, 0) should be(1)
+  test("nCount should return at most max Ns") {
+    assertEquals(nCount("AAANAN".toCharArray, 0), 1)
+    assertEquals(nCount("AAANAN".toCharArray, 1), 1)
+    assertEquals(nCount("AAANAN".toCharArray, 2), 2)
+    assertEquals(nCount("AAANAN".toCharArray, 3), 2)
+    assertEquals(nCount("TGNTA".toCharArray, 0), 1)
   }
 
-  it should "handle random sequences" in {
+  test("should handle random sequences") {
     forAll(dnaSeq(acgtn)) { s =>
       val chars = s.toCharArray
       s.indices.foreach { idx =>
         // the min/max thing is to deal with weirdness if max is 0 - we have to find an N to exit early
-        nCount(chars, idx) should be(math.min(math.max(idx, 1), nCount(chars)))
+        assertEquals(nCount(chars, idx), math.min(math.max(idx, 1), nCount(chars)))
       }
     }
   }

@@ -5,12 +5,12 @@
  */
 package org.broadinstitute.gpp.poolq3.barcode
 
+import munit.FunSuite
 import org.broadinstitute.gpp.poolq3.types.Read
-import org.scalatest.flatspec.AnyFlatSpec
 
-class KnownPrefixPolicyBenchmark extends AnyFlatSpec:
+class KnownPrefixPolicyBenchmark extends FunSuite:
 
-  ignore should "compare times" in {
+  test("should compare times".ignore) {
     val seqs = Seq(
       "AGCTTGTGGAAAGGACGAAACACCGGCGCTGGTAGTTCGAACCCGGTTTT",
       "GCTTGTGGAAAGGACGAAACACCGGGGCCTCTCACCTTCCACGAGTTTTA",

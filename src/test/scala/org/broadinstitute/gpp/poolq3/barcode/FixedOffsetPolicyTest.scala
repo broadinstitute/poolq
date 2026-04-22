@@ -5,35 +5,40 @@
  */
 package org.broadinstitute.gpp.poolq3.barcode
 
+import munit.{FunSuite, ScalaCheckSuite}
 import org.broadinstitute.gpp.poolq3.gen.{acgtn, dnaSeq}
 import org.broadinstitute.gpp.poolq3.types.Read
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers.*
-import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks.*
+import org.scalacheck.Prop
+import org.scalacheck.Prop.forAll
 
-class FixedOffsetPolicyTest extends AnyFlatSpec:
+class FixedOffsetPolicyTest extends FunSuite with ScalaCheckSuite:
 
-  "find" should "find the barcode in the read" in {
+  test("find should find the barcode in the read") {
     forAll(dnaSeq(acgtn), dnaSeq(acgtn), dnaSeq(acgtn)) { (a: String, b: String, c: String) =>
       val read = Read("id", a + b + c)
       val policy = FixedOffsetPolicy(a.length, b.length, skipShortReads = false)
-      policy.find(read) should contain(FoundBarcode(b.toCharArray, a.length))
+      assertEquals(policy.find(read), Some(FoundBarcode(b.toCharArray, a.length)))
     }
   }
 
-  it should "skip short reads when asked" in {
+  test("should skip short reads when asked") {
     forAll(dnaSeq(acgtn), dnaSeq(acgtn)) { (a: String, b: String) =>
       val read = Read("id", a + b)
       val policy = FixedOffsetPolicy(a.length + 1, b.length, skipShortReads = true)
-      policy.find(read) should be(None)
+      assertEquals(policy.find(read), None)
     }
   }
 
-  it should "reject short reads" in {
+  test("should reject short reads") {
     forAll(dnaSeq(acgtn), dnaSeq(acgtn)) { (a: String, b: String) =>
       val read = Read("id", a + b)
       val policy = FixedOffsetPolicy(a.length + 1, b.length, skipShortReads = false)
-      assertThrows[ReadTooShortException](policy.find(read))
+      Prop.secure {
+        val _ = intercept[ReadTooShortException] {
+          policy.find(read)
+        }
+        true
+      }
     }
   }
 

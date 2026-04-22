@@ -5,16 +5,15 @@
  */
 package org.broadinstitute.gpp.poolq3.barcode
 
+import munit.{FunSuite, ScalaCheckSuite}
 import org.broadinstitute.gpp.poolq3.gen.{acgt, acgtn, dnaSeqMaxN, dnaSeqOfN}
 import org.broadinstitute.gpp.poolq3.tools.nanoTimed
 import org.broadinstitute.gpp.poolq3.types.Read
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers.*
-import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks.*
+import org.scalacheck.Prop.forAll
 
-class TemplatePolicyTest extends AnyFlatSpec {
+class TemplatePolicyTest extends FunSuite with ScalaCheckSuite {
 
-  "KeyMaskPolicy" should "do a thing" in {
+  test("KeyMaskPolicy should do a thing") {
     val km = KeyMask("caccgNNNNNnnnnnnnnnttacaNNNNN")
     val kmp = GeneralTemplatePolicy(km, Some(11))
 
@@ -25,10 +24,10 @@ class TemplatePolicyTest extends AnyFlatSpec {
     //         01234567890123456789012345678901234567890123456789
     val seq = "CTTGTGGAAATGACGAACCACCGATAGCCAAGAATTATTACAAGTTTTAG"
 
-    kmp.find(Read("", seq)) should be(Some(FoundBarcode("ATAGCAGTTT".toCharArray, 23)))
+    assertEquals(kmp.find(Read("", seq)), Some(FoundBarcode("ATAGCAGTTT".toCharArray, 23)))
   }
 
-  it should "find a seq at the right edge of the read" in {
+  test("should find a seq at the right edge of the read") {
     val km = KeyMask("caccgNNNNNnnnnnnnnnttacaNNNNN")
     val kmp = GeneralTemplatePolicy(km, Some(11))
 
@@ -37,11 +36,11 @@ class TemplatePolicyTest extends AnyFlatSpec {
     val seq = "CTTGTGGAAATGACGAACCACCACCGGCCAAGAATTATTATTACATTTAG"
     //                              caccgNNNNNnnnnnnnnnttacaNNNNN
 
-    kmp.find(Read("", seq)) should be(Some(FoundBarcode("GCCAATTTAG".toCharArray, 26)))
+    assertEquals(kmp.find(Read("", seq)), Some(FoundBarcode("GCCAATTTAG".toCharArray, 26)))
   }
 
   // this is the same case as above, but I deleted the last base of the seq
-  it should "not find a seq past the right edge of the read" in {
+  test("should not find a seq past the right edge of the read") {
     val km = KeyMask("caccgNNNNNnnnnnnnnnttacaNNNNN")
     val kmp = GeneralTemplatePolicy(km, Some(11))
 
@@ -50,10 +49,10 @@ class TemplatePolicyTest extends AnyFlatSpec {
     val seq = "CTTGTGGAAATGACGAACCACCACCGGCCAAGAATTATTATTACATTTA"
     //                              caccgNNNNNnnnnnnnnnttacaNNNNN
 
-    kmp.find(Read("", seq)) should be(None)
+    assertEquals(kmp.find(Read("", seq)), None)
   }
 
-  it should "find a seq at the min start pos" in {
+  test("should find a seq at the min start pos") {
     val km = KeyMask("caccgNNNNNnnnnnnnnnttacaNNNNN")
     val kmp = GeneralTemplatePolicy(km, Some(11))
 
@@ -62,11 +61,11 @@ class TemplatePolicyTest extends AnyFlatSpec {
     val seq = "CTTGTGGAAATCACCGACCACCACCGGCCATTACATATTATTACATTTAG"
     //                    caccgNNNNNnnnnnnnnnttacaNNNNN
 
-    kmp.find(Read("", seq)) should be(Some(FoundBarcode("ACCACTATTA".toCharArray, 16)))
+    assertEquals(kmp.find(Read("", seq)), Some(FoundBarcode("ACCACTATTA".toCharArray, 16)))
   }
 
   // this is the same case as above, but I deleted the first base of the seq
-  it should "not find a seq before the min start pos" in {
+  test("should not find a seq before the min start pos") {
     val km = KeyMask("caccgNNNNNnnnnnnnnnttacaNNNNN")
     val kmp = GeneralTemplatePolicy(km, Some(11))
 
@@ -75,10 +74,10 @@ class TemplatePolicyTest extends AnyFlatSpec {
     val seq = "TTGTGGAAATCACCGACCACCACTGGCCATTACATATTATTACATTTAG"
     //                   caccgNNNNNnnnnnnnnnttacaNNNNN
 
-    kmp.find(Read("", seq)) should be(None)
+    assertEquals(kmp.find(Read("", seq)), None)
   }
 
-  it should "find a seq at the max start pos" in {
+  test("should find a seq at the max start pos") {
     val km = KeyMask("caccgNNNNNnnnnnnnnnttacaNNNNN")
     val kmp = GeneralTemplatePolicy(km, Some(11), Some(11))
 
@@ -87,10 +86,10 @@ class TemplatePolicyTest extends AnyFlatSpec {
     val seq = "CTTGTGGAAATCACCGACCACCACCGGCCATTACATATTATTACATTTAG"
     //                    caccgNNNNNnnnnnnnnnttacaNNNNN
 
-    kmp.find(Read("", seq)) should be(Some(FoundBarcode("ACCACTATTA".toCharArray, 16)))
+    assertEquals(kmp.find(Read("", seq)), Some(FoundBarcode("ACCACTATTA".toCharArray, 16)))
   }
 
-  it should "not find a seq past the max start pos" in {
+  test("should not find a seq past the max start pos") {
     val km = KeyMask("caccgNNNNNnnnnnnnnnttacaNNNNN")
     val kmp = GeneralTemplatePolicy(km, Some(5), Some(10))
 
@@ -99,10 +98,10 @@ class TemplatePolicyTest extends AnyFlatSpec {
     val seq = "CTTGTGGAAATCACCGACCACCACCGGCCATTACATATTATTACATTTAG"
     //                    caccgNNNNNnnnnnnnnnttacaNNNNN
 
-    kmp.find(Read("", seq)) should be(None)
+    assertEquals(kmp.find(Read("", seq)), None)
   }
 
-  it should "handle a very long read" in {
+  test("should handle a very long read") {
     // format: off
     val pattern = "caccgNNNNNNNNNNNNNNNNNNNNnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnNNNNNNNNNNNNNNNNNNNNN"
     val read1   = "CACCGTTTTTTTTTTTTTTTTTTTTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATTTTTTTTTTTTTTTTTTTTT"
@@ -113,16 +112,18 @@ class TemplatePolicyTest extends AnyFlatSpec {
     val keymask = KeyMask(pattern)
     val kmp = new GeneralTemplatePolicy(keymask, Some(0))
 
-    val _ = kmp.find(Read("", read1)) should be(
+    assertEquals(
+      kmp.find(Read("", read1)),
       Some(FoundBarcode("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT".toCharArray, 5))
     )
-    val _ = kmp.find(Read("", read2)) should be(
+    assertEquals(
+      kmp.find(Read("", read2)),
       Some(FoundBarcode("NTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT".toCharArray, 5))
     )
-    kmp.find(Read("", read3)) should be(None)
+    assertEquals(kmp.find(Read("", read3)), None)
   }
 
-  ignore should "not be too slow given some random barcodes" in {
+  test("should not be too slow given some random barcodes".ignore) {
     val fixed = "ACTTGCATTGCAATGTGA"
     val prefix1 = "CACCG"
     val prefix2 = "TTACA"
@@ -147,7 +148,7 @@ class TemplatePolicyTest extends AnyFlatSpec {
         println(s"indexof: $t2 ratio: 1.0")
         println(s"keymask: $t1 ratio: $ratio1")
 
-        ret1 should be(ret2)
+        assertEquals(ret1, ret2)
     }
   }
 
