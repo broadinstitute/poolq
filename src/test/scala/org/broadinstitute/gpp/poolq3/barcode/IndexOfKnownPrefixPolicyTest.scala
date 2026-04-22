@@ -5,28 +5,27 @@
  */
 package org.broadinstitute.gpp.poolq3.barcode
 
+import munit.{FunSuite, ScalaCheckSuite}
 import org.broadinstitute.gpp.poolq3.gen.{acgt, acgtn, dnaSeqMaxN, dnaSeqOfN}
 import org.broadinstitute.gpp.poolq3.types.Read
 import org.scalacheck.Gen
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers.*
-import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks.*
+import org.scalacheck.Prop.forAll
 
-class IndexOfKnownPrefixPolicyTest extends AnyFlatSpec:
+class IndexOfKnownPrefixPolicyTest extends FunSuite with ScalaCheckSuite:
 
   val fixed = "NNNNNNNNNNNN"
 
-  "find" should "find a barcode" in {
+  test("find should find a barcode") {
     forAll(dnaSeqMaxN(acgtn, 7), dnaSeqOfN(acgt, 5), dnaSeqOfN(acgtn, 20)) {
       (variable: String, prefix: String, barcode: String) =>
         val read = Read("id", variable + fixed + prefix + barcode)
         val policy = IndexOfKnownPrefixPolicy(prefix, barcode.length, Some(7))
         val found: Option[FoundBarcode] = policy.find(read)
-        found should be(Some(FoundBarcode(barcode.toCharArray, variable.length + fixed.length + prefix.length)))
+        assertEquals(found, Some(FoundBarcode(barcode.toCharArray, variable.length + fixed.length + prefix.length)))
     }
   }
 
-  it should "not find a barcode that's before the search window" in {
+  test("should not find a barcode that's before the search window") {
     val prefix = "CACCG"
     val barcodeLength = 20
     val minPrefixPos = 22
@@ -39,19 +38,19 @@ class IndexOfKnownPrefixPolicyTest extends AnyFlatSpec:
       val pre = bases.take(prefixPos)
       val post = bases.drop(prefixPos)
       val seq = pre + "CACCG" + post + barcode
-      policy.find(Read("id", seq)) should be(None)
+      assertEquals(policy.find(Read("id", seq)), None)
     }
   }
 
-  it should "not find a barcode that's after the search window" in {
+  test("should not find a barcode that's after the search window") {
     val prefix = "CACCG"
     val barcodeLength = 20
     val minPrefixPos = 22
     val maxPrefixPos = 29
     val policy = IndexOfKnownPrefixPolicy(prefix, barcodeLength, Some(minPrefixPos), Some(maxPrefixPos))
-    forAll(dnaSeqMaxN(acgtn, maxPrefixPos + 1), dnaSeqOfN(acgtn, barcodeLength)) { (pre, barcode) =>
+    forAll(dnaSeqOfN(acgtn, maxPrefixPos + 1), dnaSeqOfN(acgtn, barcodeLength)) { (pre, barcode) =>
       val seq = pre + "CACCG" + barcode
-      policy.find(Read("id", seq)) should be(None)
+      assertEquals(policy.find(Read("id", seq)), None)
     }
   }
 
