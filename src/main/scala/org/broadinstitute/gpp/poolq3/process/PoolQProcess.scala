@@ -33,7 +33,11 @@ final class PoolQProcess(
 
   private val queue: ArrayBlockingQueue[Barcodes] = new ArrayBlockingQueue(queueSize)
 
+  private val queueWaitMillis: Long = 100L
+
   @volatile private var done = false
+
+  @volatile private var consumerFailure: Throwable | Null = null
 
   final private class ConsumerThread extends Thread:
 
@@ -50,14 +54,18 @@ final class PoolQProcess(
         )
       end logProgress
 
-      while !done || !queue.isEmpty do // as long as we're not done OR there is still work in the queue
+      while consumerFailure == null && (!done || !queue.isEmpty) do
         try Option(queue.poll(100, TimeUnit.MILLISECONDS)).foreach(next => consumer.consume(next))
         catch
           case _: InterruptedException =>
             log.warn(
               s"Interrupted. Done = $done Processed ${nf.format(consumer.readsProcessed)} reads; queue has ${queue.size()} remaining"
             )
-          case NonFatal(e) => log.error(e)(s"Error processing read ${consumer.readsProcessed}")
+          case NonFatal(e) =>
+            consumerFailure = e
+            done = true
+            log.error(e)(s"Error processing read ${consumer.readsProcessed}; terminating run")
+        end try
         // update the log periodically
         val n = consumer.readsProcessed
         if n % reportFrequency == 0L then logProgress(n)
@@ -72,24 +80,59 @@ final class PoolQProcess(
   def run(): PoolQRunSummary =
     val consumerThread = new ConsumerThread
     consumerThread.setName("Consumer")
+    var consumerClosed = false
+
+    def closeConsumer(primaryErrorOpt: Option[Throwable]): Unit =
+      if !consumerClosed then
+        try
+          consumer.close()
+          consumerClosed = true
+        catch
+          case NonFatal(closeErr) =>
+            primaryErrorOpt match
+              case Some(primaryError) => primaryError.addSuppressed(closeErr)
+              case None => throw closeErr
+      end if
+    end closeConsumer
+
+    // Keep retrying until an item is successfully enqueued, but fail fast if the consumer has errored.
+    def enqueueOrFail(next: Barcodes): Unit =
+      var enqueued = false
+      while !enqueued do
+        val failure = consumerFailure
+        if failure != null then throw failure
+        enqueued = queue.offer(next, queueWaitMillis, TimeUnit.MILLISECONDS)
 
     log.info("Beginning task processing.")
     consumer.start()
     consumerThread.start()
 
-    // fill the queue
-    source.foreach(queue.put)
+    try
+      // fill the queue while checking for failures in the consumer thread
+      while source.hasNext && consumerFailure == null do
+        val next = source.next()
+        enqueueOrFail(next)
 
-    // signal the end
-    done = true
+      // signal the end
+      done = true
 
-    // shut down the processing thread
-    log.info("Shutting down.")
-    consumerThread.join()
+      // shut down the processing thread
+      log.info("Shutting down.")
+      consumerThread.join()
 
-    consumer.close()
+      val failure = Option(consumerFailure)
+      closeConsumer(failure)
+      failure.foreach(throw _)
 
-    PoolQRunSummary(consumer.readsProcessed, consumer.matchingReads, consumer.matchPercent, consumer.state)
+      PoolQRunSummary(consumer.readsProcessed, consumer.matchingReads, consumer.matchPercent, consumer.state)
+    catch
+      case t: Throwable =>
+        done = true
+        consumerThread.interrupt()
+        consumerThread.join()
+        closeConsumer(Some(t))
+        throw t
+    end try
 
   end run
 

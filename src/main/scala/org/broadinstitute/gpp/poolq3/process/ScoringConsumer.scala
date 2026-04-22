@@ -7,6 +7,8 @@ package org.broadinstitute.gpp.poolq3.process
 
 import java.util.concurrent.{ArrayBlockingQueue, TimeUnit}
 
+import scala.util.control.NonFatal
+
 import org.broadinstitute.gpp.poolq3.barcode.{Barcodes, FoundBarcode}
 import org.broadinstitute.gpp.poolq3.hist.{BasicShardedHistogram, OpenHashMapHistogram, TupleHistogram}
 import org.broadinstitute.gpp.poolq3.parser.BarcodeSet
@@ -26,11 +28,17 @@ final class ScoringConsumer(
 
   private val log: Logger = getLogger
 
+  private val pollTimeoutMillis: Long = 100L
+
   private val unexpectedSequenceQueue: ArrayBlockingQueue[(Array[Char], Array[Char])] =
     new ArrayBlockingQueue(1000)
 
   // used to tell the unexpected sequence tracker thread when processing is done
-  @volatile private var done = false
+  @volatile private var inputProcessingDone = false
+
+  // stores any error that occurs in a thread running within this consumer; currently the only one of those
+  // is the unexpected sequence tracker thread
+  @volatile private var threadError: Throwable | Null = null
 
   // tracks the state as we go
   override val state =
@@ -47,13 +55,19 @@ final class ScoringConsumer(
     final override def run(): Unit =
       assert(unexpectedSequenceTrackerOpt.isDefined)
       val unexpectedSequenceTracker = unexpectedSequenceTrackerOpt.get
-      while !done || !unexpectedSequenceQueue.isEmpty do
+      def unexpectedTrackerDone: Boolean = inputProcessingDone && unexpectedSequenceQueue.isEmpty
+
+      while threadError == null && !unexpectedTrackerDone do
         try
-          Option(unexpectedSequenceQueue.poll(100, TimeUnit.MILLISECONDS))
+          Option(unexpectedSequenceQueue.poll(pollTimeoutMillis, TimeUnit.MILLISECONDS))
             .foreach(unexpectedSequenceTracker.reportUnexpected)
         catch
           case _: InterruptedException =>
-            log.debug(s"Interrupted. Done = $done; queue length = ${unexpectedSequenceQueue.size()}")
+            log.debug(s"Interrupted. Done = $inputProcessingDone; queue length = ${unexpectedSequenceQueue.size()}")
+          case NonFatal(e) =>
+            threadError = e
+            log.error(e)("Unexpected sequence tracker failed")
+      end while
 
     end run
 
@@ -62,12 +76,15 @@ final class ScoringConsumer(
 
   override def close(): Unit =
     unexpectedSequenceTrackerOpt.foreach { _ =>
-      done = true
+      inputProcessingDone = true
       unexpectedSequenceTrackerThread.join()
       unexpectedSequenceTrackerOpt.foreach(_.close())
+      failOnThreadError()
     }
 
   override def consume(parsedBarcode: Barcodes): Unit =
+    failOnThreadError()
+
     // increment the read counter regardless
     state.reads += 1
 
@@ -96,7 +113,7 @@ final class ScoringConsumer(
           // match the row barcode to the reference data, and the row barcode doesn't have an N in it, then queue the
           // row barcode for inclusion in the unexpected sequence report
           if unexpectedSequenceTrackerOpt.isDefined && colBc.nonEmpty && rowBc.isEmpty && !containsN(parsedRow.barcode)
-          then unexpectedSequenceQueue.put((parsedRow.barcode, parsedCol.barcode))
+          then enqueueUnexpected(parsedRow.barcode, parsedCol.barcode)
         end if
 
       case (f @ Some(parsedRow), r @ Some(parsedRevRow), Some(parsedCol)) =>
@@ -120,7 +137,7 @@ final class ScoringConsumer(
         // match the row barcode to the reference data, and the row barcode doesn't have an N in it, then queue the
         // row barcode for inclusion in the unexpected sequence report
         if unexpectedSequenceTrackerOpt.isDefined && colBc.nonEmpty && rowBc.isEmpty && !containsN(combinedBarcode)
-        then unexpectedSequenceQueue.put((combinedBarcode, parsedCol.barcode))
+        then enqueueUnexpected(combinedBarcode, parsedCol.barcode)
 
       case (None, r, None) =>
         updateRowBarcodePositionStats(None, r)
@@ -187,6 +204,14 @@ final class ScoringConsumer(
     row.foreach(r => state.rowBarcodeStats.update(r.offset0))
     revRow.foreach(r => state.revRowBarcodeStats.update(r.offset0))
     if row.isEmpty && revRow.isEmpty then state.neitherRowBarcodeFound += 1L
+
+  private def enqueueUnexpected(rowBarcode: Array[Char], columnBarcode: Array[Char]): Unit =
+    failOnThreadError()
+    unexpectedSequenceQueue.put((rowBarcode, columnBarcode))
+
+  private def failOnThreadError(): Unit =
+    val err = threadError
+    if threadError != null then throw IllegalStateException("Unexpected sequence tracker failed.", err)
 
   override def readsProcessed: Long = state.reads
 
