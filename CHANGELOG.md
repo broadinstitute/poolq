@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.13.3
+
+### Improvements
+
+* Port tests to munit
+
+### Bugfixes
+
+* Fix path in log message
+* Fix theoretical deadlock in unexpected sequence tracker
+
 ## 3.13.2
 
 ### Improvements
