@@ -28,8 +28,6 @@ final class ScoringConsumer(
 
   private val log: Logger = getLogger
 
-  private val pollTimeoutMillis: Long = 100L
-
   private val unexpectedSequenceQueue: ArrayBlockingQueue[(Array[Char], Array[Char])] =
     new ArrayBlockingQueue(1000)
 
@@ -59,7 +57,7 @@ final class ScoringConsumer(
 
       while threadError == null && !unexpectedTrackerDone do
         try
-          Option(unexpectedSequenceQueue.poll(pollTimeoutMillis, TimeUnit.MILLISECONDS))
+          Option(unexpectedSequenceQueue.poll(Constants.QueueTimeoutMillis, TimeUnit.MILLISECONDS))
             .foreach(unexpectedSequenceTracker.reportUnexpected)
         catch
           case _: InterruptedException =>
@@ -206,8 +204,17 @@ final class ScoringConsumer(
     if row.isEmpty && revRow.isEmpty then state.neitherRowBarcodeFound += 1L
 
   private def enqueueUnexpected(rowBarcode: Array[Char], columnBarcode: Array[Char]): Unit =
-    failOnThreadError()
-    unexpectedSequenceQueue.put((rowBarcode, columnBarcode))
+    val entry = (rowBarcode, columnBarcode)
+    var enqueued = false
+    while !enqueued do
+      failOnThreadError()
+      try enqueued = unexpectedSequenceQueue.offer(entry, Constants.QueueTimeoutMillis, TimeUnit.MILLISECONDS)
+      catch
+        case e: InterruptedException =>
+          Thread.currentThread().interrupt()
+          throw new IllegalStateException("Interrupted while enqueueing unexpected sequence.", e)
+
+  end enqueueUnexpected
 
   private def failOnThreadError(): Unit =
     val err = threadError
