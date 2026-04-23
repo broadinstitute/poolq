@@ -113,11 +113,12 @@ class CorrelationFileTest extends FunSuite:
 
       val normalizedCounts = LogNormalizedCountsWriter.logNormalizedCounts(state.known, rowReference, singleCondRef)
 
-      // we've set a trap - if we try to compute a correlation, the library code should throw an exception
+      // we've set a trap - if we try to compute a correlation, the math library would throw an exception; this test verifies that
+      // instead, we catch that and just don't write anything to the file
       val _ = CorrelationFileWriter.write(outputFile, normalizedCounts, rowReference, singleCondRef)
 
       // be sure also that we didn't actually write anything to the file
-      Using(Source.fromFile(outputFile.toFile))(src => assertEquals(src.getLines().mkString("\n"), ""))
+      Using.resource(Source.fromFile(outputFile.toFile))(src => assertEquals(src.getLines().mkString("\n"), ""))
 
     finally
       val _ = Files.deleteIfExists(outputFile)
@@ -142,11 +143,12 @@ class CorrelationFileTest extends FunSuite:
 
       val normalizedCounts = LogNormalizedCountsWriter.logNormalizedCounts(state.known, rowReference, singleCondRef)
 
-      // we've set a trap - if we try to compute a correlation, the library code should throw an exception
+      // we've set a trap - if we try to compute a correlation, the math library would throw an exception; this test verifies that
+      // instead, we catch that and just don't write anything to the file
       val _ = CorrelationFileWriter.write(outputFile, normalizedCounts, rowReference, singleCondRef)
 
       // be sure also that we didn't actually write anything to the file
-      Using(Source.fromFile(outputFile.toFile))(src => assertEquals(src.getLines().mkString("\n"), ""))
+      Using.resource(Source.fromFile(outputFile.toFile))(src => assertEquals(src.getLines().mkString("\n"), ""))
 
     finally
       val _ = Files.deleteIfExists(outputFile)

@@ -30,7 +30,7 @@ class IndexOfKnownPrefixPolicyTest extends FunSuite with ScalaCheckSuite:
     val barcodeLength = 20
     val minPrefixPos = 22
     val policy = IndexOfKnownPrefixPolicy(prefix, barcodeLength, Some(minPrefixPos))
-    // this generator cannot generate a CACCG prefix because it cannot generate a G
+    // this generator cannot generate a CACCG prefix because it cannot generate a C
     val notAllBases = Gen.oneOf('A', 'T', 'G')
     forAll(
       dnaSeqMaxN(notAllBases, minPrefixPos - prefix.length),
@@ -50,7 +50,7 @@ class IndexOfKnownPrefixPolicyTest extends FunSuite with ScalaCheckSuite:
     val minPrefixPos = 22
     val maxPrefixPos = 29
     val policy = IndexOfKnownPrefixPolicy(prefix, barcodeLength, Some(minPrefixPos), Some(maxPrefixPos))
-    // this generator cannot generate a CACCG prefix because it cannot generate a G
+    // this generator cannot generate a CACCG prefix because it cannot generate a C
     val notAllBases = Gen.oneOf('A', 'T', 'G')
     forAll(dnaSeqOfN(notAllBases, maxPrefixPos + 1), dnaSeqOfN(notAllBases, barcodeLength)) { (pre, barcode) =>
       val seq = pre + prefix + barcode

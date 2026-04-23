@@ -5,6 +5,8 @@
  */
 package org.broadinstitute.gpp.poolq3.parser
 
+import scala.util.Using
+
 import better.files.*
 import munit.FunSuite
 
@@ -23,9 +25,8 @@ class FastqParserTest extends FunSuite:
     val file: File = File.newTemporaryFile("FastqParserTest", ".fastq")
     try
       file.overwrite(data)
-      val fqp = new FastqParser(file.path)
       intercept[InvalidFileException] {
-        fqp.toList
+        Using.resource(new FastqParser(file.path).iterator)(iter => iter.toList)
       }
     finally file.delete()
   }
@@ -41,9 +42,8 @@ class FastqParserTest extends FunSuite:
     val file: File = File.newTemporaryFile("FastqParserTest", ".fastq")
     try
       file.overwrite(data)
-      val fqp = new FastqParser(file.path)
       intercept[InvalidFileException] {
-        fqp.toList
+        Using.resource(new FastqParser(file.path).iterator)(iter => iter.toList)
       }
     finally file.delete()
   }
@@ -61,10 +61,7 @@ class FastqParserTest extends FunSuite:
     val file: File = File.newTemporaryFile("FastqParserTest", ".fastq")
     try
       file.overwrite(data)
-      val fqp = new FastqParser(file.path)
-      val fqi = fqp.iterator
-      assertEquals(fqi.toList.length, 2)
-      fqi.close()
+      Using.resource(new FastqParser(file.path).iterator)(iter => assertEquals(iter.toList.length, 2))
     finally file.delete()
   }
 
@@ -73,9 +70,8 @@ class FastqParserTest extends FunSuite:
     val file: File = File.newTemporaryFile("FastqParserTest", ".fastq")
     try
       file.overwrite(data)
-      val fqp = new FastqParser(file.path)
       intercept[InvalidFileException] {
-        fqp.toList
+        Using.resource(new FastqParser(file.path).iterator)(iter => iter.toList)
       }
     finally file.delete()
   }
