@@ -11,7 +11,7 @@ inThisBuild(
 
 lazy val versions = new {
   val betterFiles = "3.9.2"
-  val catsEffect3 = "3.7.0"
+  val catsEffect3 = "3.7.1"
   val cats = "2.13.0"
   val commonsIo = "2.22.0"
   val commonsText = "1.15.0"
