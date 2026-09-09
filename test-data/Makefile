@@ -196,7 +196,9 @@ test-demultiplexed:
 	(cd $(wd); diff counts.txt ../../test-data/demultiplexed/expected-counts.txt && \
      diff lognormalized-counts.txt ../../test-data/demultiplexed/lognormalized-counts.txt && \
      diff barcode-counts.txt ../../test-data/demultiplexed/barcode-counts.txt && \
-     diff correlation.txt ../../test-data/demultiplexed/correlation.txt)
+     diff correlation.txt ../../test-data/demultiplexed/correlation.txt && \
+     diff quality.txt ../../test-data/demultiplexed/quality.txt && \
+     diff condition-barcode-counts-summary.txt ../../test-data/demultiplexed/condition-barcode-counts-summary.txt)
 
 test-demultiplexed-paired-end: wd = $(test-output-dir)/demultiplexed-paired-end
 test-demultiplexed-paired-end:
