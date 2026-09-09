@@ -332,7 +332,7 @@ class ScoringConsumerTest extends FunSuite:
     assertEquals(state.revRowBarcodeStats.max, -1)
   }
 
-  // regression test for the asymmetry described in notes/always-count-col-barcodes-paired-end-asymmetry.md:
+  // Regression test for the paired-end row-barcode asymmetry:
   // --always-count-col-barcodes must count a recognized column barcode when either half of the paired-end
   // row barcode is missing, not just when the forward (read1) half is the one that's missing
   test("paired end sequencing only reverse found with always count column barcodes") {
