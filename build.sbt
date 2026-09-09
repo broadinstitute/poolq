@@ -11,23 +11,23 @@ inThisBuild(
 
 lazy val versions = new {
   val betterFiles = "3.9.2"
-  val catsEffect3 = "3.7.0"
+  val catsEffect3 = "3.7.1"
   val cats = "2.13.0"
   val commonsIo = "2.22.0"
   val commonsText = "1.15.0"
   val commonsMath3 = "3.6.1"
-  val fastutil = "8.5.18"
-  val fs2 = "3.13.0"
+  val fastutil = "8.5.19"
+  val fs2 = "3.14.0"
   val log4s = "1.10.0"
-  val logback = "1.5.32"
+  val logback = "1.5.38"
   val munit = "1.3.0"
   val munitCatsEffect3 = "2.2.0"
-  val munitScalaCheck = "1.3.0"
+  val munitScalaCheck = "1.3.1"
   val samTools = "3.0.5"
-  val scalaCheck = "1.19.0"
+  val scalaCheck = "1.20.0"
   val scalaCsv = "2.0.0"
   val scopt = "4.1.0"
-  val slf4j = "2.0.17"
+  val slf4j = "2.0.19"
 }
 
 lazy val libraries = new {
