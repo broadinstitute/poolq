@@ -112,6 +112,11 @@ final class ScoringConsumer(
           // row barcode for inclusion in the unexpected sequence report
           if unexpectedSequenceTrackerOpt.isDefined && colBc.nonEmpty && rowBc.isEmpty && !containsN(parsedRow.barcode)
           then enqueueUnexpected(parsedRow.barcode, parsedCol.barcode)
+        else if alwaysCountColumnBarcodes then
+          // read2's row barcode component could not be located, but the caller has asked us to count the
+          // column barcode anyway; mirrors the (None, r, Some(col)) case below
+          val colBc: Seq[MatchedBarcode] = colReference.find(parsedCol.barcode)
+          updateColumnBarcodeStats(colBc, parsedCol)
         end if
 
       case (f @ Some(parsedRow), r @ Some(parsedRevRow), Some(parsedCol)) =>

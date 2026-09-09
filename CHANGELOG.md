@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.13.4
+
+### Bugfixes
+
+* Fix `--always-count-col-barcodes` in paired-end mode not counting a column barcode when read2's half of the row barcode was missing but read1's was found
+
 ## 3.13.3
 
 ### Improvements
