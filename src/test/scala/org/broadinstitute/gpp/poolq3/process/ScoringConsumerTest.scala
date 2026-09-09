@@ -332,4 +332,53 @@ class ScoringConsumerTest extends FunSuite:
     assertEquals(state.revRowBarcodeStats.max, -1)
   }
 
+  // Regression test for the paired-end row-barcode asymmetry:
+  // --always-count-col-barcodes must count a recognized column barcode when either half of the paired-end
+  // row barcode is missing, not just when the forward (read1) half is the one that's missing
+  test("paired end sequencing only reverse found with always count column barcodes") {
+    val consumer = new ScoringConsumer(rowReference, colReference, false, true, None, None, true)
+    val barcodes =
+      Barcodes(None, Some(FoundBarcode("AAA".toCharArray(), 20)), Some(FoundBarcode("AAA".toCharArray, 0)), None)
+
+    consumer.consume(barcodes)
+    val state = consumer.state
+
+    assertEquals(state.known.count(("AAAAAAAAAA", "AAA")), 0L)
+    assertEquals(state.knownCol.count("AAA"), 1L)
+    assertEquals(state.reads, 1L)
+    assertEquals(state.exactMatches, 0L)
+    assertEquals(state.matches, 0L)
+    assertEquals(state.neitherRowBarcodeFound, 0L)
+    assertEquals(state.rowBarcodeNotFound, 1L)
+    assertEquals(state.rowBarcodeStats.min, Int.MaxValue)
+    assertEquals(state.rowBarcodeStats.max, -1)
+    assertEquals(state.revRowBarcodeNotFound, 0L)
+    assertEquals(state.revRowBarcodeStats.min, 20)
+    assertEquals(state.revRowBarcodeStats.max, 20)
+  }
+
+  test("paired end sequencing only forward found with always count column barcodes") {
+    val consumer = new ScoringConsumer(rowReference, colReference, false, true, None, None, true)
+    val barcodes =
+      Barcodes(Some(FoundBarcode("AAAAA".toCharArray(), 8)), None, Some(FoundBarcode("AAA".toCharArray, 0)), None)
+
+    consumer.consume(barcodes)
+    val state = consumer.state
+
+    assertEquals(state.known.count(("AAAAAAAAAA", "AAA")), 0L)
+    // before the fix for the paired-end asymmetry, this was 0: the flag was only consulted when the
+    // forward (read1) barcode was the missing one, not the reverse (read2) barcode
+    assertEquals(state.knownCol.count("AAA"), 1L)
+    assertEquals(state.reads, 1L)
+    assertEquals(state.exactMatches, 0L)
+    assertEquals(state.matches, 0L)
+    assertEquals(state.neitherRowBarcodeFound, 0L)
+    assertEquals(state.rowBarcodeNotFound, 0L)
+    assertEquals(state.rowBarcodeStats.min, 8)
+    assertEquals(state.rowBarcodeStats.max, 8)
+    assertEquals(state.revRowBarcodeNotFound, 1L)
+    assertEquals(state.revRowBarcodeStats.min, Int.MaxValue)
+    assertEquals(state.revRowBarcodeStats.max, -1)
+  }
+
 end ScoringConsumerTest
