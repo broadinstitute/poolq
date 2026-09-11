@@ -109,8 +109,7 @@ lazy val assemblySettings = List(
 lazy val publishSettings = List(
   // Publish to GitHub Packages:
   githubOwner := "broadinstitute",
-  githubRepository := artifactId,
-  githubTokenSource := TokenSource.Environment("GITHUB_TOKEN") || TokenSource.GitConfig("github.token")
+  githubRepository := artifactId
 )
 
 lazy val poolq = project
