@@ -34,7 +34,6 @@ object GithubPackages extends AutoPlugin {
     // baked into the published POM and inherited by consumers, who may
     // have no credentials for it.
     pomIncludeRepository := (_ => false),
-
     resolvers ++= {
       githubOwner.?.value match {
         case Some(owner) if owner.nonEmpty =>
@@ -77,9 +76,7 @@ object GithubPackages extends AutoPlugin {
 
       back.orElse {
         if (!suppressMissingConfigWarning)
-          sLog.value.warn(
-            "GithubPackages: `githubOwner`/`githubRepository` not set; leaving publishTo unchanged"
-          )
+          sLog.value.warn("GithubPackages: `githubOwner`/`githubRepository` not set; leaving publishTo unchanged")
         publishTo.value
       }
     }

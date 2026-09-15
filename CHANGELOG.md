@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.13.5
+
+### Bugfixes
+
+* Sort rows in the unexpected sequence report so they are descending by count
+
 ## 3.13.4
 
 ### Bugfixes

@@ -154,9 +154,10 @@ object UnexpectedSequenceWriter:
       if pq.size > n then
         val _ = pq.dequeue()
     }
-    val ret: Vector[B] = pq.toVector
+    // dequeueAll drains in priority order (per `ord.reverse`, i.e. ascending `ord`); reverse for descending
+    val ret: Vector[B] = pq.dequeueAll.reverse.toVector
     assert(ret.size <= n)
-    ret.reverse
+    ret
 
   end topNBy
 
