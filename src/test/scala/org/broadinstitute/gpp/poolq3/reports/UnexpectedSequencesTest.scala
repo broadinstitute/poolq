@@ -257,13 +257,7 @@ class UnexpectedSequencesTest extends FunSuite with TestResources:
 
   test("topNBy breaks ties alphabetically") {
     val counts: Map[String, Int] =
-      Map(
-        "GGG" -> 100,
-        "CCC" -> 100,
-        "AAA" -> 100,
-        "TTT" -> 50,
-        "ZZZ" -> 10
-      )
+      Map("GGG" -> 100, "CCC" -> 100, "AAA" -> 100, "TTT" -> 50, "CAT" -> 10)
     val stringOrd: Ordering[String] = Ordering[String]
     // topNBy is called with an Ordering[(Int, String)] built from a reversed Ordering[String], as done in
     // loadCache, so that ties are broken in favor of the alphabetically earlier barcode
