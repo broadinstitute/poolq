@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.14.0
+
+### Improvements
+
+* Updated dependencies. Note that this requires us to update the minimum required Java environment from Java 11 to Java 17.
+
 ## 3.13.5
 
 ### Bugfixes
