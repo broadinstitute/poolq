@@ -196,8 +196,8 @@ class UnexpectedSequencesTest extends FunSuite with TestResources:
     assert(i4.closed)
   }
 
-  private def testIt(underlyingBarcodes: List[(String, String)], unexpectedReadCount: Int, maxMapSize: Int)(implicit
-      loc: Location
+  private def testIt(underlyingBarcodes: List[(String, String)], unexpectedReadCount: Int, maxMapSize: Int)(using
+      Location
   ): Unit =
     val barcodes = CloseableIterable.ofList(underlyingBarcodes.map { case (row, col) =>
       Barcodes(Some(FoundBarcode(row.toCharArray, 0)), None, Some(FoundBarcode(col.toCharArray, 0)), None)

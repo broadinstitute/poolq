@@ -50,7 +50,7 @@ class VariantReferenceTest extends FunSuite with ScalaCheckSuite:
   }
 
   test("should handle truncated barcodes without Ns") {
-    implicit val ord: Ordering[MatchedBarcode] = Ordering.by(mb => (mb.barcode, mb.distance))
+    given Ordering[MatchedBarcode] = Ordering.by(mb => (mb.barcode, mb.distance))
 
     val barcodes = Seq(ReferenceEntry("AAAAAAAAAAAAAAAAAAAA", "One"), ReferenceEntry("AAAAAAAAAAAAAAAAAAAT", "Two"))
 
@@ -65,7 +65,7 @@ class VariantReferenceTest extends FunSuite with ScalaCheckSuite:
   }
 
   test("should handle truncated barcodes with Ns") {
-    implicit val ord: Ordering[MatchedBarcode] = Ordering.by(mb => (mb.barcode, mb.distance))
+    given Ordering[MatchedBarcode] = Ordering.by(mb => (mb.barcode, mb.distance))
 
     val barcodes = Seq(ReferenceEntry("AAAAAAAAAAAAAAAAAAAA", "One"), ReferenceEntry("AAAAAAAAAAAAAAAAAATA", "Two"))
 

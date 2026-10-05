@@ -60,7 +60,7 @@ class UnlabeledConditionsTest extends CatsEffectSuite with TestResources:
 
   }
 
-  def filesSame(expected: JPath, actual: JPath)(implicit loc: munit.Location): IO[Unit] =
+  def filesSame(expected: JPath, actual: JPath)(using loc: munit.Location): IO[Unit] =
     val ef: Stream[IO, String] = Files[IO].readAll(Path.fromNioPath(expected)).through(text.utf8.decode).foldMonoid
     val af: Stream[IO, String] = Files[IO].readAll(Path.fromNioPath(actual)).through(text.utf8.decode).foldMonoid
 

@@ -111,8 +111,7 @@ final case class PoolQConfig(
         case Right(ReadsSource.SelfContained(_)) => false
         case Right(ReadsSource.Split(_, _)) => false
         case Right(ReadsSource.Dmuxed(_)) => false
-        case Left(_) => false
-      )
+        case Left(_) => false)
 
 end PoolQConfig
 
@@ -122,25 +121,24 @@ object PoolQConfig:
 
   private[poolq3] val DefaultPath = Paths.get(".")
 
-  implicit private val readPath: Read[Path] = implicitly[Read[File]].map(_.toPath)
+  private given Read[Path] = summon[Read[File]].map(_.toPath)
 
-  implicit private val readPaths: Read[(Path, List[Path])] = implicitly[Read[Seq[File]]].map { files =>
+  private given Read[(Path, List[Path])] = summon[Read[Seq[File]]].map { files =>
     files.toList.map(_.toPath) match
       case Nil => throw new IllegalArgumentException(s"No argument provided")
-      case (x :: xs) => (x, xs)
+      case x :: xs => (x, xs)
   }
 
-  implicit private val readBarcodePaths: Read[List[(Option[String], Path)]] = implicitly[Read[Seq[String]]].map {
-    args =>
-      args.view.map { arg =>
-        arg match
-          case BarcodePathRegex(bc, pathStr) => (Option(bc), Paths.get(pathStr))
-          case _ => (None, Paths.get(arg))
-      }.toList
+  private given Read[List[(Option[String], Path)]] = summon[Read[Seq[String]]].map { args =>
+    args.view.map { arg =>
+      arg match
+        case BarcodePathRegex(bc, pathStr) => (Option(bc), Paths.get(pathStr))
+        case _ => (None, Paths.get(arg))
+    }.toList
   }
 
-  implicit private val readReadIdCheckPolicy: Read[ReadIdCheckPolicy] =
-    implicitly[Read[String]].map(ReadIdCheckPolicy.forName)
+  private given Read[ReadIdCheckPolicy] =
+    summon[Read[String]].map(ReadIdCheckPolicy.forName)
 
   def parse(args: Array[String]): Option[PoolQConfig] =
 

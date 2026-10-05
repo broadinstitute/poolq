@@ -22,7 +22,7 @@ end KeyRange
 
 object KeyRange:
 
-  implicit val ord: Ordering[KeyRange] = Ordering.by(kr => (kr.start0, kr.end0))
+  given Ordering[KeyRange] = Ordering.by(kr => (kr.start0, kr.end0))
 
   private val Range1Re = """^(\d+)$""".r
   private val Range2Re = """^(\d+)(?:-|\.\.)(\d+)$""".r
