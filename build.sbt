@@ -26,7 +26,7 @@ lazy val versions = new {
   val samTools = "3.0.5"
   val scalaCheck = "1.20.0"
   val scalaCsv = "2.0.0"
-  val scopt = "4.1.0"
+  val scopt = "4.2.0"
   val slf4j = "2.0.19"
 }
 
