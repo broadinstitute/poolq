@@ -9,5 +9,5 @@ private[reports] case class BarcodeFrequency(bc: String, frequency: Long)
 
 private[reports] object BarcodeFrequency:
 
-  implicit val ord: Ordering[BarcodeFrequency] =
+  given Ordering[BarcodeFrequency] =
     Ordering.by[BarcodeFrequency, (Long, String)](b => (-b.frequency, b.bc)).reverse

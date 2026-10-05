@@ -20,7 +20,7 @@ class KeyRangeTest extends FunSuite:
   }
 
   test("should have working compare()") {
-    val ord = implicitly[Ordering[KeyRange]]
+    val ord = summon[Ordering[KeyRange]]
     assertEquals(ord.compare(KeyRange(2, 5), KeyRange(2, 5)), 0)
     assert(ord.lteq(KeyRange(2, 5), KeyRange(2, 5)))
     assert(ord.gteq(KeyRange(2, 5), KeyRange(2, 5)))

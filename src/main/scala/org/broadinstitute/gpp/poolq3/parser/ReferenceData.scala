@@ -26,9 +26,8 @@ class ReferenceData(val mappings: Seq[ReferenceEntry]):
   lazy val barcodeLengths: Option[(Int, Int)] = mappings.head.barcodeLengths
 
   def forColumnBarcodes(dialect: ReportsDialect): ReferenceData =
-    val columnBarcodeMappings = mappings.map { m =>
-      if m.referenceId.isEmpty then m.copy(referenceId = ReferenceData.unlabeled(dialect)) else m
-    }
+    val columnBarcodeMappings =
+      mappings.map(m => if m.referenceId.isEmpty then m.copy(referenceId = ReferenceData.unlabeled(dialect)) else m)
     new ReferenceData(columnBarcodeMappings)
 
 end ReferenceData
@@ -75,7 +74,7 @@ object ReferenceData:
         .get()
       val br = new BufferedReader(new InputStreamReader(in))
       val guessedDelimiter = guessDelimiter(br)
-      implicit object CSVFormat extends DefaultCSVFormat:
+      given DefaultCSVFormat:
         override val delimiter = guessedDelimiter
         override val quoteChar: Char = quote
       skipHeader(br, LineRegex)

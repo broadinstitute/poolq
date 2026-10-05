@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.14.0
+
+### Improvements
+
+* Updated dependencies. Note that this requires us to update the minimum required Java environment from Java 11 to Java 17.
+* Updated code to Scala 3.9.0
+
 ## 3.13.5
 
 ### Bugfixes
