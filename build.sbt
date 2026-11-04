@@ -110,9 +110,11 @@ lazy val publishSettings = List(
   // Publish to GitHub Packages:
   githubOwner := "broadinstitute",
   githubRepository := artifactId,
-  // logback.xml configures the command-line program, which the assembly jar has; an application that uses the library
-  // brings its own
-  Compile / packageBin / mappings ~= (_.filterNot { case (_, path) => path == "logback.xml" })
+  // logback.xml configures the command-line program; an application that uses the library brings its own. The assembly
+  // jar still has it because assembly reads the classes directory, not packageBin's jar; with exportJars := true
+  // (sbt 2's default) it would read the jar, and would need logback.xml added some other way
+  Compile / packageBin / mappings ~= (_.filterNot { case (_, path) => path == "logback.xml" }),
+  Compile / packageSrc / mappings ~= (_.filterNot { case (_, path) => path == "logback.xml" })
 )
 
 lazy val poolq = project

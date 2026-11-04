@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.14.1
+
+### Improvements
+
+* Stop shipping logback configuration (`logback.xml`, `logback-test.xml`) in the library jar; applications that use PoolQ as a library now configure their own logging. The command-line jar is unchanged
+
 ## 3.14.0
 
 ### Improvements
