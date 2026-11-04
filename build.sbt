@@ -109,7 +109,10 @@ lazy val assemblySettings = List(
 lazy val publishSettings = List(
   // Publish to GitHub Packages:
   githubOwner := "broadinstitute",
-  githubRepository := artifactId
+  githubRepository := artifactId,
+  // logback.xml configures the command-line program, which the assembly jar has; an application that uses the library
+  // brings its own
+  Compile / packageBin / mappings ~= (_.filterNot { case (_, path) => path == "logback.xml" })
 )
 
 lazy val poolq = project
